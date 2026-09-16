@@ -192,14 +192,25 @@ ax3.legend(loc="upper left", frameon=True, framealpha=0.9)
 # Panel B: Summary of Chromatin State Transition
 ax4 = fig2.add_subplot(gs2[1])
 
-categories = ["Mononucleosome Core", "Linker DNA Length", "Nucleosome Repeat (NRL)", "Linker Histone H1", "CENP-B Box Status"]
-periphery_vals = [147, 13, 160, 1.0, 0.2]
-cdr_vals = [128, 42, 170, 0.0, 1.0]
+import json
+metrics_file = os.path.join(DATA_DIR, "metrics.json")
+with open(metrics_file) as f:
+    metrics = json.load(f)
 
-# Bar comparison of physical lengths
+lg = metrics["linker_geometry"]
+noncdr_core = lg["periphery_core_bp"]
+noncdr_linker = lg["periphery_linker_bp"]
+noncdr_nrl = lg["periphery_nrl_bp"]
+
+cdr_core = lg["cdr_core_bp"]
+cdr_linker_a = lg["cdr_linker_class1_bp"]
+cdr_linker_b = lg["cdr_linker_class2_bp"]
+cdr_linker_mean = lg["cdr_mean_linker_bp"]
+cdr_nrl = lg["cdr_monomer1_nrl_bp"]  # or mean 170
+
 labels = ["Core (bp)", "Linker (bp)", "NRL (bp)"]
-noncdr_lens = [147, 13, 160]
-cdr_lens = [128, 42, 170]
+noncdr_lens = [noncdr_core, noncdr_linker, noncdr_nrl]
+cdr_lens = [cdr_core, cdr_linker_mean, 170]
 
 x = np.arange(len(labels))
 width = 0.35
@@ -212,9 +223,13 @@ for rect in rects1:
     h = rect.get_height()
     ax4.text(rect.get_x() + rect.get_width()/2., h + 3, f"{int(h)}", ha="center", va="bottom", fontsize=8, color="#333333")
 
-for rect in rects2:
+for i, rect in enumerate(rects2):
     h = rect.get_height()
-    ax4.text(rect.get_x() + rect.get_width()/2., h + 3, f"{int(h)}", ha="center", va="bottom", fontsize=8, fontweight="bold", color="#D9381E")
+    if i == 1:
+        txt = f"{cdr_linker_a}/{cdr_linker_b}"  # 20 and 60 bp bimodal
+    else:
+        txt = f"{int(h)}"
+    ax4.text(rect.get_x() + rect.get_width()/2., h + 3, txt, ha="center", va="bottom", fontsize=8, fontweight="bold", color="#D9381E")
 
 ax4.set_ylabel("DNA Length (Base Pairs)")
 ax4.set_title("B. Bimodal Centromeric Phase Transition", loc="left", fontweight="bold")
@@ -228,10 +243,10 @@ ax4.legend(loc="upper left", frameon=True, framealpha=0.9)
 # Additional state box
 text_box = (
     "Chromatin State Partitioning:\n"
-    "• Periphery: 5mC (85%), H1 bound,\n"
-    "  dense 160 bp lattice, closed linkers.\n"
-    "• CDR Core: 5mC (25%), H1 excluded,\n"
-    "  open 128 bp core, 340 bp dimer lattice."
+    "• Periphery: 85% 5mC, H1 bound,\n"
+    "  160 bp NRL, 13 bp linker (compacted).\n"
+    "• CDR Core: 25% 5mC, H1 excluded,\n"
+    "  130 bp core, 20/60 bp linkers (340 bp dimer)."
 )
 ax4.text(0.5, 0.52, text_box, transform=ax4.transAxes, fontsize=7.5,
          verticalalignment="top", bbox=dict(boxstyle="round,pad=0.5", facecolor="#FFF9E6", edgecolor="#E2C974", alpha=0.9))
