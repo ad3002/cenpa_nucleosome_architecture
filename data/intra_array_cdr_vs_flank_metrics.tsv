@@ -1,0 +1,3 @@
+array_domain	mean_5mc_pct	cenpa_density_norm	modal_core_size_bp	monomer_nrl_modes_bp	dimer_lattice_peak_bp	linker_lengths_bp	h1_occupancy_model	cenpb_box_exposure
+CDR (Kinetochore Core)	28.4%	1.000	130	150 & 190	340	20 & 60 (mean 40)	Excluded (open gyres)	Exposed at +55 & +90 bp
+Adjacent Intra-Array Flanks	88.7%	0.082	147	160	None (160 bp ladder)	13	Bound (HP1-stabilized)	Occluded / compacted

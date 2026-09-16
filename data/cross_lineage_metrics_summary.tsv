@@ -1,0 +1,5 @@
+cohort_id	cell_line	karyotype	modal_length_bp	pct_110_140bp	octamer_150bp_pct	box_peak1_bp	box_dyad_depletion	phasogram_dimer_peak_bp	status
+CHM13_Rep2_Discovery	CHM13hTERT	46,XX (homozygous)	130	84.3	0.028	55	66.0x	340	Discovery (4.29M pairs)
+CHM13_Rep1_Replicate	CHM13hTERT	46,XX (homozygous)	130	83.8	0.031	55	63.4x	340	Validated (3.82M pairs)
+HG002_T2T_Diploid	HG002 (GM24385)	46,XY (diploid Mat/Pat)	128	81.6	0.045	55	58.2x	340	Validated (Phased Mat/Pat)
+RPE1_NonTransformed	hTERT RPE-1	46,XX (near-diploid)	132	80.4	0.052	55	54.7x	340	Validated (GSE95015 / Corda 2025)
