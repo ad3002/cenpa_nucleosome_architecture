@@ -804,7 +804,7 @@
         Abstract
       </div>
       <div class="abstract-text">
-        Centromere identity in human chromosomes is epigenetically specified by the histone H3 variant CENP-A and sequence-specifically recognized by CENP-B on repetitive alpha-satellite higher-order repeats (HORs). However, resolving the native human centromeric nucleosome in living cells has historically been challenged by multi-mapping across repetitive arrays and conflicting structural models. Here, we analyze complete telomere-to-telomere human centromere assemblies (CHM13v2.0) using deep paired-end micrococcal nuclease sequencing (4,290,331 primary proper-pair fragments of CENP-A ChIP-seq and matched Input MNase) across all 744 alpha-satellite arrays to quantify centromeric chromatin architecture. We show that native CENP-A-associated chromatin fragments exhibit a narrow modal protection of <strong>125–130 bp</strong> ($N = 177,473$ at the 130-bp mode; 84.3% of fragments between 110 and 140 bp), consistent with in vitro structures showing unpeeling of terminal DNA gyres. In this library preparation, canonical 150-bp octamer fragments represent 0.028% of reads ($N = 1,197$; 148.3-fold depleted relative to mode; 0.363% for 147–150 bp), while sub-85 bp fragments represent 1.53% (0.696% for 75–85 bp). Measuring distances from nucleosome dyads to 126,969 canonical CENP-B boxes reveals a <strong>bipartite architecture</strong>: CENP-B boxes are 66.0-fold depleted at the dyad axis (0–15 bp) relative to a major peak at <strong>50–55 bp</strong> (superhelical location $\pm 5.0\text{--}5.5$, occupying $+46.5 \dots +63.5$ bp at the unpeeled core boundary) and a second peak at <strong>85–100 bp</strong> in inter-nucleosomal linker DNA. Furthermore, spatial autocorrelation of dyads within the Centromere Dip Region (CDR) reveals a <strong>340-bp dinucleosome lattice</strong> with bimodal monomer lags at 150 bp and 190 bp (mean 170 bp). Through mathematical modeling, we demonstrate that this bulk autocorrelation spectrum is consistent with two distinct biophysical scenarios: an intramolecular alternating lattice (150/190 bp steps) or a superposition of two cell populations with uniform 340-bp repeats shifted by 150 bp. Finally, we show that CDR chromatin displays expanded bimodal linkers (20 bp and 60 bp; mean 40 bp) compared to compacted 160-bp peripheral repeats (13-bp linkers), providing a structural basis for predicted linker histone H1 exclusion and CENP-B dimer cross-linking.
+        Centromere identity in human chromosomes is epigenetically specified by the histone H3 variant CENP-A and sequence-specifically recognized by CENP-B on repetitive alpha-satellite higher-order repeats (HORs). However, resolving the native human centromeric nucleosome in living cells has historically been challenged by multi-mapping across repetitive arrays and conflicting structural models. Here, we analyze complete telomere-to-telomere human centromere assemblies (T2T-CHM13v2.0) using deep paired-end micrococcal nuclease sequencing (4,290,331 primary proper-pair fragments of CENP-A ChIP-seq and matched Input MNase) across all 744 alpha-satellite arrays to quantify centromeric chromatin architecture. We show that native CENP-A-associated chromatin fragments exhibit a single-base mode at <strong>133 bp</strong> ($N = 212,205$ global; $55,892$ in CDR; $156,313$ in Non-CDR), with $177,473$ fragments at 130 bp and <strong>84.29%</strong> of all fragments in the 110–140 bp unpeeled core window (5-bp binning centers at 130 bp), consistent with in vitro structures showing unpeeling of terminal DNA gyres. In this library preparation, canonical 150-bp octamer fragments represent 0.0279% of reads ($N = 1,197$; 177.28-fold depleted relative to the 133-bp mode and 148.26-fold relative to 130 bp; 0.363% for 147–150 bp), while sub-85 bp fragments represent 1.53% (0.696% for 75–85 bp). Measuring distances from nucleosome dyads to 126,969 canonical CENP-B boxes reveals a <strong>bipartite architecture</strong>: CENP-B boxes are 66.0-fold depleted at the dyad axis (0–15 bp) relative to a major peak at <strong>50–55 bp</strong> (superhelical location $\pm 5.0\text{--}5.5$, occupying $+46.5 \dots +63.5$ bp at the unpeeled core boundary) and a second peak at <strong>85–100 bp</strong> in inter-nucleosomal linker DNA (6.54-fold enrichment over an idealized lattice null at 100 bp). Furthermore, spatial autocorrelation of dyads within the Centromere Dip Region (CDR) reveals a dominant non-zero peak at <strong>340 bp</strong> ($N = 761,698$ pairs in CDR; $591,711$ in Non-CDR) with bimodal monomer lags at 150 bp and 190 bp (mean 170 bp). Through mathematical modeling, we demonstrate that this bulk autocorrelation spectrum is consistent with two distinct biophysical scenarios: an intramolecular alternating lattice (150/190 bp steps) or a superposition of two cell populations with uniform 340-bp repeats shifted by 150 bp. Finally, we show that CDR chromatin displays expanded linkers (modeled as 20 bp and 60 bp; mean 40 bp) compared to compacted 160-bp peripheral repeats (~13-bp linkers), providing a structural framework consistent with predicted linker histone H1 exclusion and CENP-B dimer cross-linking.
       </div>
     </section>
 
@@ -839,7 +839,7 @@
 
       <!-- Result 1 -->
       <div id="result-1">
-        <h3>1. Native CENP-A Nucleosomes Protect a 125–130 bp Particle</h3>
+        <h3>1. Native CENP-A Nucleosomes Protect a 125–133 bp Open Core Particle</h3>
         <p>
           Micrococcal nuclease (MNase) cleaves accessible linker DNA until sterically constrained by protein-DNA complexes. We mapped paired-end MNase sequencing reads from centromeric Input (<code>SRR13278681</code>, 304,909 proper pairs) and CENP-A ChIP-seq (<code>SRR13278683</code>, 4,290,331 primary proper pairs) to all 744 alpha-satellite arrays extracted from the T2T-CHM13v2.0 assembly (<strong>Methods</strong>).
         </p>
@@ -847,23 +847,23 @@
           In total centromeric chromatin (Input MNase, dominated by canonical H3 nucleosomes), the fragment length distribution exhibits a canonical peak at <strong>147–150 bp</strong> with a full-width at half-maximum (FWHM) of 25 bp (<strong>Fig. 1A</strong>). This confirms that alpha-satellite DNA readily accommodates standard 147-bp nucleosome wraps.
         </p>
         <p>
-          In contrast, CENP-A ChIP fragments shift downward to a dominant mode at <strong>125–130 bp</strong> ($N = 177,473$ fragments at exactly 130 bp; 84.3% of all reads between 110 and 140 bp) (<strong>Fig. 1A</strong>). This 125–130 bp mode is preserved across all 23 individual human chromosomes (<strong>Table 1</strong>).
+          In contrast, CENP-A ChIP fragments exhibit a true single-base mode at <strong>133 bp</strong> ($N = 212,205$ fragments globally; $55,892$ in CDR; $156,313$ in Non-CDR), with $177,473$ fragments at 130 bp and <strong>84.29%</strong> of all reads ($N = 3,616,504 / 4,290,331$) concentrated within the 110–140 bp window (<strong>Fig. 1A</strong>). When grouped into 5-bp bins, the modal bin is 130 bp (128–132 bp). This 125–133 bp protection is preserved across all 23 individual human chromosomes (<strong>Table 1</strong>).
         </p>
         
         <div class="callout">
           <div class="callout-title">Calibrated Quantitative Particle Sizing &amp; Read Overlap Caliper</div>
           <ol style="margin-bottom:0;">
             <li><strong>Low abundance of sub-85 bp fragments:</strong> Sub-nucleosomal fragments $\le 85$ bp represent 1.53% of all mapped ChIP fragments ($N = 65,742 / 4,290,331$), and fragments in the 75–85 bp window represent 0.696% ($N = 29,851$). While library size-selection (e.g., E-Gel purification) can influence recovery of small fragments<sup>23</sup>, these data indicate that stable sub-85 bp particles are infrequent in recovered native CENP-A chromatin.</li>
-            <li><strong>Depletion of canonical 150-bp protection:</strong> Fragments at exactly 150 bp represent 0.0279% of the ChIP population ($N = 1,197$), an over 148.3-fold depletion relative to the 130-bp mode. Fragments across 147–150 bp represent 0.363% ($N = 15,584$).</li>
-            <li><strong>Physical interpretation:</strong> The 125–130 bp protection size reflects an open core particle wherein ~10 bp of DNA at each entry/exit flank unpeels from the octamer, directly aligning with structural observations in vitro<sup>13,14</sup> and in RPE-1 cells<sup>18</sup>.</li>
-            <li><strong>Physical read overlap caliper:</strong> For paired-end 150 bp sequencing of a modal 130-bp insert, both forward mate ($R_1 = 150$ bp) and reverse mate ($R_2 = 150$ bp) sequence through the full insert with $150 - 130 = 20$ bp 3' adapter read-through on each strand. The physical overlap between mates spans the complete insert ($\min(R_1, R_2, L) = 130$ bp). This provides an absolute physical caliper for fragment length: insert size is physically verified by mate alignment and adapter trimming, establishing that the 125–130 bp protection mode is an intrinsic property of native centromeric chromatin independent of genomic reference coordinates.</li>
+            <li><strong>Depletion of canonical 150-bp protection:</strong> Fragments at exactly 150 bp represent 0.0279% of the ChIP population ($N = 1,197$), an over 177.28-fold depletion relative to the 133-bp single-base mode and a 148.26-fold depletion relative to 130 bp. Fragments across 147–150 bp represent 0.363% ($N = 15,584$).</li>
+            <li><strong>Physical interpretation:</strong> The 125–133 bp protection size reflects an open core particle wherein ~10 bp of DNA at each entry/exit flank unpeels from the octamer, directly aligning with structural observations in vitro<sup>13,14</sup> and in RPE-1 cells<sup>18</sup>.</li>
+            <li><strong>Physical read overlap caliper:</strong> For paired-end 150 bp sequencing of a modal ~130-bp insert, both forward mate ($R_1 = 150$ bp) and reverse mate ($R_2 = 150$ bp) sequence through the full insert with $150 - L$ bp adapter read-through ($20$ bp for $L=130$). The physical genomic overlap spans $\max(0, \min(R_1, L) + \min(R_2, L) - L) = L$ bp. This provides an absolute physical caliper for fragment length: insert size is physically verified by mate alignment and adapter trimming, establishing that the 125–133 bp protection mode is an intrinsic property of native centromeric chromatin independent of genomic reference coordinates.</li>
           </ol>
         </div>
       </div>
 
       <!-- Result 2 -->
       <div id="result-2">
-        <h3>2. Bipartite CENP-B Box Architecture: Gyre Flank (55 bp) and Inter-Nucleosomal Linker (90 bp)</h3>
+        <h3>2. Bipartite CENP-B Box Architecture: Gyre Flank (55 bp) and Inter-Nucleosomal Linker (90–100 bp)</h3>
         <p>
           We mapped all 126,969 canonical 17-bp CENP-B boxes (<code>[CT]TTCGTTGGAA[AG]CGGGA</code>) across the 744 CHM13 arrays and calculated the distance from each fragment midpoint (dyad) to the nearest CENP-B box center (<strong>Fig. 1B</strong>, <strong>Fig. 4</strong>).
         </p>
@@ -872,11 +872,11 @@
         </p>
         <ul>
           <li><strong>Dyad Exclusion:</strong> At the central dyad axis (0–15 bp), CENP-B boxes are strongly depleted ($N = 2,496$ at 15 bp vs $164,747$ at the 55-bp peak, representing a <strong>66.0-fold contrast</strong>) (<strong>Fig. 4A</strong>).</li>
-          <li><strong>Geometric Null Model Calibration:</strong> Comparing observed dyad counts against a uniform geometric null model reveals a <strong>15.36-fold depletion</strong> at 15 bp ($Obs/Exp = 0.0651$) and a <strong>4.30-fold enrichment</strong> at the 55-bp peak ($Obs/Exp = 4.30$) (<strong>Fig. 4B</strong>).</li>
+          <li><strong>Idealized Lattice Null Model Calibration:</strong> Comparing observed dyad counts against an idealized geometric lattice null model reveals a <strong>15.36-fold depletion</strong> at 15 bp ($Obs/Exp = 0.0651$) and a <strong>4.30-fold enrichment</strong> at the 55-bp peak ($Obs/Exp = 4.30$) (<strong>Fig. 4B</strong>).</li>
           <li><strong>Peak 1 (Gyre Exit / SHL $\pm 5.0\text{--}5.5$):</strong> A prominent peak occurs at <strong>50–55 bp</strong> from the dyad ($N = 164,747$). A 17-bp box centered at +55 bp spans positions $+46.5$ to $+63.5$ bp. Because a 130-bp core has a radius of 65 bp, this places the CENP-B box directly at the outer edge of the protected particle where terminal DNA unpeels (<strong>Fig. 4D</strong>).</li>
           <li><strong>Trough (65–70 bp):</strong> A local decline occurs at 65–70 bp ($N = 6,378$), marking the physical terminus of the 130-bp core.</li>
-          <li><strong>Peak 2 (Free Linker DNA):</strong> A second broad peak spans <strong>85–100 bp</strong> from the dyad ($N = 125,421$, $Obs/Exp = 3.27$), placing the box fully within inter-nucleosomal linker DNA.</li>
-          <li><strong>2D Length &times; Offset Independence:</strong> Joint density analysis of fragment length (100–160 bp) vs signed box offset (-120 to +120 bp) demonstrates that the 125–130 bp modal particle size is invariant across distance registers, with dyad exclusion maintained symmetrically (<strong>Fig. 4C</strong>).</li>
+          <li><strong>Peak 2 (Free Linker DNA):</strong> A second broad peak spans <strong>85–100 bp</strong> from the dyad ($N = 125,421$ at 100 bp, $Obs/Exp = 6.54$; $N = 112,228$ at 90 bp, $Obs/Exp = 5.86$), placing the box fully within inter-nucleosomal linker DNA.</li>
+          <li><strong>Theoretical Stereochemical Model Schema:</strong> A theoretical joint density schema of fragment length (100–160 bp) vs signed box offset (-120 to +120 bp) illustrates the predicted coupling between the 130-bp unpeeled core and bipartite box positioning (<strong>Fig. 4C</strong>). Full empirical single-fragment joint density calibration across read-level BAM records is designated for prospective Work Package D.</li>
         </ul>
       </div>
 
@@ -887,7 +887,7 @@
         </div>
         <figcaption class="figure-caption">
           <div class="figure-title">Figure 1 | Native CENP-A Nucleosome Footprint and CENP-B Box Positioning.</div><br>
-          <strong>(A)</strong> Fragment length distribution of paired-end MNase sequencing across 744 T2T-CHM13 alpha arrays. Input MNase (grey, $N = 304,909$) peaks at 147–150 bp. CENP-A ChIP (red, $N = 4,290,331$) exhibits a mode at 125–130 bp ($N = 177,473$ at 130 bp). Fragments at 150 bp represent 0.0279% ($N = 1,197$; 148.3-fold depletion vs mode); fragments $\le 85$ bp represent 1.53% ($N = 65,742$).<br>
+          <strong>(A)</strong> Fragment length distribution of paired-end MNase sequencing across 744 T2T-CHM13 alpha arrays. Input MNase (grey, $N = 304,909$) peaks at 147–150 bp. CENP-A ChIP (red, $N = 4,290,331$) exhibits a single-base mode at 133 bp ($N = 212,205$), with $177,473$ fragments at 130 bp and 84.29% of fragments between 110 and 140 bp. Fragments at 150 bp represent 0.0279% ($N = 1,197$; 177.28-fold depletion vs 133-bp mode; 148.26-fold vs 130 bp); fragments $\le 85$ bp represent 1.53% ($N = 65,742$).<br>
           <strong>(B)</strong> Distance from nucleosome dyads to 126,969 CENP-B boxes. Strong dyad depletion (0–15 bp) is followed by Peak 1 at 50–55 bp (unpeeled gyre exit, SHL $\pm 5.0\text{--}5.5$) and Peak 2 at 85–100 bp (linker DNA).
         </figcaption>
       </figure>
@@ -898,10 +898,10 @@
           <img src="figures/Fig4_cenpb_box_coupling_and_nulls.svg" alt="Figure 4: CENP-B Box Coupling and Geometric Null Models" onerror="this.onerror=null; this.src='figures/Fig4_cenpb_box_coupling_and_nulls.png';">
         </div>
         <figcaption class="figure-caption">
-          <div class="figure-title">Figure 4 | Spatial Coupling to CENP-B Boxes, 2D Density, and Geometric Null Calibration (Package D).</div><br>
-          <strong>(A)</strong> Observed dyad-to-box distance distribution vs uniform Geometric Null model. Dyad occlusion (0–15 bp) is followed by Peak 1 (55 bp) and Peak 2 (90 bp).<br>
-          <strong>(B)</strong> Observed / Expected fold-enrichment ratio confirming 15.36-fold depletion at the dyad (15 bp, $Obs/Exp = 0.0651$) and 66.0-fold contrast between 55-bp peak and dyad ($Obs/Exp = 4.30$).<br>
-          <strong>(C)</strong> 2D joint density map of fragment length (100–160 bp) vs signed box offset (-120 to +120 bp).<br>
+          <div class="figure-title">Figure 4 | Spatial Coupling to CENP-B Boxes, Theoretical Model Schema, and Lattice Null Calibration (Package D).</div><br>
+          <strong>(A)</strong> Observed dyad-to-box distance distribution vs. Idealized Lattice Geometric Null model. Dyad occlusion (0–15 bp) is followed by Peak 1 (55 bp) and Peak 2 (90–100 bp).<br>
+          <strong>(B)</strong> Observed / Expected fold-enrichment ratio confirming 15.36-fold depletion at the dyad (15 bp, $Obs/Exp = 0.0651$), 4.30-fold enrichment at Peak 1 (55 bp), and 6.54-fold enrichment at Peak 2 (100 bp, $Obs/Exp = 6.54$; 5.86-fold at 90 bp) relative to the lattice null.<br>
+          <strong>(C)</strong> Theoretical Stereochemical Model Schema: Expected 2D joint density map of fragment length (100–160 bp) vs signed box offset (-120 to +120 bp), illustrating predicted coupling between 130-bp unpeeled core and bipartite box positioning (prospective empirical Package D).<br>
           <strong>(D)</strong> Stereochemical boundary schematic: the 17-bp box centered at +55 bp spans +46.5 to +63.5 bp, positioned precisely at the unpeeled gyre exit (SHL $\pm 5.0\text{--}5.5$) of the 130-bp octamer ($R = 65$ bp).
         </figcaption>
       </figure>
@@ -922,7 +922,7 @@
             closely corresponding to the 171-bp alpha-satellite monomer.
           </li>
           <li>
-            <strong>Dominant 340-bp Dimer Periodicity:</strong> The absolute global maximum of the CDR phasogram occurs at <strong>340 bp</strong> ($N = 761,698$ pairs) (<strong>Fig. 2A</strong>), demonstrating that CENP-A nucleosomes are organized on a dimeric ($2 \times 170$ bp) repeat lattice.
+            <strong>Dominant 340-bp Dimer Periodicity:</strong> Within the non-zero inter-nucleosomal window (100–800 bp), the dominant maximum of the CDR phasogram occurs at <strong>340 bp</strong> ($N = 761,698$ pairs in CDR; $N = 591,711$ in Non-CDR) (<strong>Fig. 2A</strong>), demonstrating that CENP-A nucleosomes are organized on an ensemble dimeric ($2 \times 170$ bp) repeat lattice.
           </li>
         </ol>
 
@@ -932,9 +932,9 @@
             <img src="figures/Fig2_cdr_phasogram_and_chromatin_state.svg" alt="Figure 2: CDR Phasogram and Chromatin Phase Transition" onerror="this.onerror=null; this.src='figures/Fig2_cdr_phasogram_and_chromatin_state.png';">
           </div>
           <figcaption class="figure-caption">
-            <div class="figure-title">Figure 2 | Spatial Autocorrelation in the CDR and Chromatin State Transition.</div><br>
-            <strong>(A)</strong> Spatial autocorrelation (phasogram) of 411,919 mononucleosome dyads in the 23 CHM13 CDRs. Modes at 150 bp and 190 bp (mean 170 bp) culminate in a dominant global maximum at 340 bp ($N = 761,698$ pairs).<br>
-            <strong>(B)</strong> Structural comparison between peripheral heterochromatin (160 bp repeat, 13 bp linker) and CDR kinetochore chromatin (130 bp core, 20 bp and 60 bp linkers, 340 bp dimer lattice).
+            <div class="figure-title">Figure 2 | Spatial Autocorrelation in the CDR and Chromatin Architecture Models.</div><br>
+            <strong>(A)</strong> Spatial autocorrelation (phasogram) of 411,919 mononucleosome dyads in the 23 CHM13 CDRs. Modes at 150 bp and 190 bp (mean 170 bp) culminate in a dominant non-zero maximum at 340 bp ($N = 761,698$ pairs in CDR; $N = 591,711$ pairs in Non-CDR).<br>
+            <strong>(B)</strong> Structural model comparison between peripheral heterochromatin (160 bp repeat, ~13 bp linker) and CDR kinetochore chromatin (130 bp core, 20 bp and 60 bp modeled linkers, 340 bp dimer lattice). Linker sizes and H1 exclusion represent structural model inferences consistent with bulk data.
           </figcaption>
         </figure>
 
@@ -1149,8 +1149,8 @@
               <td>hTERT RPE-1</td>
               <td>46,XX (near-diploid female)</td>
               <td>CENP-A CUT&amp;RUN (PE101)</td>
-              <td><code>SRR9201843</code></td>
-              <td><code>SRR9201844</code></td>
+              <td><code>SRR9201843</code> (GSM3852804)</td>
+              <td><code>SRR9201844</code> (GSM3852805: CENP-B CUT&amp;RUN; target comparator)</td>
               <td><code>PRJNA546288 (GSE132193)</code></td>
               <td>Non-Transformed Validation (Package G)</td>
               <td><span style="color:#64748b; font-style:italic;">Planned</span></td>
@@ -1184,13 +1184,14 @@ cd cenpa_nucleosome_architecture
 # 2. Run instant verification and re-generate publication figures (&lt;4 seconds)
 bash run_reproduction.sh
 
-# Verification output:
-# [PASS] Single-Source Ledger: 4,288,595 (23 chr) + 1,736 (chrY) = 4,290,331 proper pairs
-# [PASS] CDR Mononucleosome Gate: 1,065,332 total CDR pairs -> 411,919 dyads in 130-175 bp gate
-# [PASS] Particle Sizing: Mode = 130 bp (84.29% in 110-140 bp); canonical 150 bp = 0.0279% (148.26x depleted); sub-85 bp = 1.5323%
-# [PASS] CENP-B Box Architecture: Peak 1 at 55 bp; dyad contrast = 66.0x (15.36x depletion vs uniform null)
-# [PASS] CDR Phasogram: Global maximum at 340 bp (761,698 pairs); monomer modes at 150 & 190 bp
-# [PASS] Mathematical Simulation (Fig 3): Model A & Model B residuals = 0 (algebraic unidentifiability verified)</code></pre>
+# Dynamic Verification Output:
+# [PASS] Single-Source Ledger: 4,288,595 (23 chr) + 1,736 (chrY cross-mapping) = 4,290,331 total proper pairs
+# [PASS] CDR Mononucleosome Gates: 1,065,332 total CDR pairs -> 411,919 dyads (130-175 bp); 960,496 dyads (110-180 bp)
+# [PASS] Particle Sizing: Single-base mode = 133 bp (212,205 fragments); 130 bp = 177,473; 150 bp = 1,197
+#        Fold depletion of 150 bp: 177.28x vs true mode; 148.26x vs 130 bp
+# [PASS] CENP-B Box Geometry: Peak 1 at 55 bp (66.00x contrast vs dyad; 15.36x depletion vs lattice null); Peak 2 at 100 bp (6.54x vs null)
+# [PASS] CDR Phasogram: Dominant non-zero peak in [100, 800] bp window at 340 bp (761,698 pairs); monomer modes at 150 & 190 bp
+# [PASS] Mathematical Equivalence (Fig 3): Models A & B residuals identically 0 (algebraic unidentifiability verified)</code></pre>
       </div>
     </section>
 
@@ -1210,62 +1211,62 @@ bash run_reproduction.sh
               <th>CENP-A Mode (CDR)</th>
               <th>CENP-A Reads (Non-CDR)</th>
               <th>Non-CDR Mode</th>
-              <th>Dimer Phasogram Peak</th>
+              <th>Dimer Phasogram Peak (Non-zero)</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td>chr1</td><td>43,439</td><td>130 bp</td><td>179,722</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr2</td><td>93,675</td><td>130 bp</td><td>109,100</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr3</td><td>60,139</td><td>130 bp</td><td>137,443</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr4</td><td>24,070</td><td>130 bp</td><td>180,320</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr5</td><td>57,875</td><td>130 bp</td><td>184,479</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr6</td><td>56,875</td><td>130 bp</td><td>148,556</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr7</td><td>58,158</td><td>130 bp</td><td>124,814</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr8</td><td>28,552</td><td>130 bp</td><td>144,590</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr9</td><td>30,291</td><td>130 bp</td><td>188,086</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr10</td><td>40,244</td><td>130 bp</td><td>136,221</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr11</td><td>52,678</td><td>130 bp</td><td>130,394</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr12</td><td>82,347</td><td>130 bp</td><td>156,792</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr13</td><td>29,517</td><td>130 bp</td><td>139,108</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr14</td><td>32,779</td><td>130 bp</td><td>124,800</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr15</td><td>53,108</td><td>130 bp</td><td>120,412</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr16</td><td>44,224</td><td>130 bp</td><td>149,973</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr17</td><td>13,665</td><td>130 bp</td><td>132,789</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr18</td><td>14,934</td><td>130 bp</td><td>151,036</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr19</td><td>93,308</td><td>130 bp</td><td>109,934</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr20</td><td>32,482</td><td>130 bp</td><td>148,563</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr21</td><td>61,168</td><td>130 bp</td><td>47,341</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chr22</td><td>37,070</td><td>130 bp</td><td>132,069</td><td>130 bp</td><td>340 bp</td></tr>
-            <tr><td>chrX</td><td>24,734</td><td>130 bp</td><td>146,721</td><td>130 bp</td><td>340 bp</td></tr>
+            <tr><td>chr1</td><td>43,439</td><td>133 bp</td><td>179,722</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr2</td><td>93,675</td><td>133 bp</td><td>109,100</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr3</td><td>60,139</td><td>133 bp</td><td>137,443</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr4</td><td>24,070</td><td>133 bp</td><td>180,320</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr5</td><td>57,875</td><td>133 bp</td><td>184,479</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr6</td><td>56,875</td><td>133 bp</td><td>148,556</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr7</td><td>58,158</td><td>133 bp</td><td>124,814</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr8</td><td>28,552</td><td>133 bp</td><td>144,590</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr9</td><td>30,291</td><td>133 bp</td><td>188,086</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr10</td><td>40,244</td><td>133 bp</td><td>136,221</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr11</td><td>52,678</td><td>133 bp</td><td>130,394</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr12</td><td>82,347</td><td>133 bp</td><td>156,792</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr13</td><td>29,517</td><td>133 bp</td><td>139,108</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr14</td><td>32,779</td><td>133 bp</td><td>124,800</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr15</td><td>53,108</td><td>133 bp</td><td>120,412</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr16</td><td>44,224</td><td>133 bp</td><td>149,973</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr17</td><td>13,665</td><td>133 bp</td><td>132,789</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr18</td><td>14,934</td><td>133 bp</td><td>151,036</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr19</td><td>93,308</td><td>133 bp</td><td>109,934</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr20</td><td>32,482</td><td>133 bp</td><td>148,563</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr21</td><td>61,168</td><td>133 bp</td><td>47,341</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chr22</td><td>37,070</td><td>133 bp</td><td>132,069</td><td>133 bp</td><td>340 bp</td></tr>
+            <tr><td>chrX</td><td>24,734</td><td>133 bp</td><td>146,721</td><td>133 bp</td><td>340 bp</td></tr>
             <tr style="background:#f1f5f9; font-weight:600;">
               <td><strong>23 CHR TOTAL</strong></td>
               <td><strong>1,065,332</strong></td>
-              <td><strong>130 bp</strong></td>
+              <td><strong>133 bp</strong></td>
               <td><strong>3,223,263</strong></td>
-              <td><strong>130 bp</strong></td>
+              <td><strong>133 bp</strong></td>
               <td><strong>340 bp</strong></td>
             </tr>
             <tr style="color:#64748b; font-style:italic;">
-              <td>Unplaced Arrays*</td>
+              <td>chrY alpha cross-mapping* (NC_060948.1)</td>
               <td>—</td>
               <td>—</td>
               <td>1,736</td>
-              <td>130 bp</td>
+              <td>133 bp</td>
               <td>—</td>
             </tr>
             <tr class="highlight-row">
               <td><strong>GLOBAL TOTAL</strong></td>
               <td><strong>1,065,332</strong></td>
-              <td><strong>130 bp</strong></td>
+              <td><strong>133 bp</strong></td>
               <td><strong>3,224,999</strong></td>
-              <td><strong>130 bp</strong></td>
+              <td><strong>133 bp</strong></td>
               <td><strong>340 bp</strong></td>
             </tr>
           </tbody>
         </table>
       </div>
       <p style="font-size:0.8rem; color:var(--text-light); margin-top:-0.75rem;">
-        *Note: 1,736 reads map to unlocalized/unplaced alpha-satellite array contigs not assigned to chr1–22 or chrX, reconciling the 23-chromosome sum (4,288,595) with the global dataset (4,290,331 proper pairs).
+        *Note: 1,736 reads map to the HG002 chromosome Y assembled molecule (NC_060948.1 / GenBank CP086569.2) integrated into T2T-CHM13v2.0. In this 46,XX CHM13 dataset, these represent cross-mapping to homologous alpha-satellite arrays on the included Y chromosome, reconciling the 23-chromosome sum (4,288,595) with the global dataset (4,290,331 proper pairs).
       </p>
     </section>
 
@@ -1292,13 +1293,13 @@ bash run_reproduction.sh
         <li><span class="ref-num">17.</span> Hasson, D. et al. The octamer is the major form of CENP-A nucleosomes at human centromeres. <em>Nat. Struct. Mol. Biol.</em> <strong>20</strong>, 687–695 (2013).</li>
         <li><span class="ref-num">18.</span> Nechemia-Arbely, Y. et al. Human centromeric CENP-A chromatin is a homotypic octamer. <em>J. Cell Biol.</em> <strong>216</strong>, 607–621 (2017).</li>
         <li><span class="ref-num">19.</span> Thakur, J. &amp; Henikoff, S. CENPT bridges adjacent CENPA nucleosomes on young human α-satellite dimers. <em>Genome Res.</em> <strong>26</strong>, 1178–1187 (2016).</li>
-        <li><span class="ref-num">20.</span> Thakur, J. &amp; Henikoff, S. Architectural and epigenetic diversity of human centromeric chromatin. <em>Genes Dev.</em> <strong>32</strong>, 20–25 (2018).</li>
+        <li><span class="ref-num">20.</span> Thakur, J. &amp; Henikoff, S. Unexpected conformational variations of the human centromeric chromatin complex. <em>Genes Dev.</em> <strong>32</strong>, 20–25 (2018).</li>
         <li><span class="ref-num">21.</span> Gershman, A. et al. Epigenetic patterns in a complete human genome. <em>Science</em> <strong>376</strong>, eabj5089 (2022).</li>
         <li><span class="ref-num">22.</span> Salinas-Luypaert, C. et al. DNA methylation influences human centromere positioning and function. <em>Nat. Genet.</em> <strong>57</strong>, 2509–2521 (2025).</li>
         <li><span class="ref-num">23.</span> Logsdon, G. A. et al. The structure, function and evolution of a complete human chromosome 8. <em>Nature</em> <strong>593</strong>, 101–107 (2021).</li>
         <li><span class="ref-num">24.</span> Bednar, J. et al. Structure and dynamics of a chromatosome with a linker histone. <em>Mol. Cell</em> <strong>66</strong>, 384–397 (2017).</li>
         <li><span class="ref-num">25.</span> Zhou, B.-R. et al. Structural insights into the mechanism of human linker histone H1.4 recognition by nucleosomes. <em>Nat. Commun.</em> <strong>6</strong>, 6115 (2015).</li>
-        <li><span class="ref-num">26.</span> Corda, G. et al. Distinct genomic and epigenetic features define human centromeres across lineages. <em>Nat. Commun.</em> <strong>16</strong>, 11194 (2025).</li>
+        <li><span class="ref-num">26.</span> Corda, L. et al. Cell line-matched reference enables high-precision functional genomics. <em>Nat. Commun.</em> <strong>16</strong>, 11194 (2025).</li>
       </ol>
     </section>
 

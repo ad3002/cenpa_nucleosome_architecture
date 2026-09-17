@@ -5,9 +5,7 @@
 Processes coordinate-sorted BAM files of paired-end MNase sequencing aligned to
 centromeric alpha-satellite arrays to compute:
 1. Fragment length (insert size) distribution (global, CDR, Non-CDR).
-2. Mononucleosome and dinucleosome peak modes.
-3. Distance from nucleosome dyad to the nearest CENP-B box center.
-4. Dinucleosome core vs linker enrichment of CENP-B boxes.
+2. Distance from nucleosome dyad to the nearest CENP-B box center.
 """
 
 import sys
@@ -16,8 +14,12 @@ import csv
 import bisect
 import collections
 import subprocess
+import argparse
 
-def run_analysis(bam_file, cdr_bed, boxes_tsv, out_prefix):
+def run_analysis(bam_file, cdr_bed, boxes_tsv, hist_out, dist_out, max_len=800):
+    if not os.path.exists(bam_file):
+        raise FileNotFoundError(f"Input BAM file not found: {bam_file}")
+
     # 1. Chromosome mapping for CHM13v2.0
     chrom_map = {f"chr{i}": f"NC_{60925 + i - 1:06d}.1" for i in range(1, 23)}
     chrom_map["chrX"] = "NC_060947.1"
@@ -33,25 +35,29 @@ def run_analysis(bam_file, cdr_bed, boxes_tsv, out_prefix):
                     acc = chrom_map.get(c)
                     if acc:
                         cdrs[acc] = (int(p[1]), int(p[2]))
-        print(f"Loaded {len(cdrs)} CDRs.")
+        print(f"Loaded {len(cdrs)} CDR intervals.")
+    else:
+        print(f"Notice: CDR BED file {cdr_bed} not found; CDR partitioning will be skipped.")
 
     # 2. Load CENP-B boxes
-    print(f"Loading CENP-B boxes from {boxes_tsv}...")
     box_centers = collections.defaultdict(list)
     total_boxes = 0
     if os.path.exists(boxes_tsv):
+        print(f"Loading CENP-B boxes from {boxes_tsv}...")
         with open(boxes_tsv) as f:
             r = csv.DictReader(f, delimiter="\t")
             for row in r:
-                arr = row["array_id"]
-                bs = int(row["box_start"])
-                be = int(row["box_end"])
+                arr = row.get("array_id", row.get("chrom", ""))
+                bs = int(row.get("box_start", row.get("start", 0)))
+                be = int(row.get("box_end", row.get("end", 0)))
                 center = (bs + be) / 2.0
                 box_centers[arr].append(center)
                 total_boxes += 1
         for arr in box_centers:
             box_centers[arr].sort()
         print(f"Loaded {total_boxes} boxes across {len(box_centers)} arrays.")
+    else:
+        print(f"Notice: CENP-B box coordinates file {boxes_tsv} not found; box distances will be empty.")
 
     # 3. Stream BAM using samtools
     print(f"Streaming primary proper pairs from {bam_file}...")
@@ -63,7 +69,6 @@ def run_analysis(bam_file, cdr_bed, boxes_tsv, out_prefix):
     hist_noncdr = collections.Counter()
     box_to_dyad_dist = collections.Counter()
 
-    CORE_LEN = 147
     total_frags = 0
 
     for line in proc.stdout:
@@ -71,7 +76,7 @@ def run_analysis(bam_file, cdr_bed, boxes_tsv, out_prefix):
         if len(p) < 9:
             continue
         tlen = int(p[8])
-        if tlen <= 0 or tlen < 50 or tlen > 1200:
+        if tlen <= 0 or tlen < 50 or tlen > max_len:
             continue
 
         pos = int(p[3]) - 1
@@ -100,6 +105,8 @@ def run_analysis(bam_file, cdr_bed, boxes_tsv, out_prefix):
                 hist_cdr[f_len] += 1
             else:
                 hist_noncdr[f_len] += 1
+        else:
+            hist_noncdr[f_len] += 1
 
         # Distance to CENP-B box
         centers = box_centers.get(arr)
@@ -116,26 +123,45 @@ def run_analysis(bam_file, cdr_bed, boxes_tsv, out_prefix):
                     box_to_dyad_dist[b_bin] += 1
 
     proc.wait()
+    if proc.returncode != 0:
+        raise RuntimeError(f"samtools execution failed with exit code {proc.returncode}")
+
     print(f"Processed {total_frags:,} primary proper-pair fragments.")
 
     # Write output tables
-    hist_out = f"{out_prefix}_fragment_length_hist.tsv"
+    os.makedirs(os.path.dirname(os.path.abspath(hist_out)), exist_ok=True)
     with open(hist_out, "w") as f:
         f.write("fragment_length_bp\tglobal_count\tcdr_count\tnoncdr_count\n")
-        max_l = max(hist_global.keys()) if hist_global else 600
-        for l in range(50, min(max_l + 1, 800)):
+        for l in range(50, max_len + 1):
             f.write(f"{l}\t{hist_global[l]}\t{hist_cdr[l]}\t{hist_noncdr[l]}\n")
     print(f"Wrote {hist_out}")
 
-    dist_out = f"{out_prefix}_box_to_dyad_distance.tsv"
+    os.makedirs(os.path.dirname(os.path.abspath(dist_out)), exist_ok=True)
     with open(dist_out, "w") as f:
         f.write("distance_to_dyad_bp\tcount\n")
-        for d in sorted(box_to_dyad_dist.keys()):
+        for d in range(0, 305, 5):
             f.write(f"{d}\t{box_to_dyad_dist[d]}\n")
     print(f"Wrote {dist_out}")
 
+def main():
+    parser = argparse.ArgumentParser(description="Analyze nucleosome particle sizes and CENP-B box distances from BAM.")
+    parser.add_argument("bam_file", help="Input sorted BAM file")
+    parser.add_argument("cdr_bed", help="BED file with CDR coordinates")
+    parser.add_argument("boxes_tsv", help="TSV file with CENP-B box coordinates")
+    parser.add_argument("out_prefix_or_hist", help="Output prefix or direct path to fragment length histogram TSV")
+    parser.add_argument("dist_out", nargs="?", default=None, help="Optional direct path to box distance TSV")
+    parser.add_argument("--max-len", type=int, default=800, help="Maximum fragment length to process (default: 800)")
+    args = parser.parse_args()
+
+    if args.dist_out:
+        hist_out = args.out_prefix_or_hist
+        dist_out = args.dist_out
+    else:
+        prefix = args.out_prefix_or_hist
+        hist_out = f"{prefix}_fragment_length_hist.tsv"
+        dist_out = f"{prefix}_box_to_dyad_distance.tsv"
+
+    run_analysis(args.bam_file, args.cdr_bed, args.boxes_tsv, hist_out, dist_out, max_len=args.max_len)
+
 if __name__ == "__main__":
-    if len(sys.argv) < 5:
-        print("Usage: 02_analyze_particles.py <bam_file> <cdr_bed> <boxes_tsv> <out_prefix>")
-        sys.exit(1)
-    run_analysis(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    main()

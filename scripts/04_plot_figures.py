@@ -9,6 +9,7 @@ Outputs:
 """
 
 import os
+import json
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -18,6 +19,11 @@ import matplotlib.gridspec as gridspec
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 OUT_DIR = os.path.join(os.path.dirname(__file__), "..", "paper", "figures")
 os.makedirs(OUT_DIR, exist_ok=True)
+
+# Load metrics for single-source consistency
+metrics_file = os.path.join(DATA_DIR, "metrics.json")
+with open(metrics_file) as f:
+    metrics = json.load(f)
 
 # Set global publication styling
 plt.rcParams["font.sans-serif"] = "Helvetica", "Arial", "DejaVu Sans"
@@ -71,14 +77,16 @@ ax1.fill_between(x_cen, y_cen_norm, color="#D9381E", alpha=0.20)
 ax1.axvline(147, color="#333333", linestyle="--", lw=1.0, alpha=0.7)
 ax1.text(149, np.max(y_inp_norm) * 0.92, "Canonical H3 core\n(147 bp)", color="#333333", fontsize=8, ha="left")
 
-ax1.axvline(130, color="#D9381E", linestyle="--", lw=1.2, alpha=0.9)
-ax1.text(128, np.max(y_cen_norm) * 0.95, "CENP-A open core\n(125–130 bp)", color="#D9381E", fontsize=8.5, fontweight="bold", ha="right")
+mode_bp = metrics["particle_sizing"]["single_base_mode_length_bp"]
+pct_110_140 = metrics["particle_sizing"]["pct_110_140bp_of_global"]
+ax1.axvline(mode_bp, color="#D9381E", linestyle="--", lw=1.2, alpha=0.9)
+ax1.text(mode_bp - 2, np.max(y_cen_norm) * 0.95, f"CENP-A open core\n(Mode: {mode_bp} bp;\n{pct_110_140}% in 110–140 bp)", color="#D9381E", fontsize=8, fontweight="bold", ha="right")
 
 ax1.axvline(80, color="#2B6CB0", linestyle=":", lw=1.0, alpha=0.6)
 ax1.text(82, 1.0, "Hemisome null\n(~80 bp: <2%)", color="#2B6CB0", fontsize=7.5, ha="left")
 
 ax1.set_xlabel("Fragment Length (bp)")
-ax1.set_ylabel("Normalized Fragment Density (%)")
+ax1.set_ylabel("Normalized Fragment Density in 60–200 bp (%)")
 ax1.set_title("A. Native CENP-A Nucleosome Core Particle Protection", loc="left", fontweight="bold")
 ax1.set_xlim(60, 200)
 ax1.set_ylim(0, max(np.max(y_inp_norm), np.max(y_cen_norm)) * 1.12)
@@ -95,7 +103,7 @@ dist_data = np.loadtxt(cenpa_dist_file, skiprows=1)
 d_x = dist_data[:, 0]
 d_y = dist_data[:, 1] / 1000.0  # in thousands
 
-# Mask up to 200 bp
+# Mask up to 180 bp
 m_dist = d_x <= 180
 d_x = d_x[m_dist]
 d_y = d_y[m_dist]
@@ -107,19 +115,22 @@ ax2.fill_between(d_x, d_y, color="#2B6CB0", alpha=0.18)
 ax2.axvspan(0, 65, color="#D9381E", alpha=0.08, label="CENP-A Core Radius (65 bp)")
 ax2.axvspan(65, 180, color="#2B6CB0", alpha=0.05, label="Inter-nucleosomal Linker DNA")
 
+contrast_ratio = metrics["cenpb_box_geometry"]["peak_to_dyad_contrast_ratio"]
+depletion_null = metrics["cenpb_box_geometry"]["depletion_ratio_vs_geometric_null_15bp"]
+
 # Peak labels
 ax2.annotate("Peak 1: 55 bp\n(Gyre Exit / SHL ±5.5)\n164.7k events", 
              xy=(55, 164.7), xytext=(20, 135),
              arrowprops=dict(facecolor="#D9381E", shrink=0.08, width=1, headwidth=5),
              fontsize=8, fontweight="bold", color="#D9381E")
 
-ax2.annotate("Peak 2: 90–100 bp\n(Free Linker DNA)\n125.4k events", 
+ax2.annotate("Peak 2: 90–100 bp\n(Free Linker DNA)\n125.4k events at 100 bp", 
              xy=(95, 125.4), xytext=(115, 120),
              arrowprops=dict(facecolor="#2B6CB0", shrink=0.08, width=1, headwidth=5),
              fontsize=8, fontweight="bold", color="#2B6CB0")
 
 # Dyad axis depletion
-ax2.annotate("Dyad Occlusion\n(0–15 bp: >62x depletion)", 
+ax2.annotate(f"Dyad Occlusion\n(0–15 bp: {contrast_ratio:.1f}x contrast;\n{depletion_null:.1f}x vs Lattice Null)", 
              xy=(5, 5), xytext=(10, 45),
              arrowprops=dict(facecolor="#333333", shrink=0.08, width=1, headwidth=4),
              fontsize=7.5, color="#444444")
@@ -168,7 +179,7 @@ ax3.axvline(170, color="#666666", linestyle=":", lw=1.0)
 ax3.text(172, 540, "171 bp\n(1x Alpha monomer)", color="#444444", fontsize=7.5)
 
 ax3.axvline(340, color="#D9381E", linestyle="--", lw=1.3)
-ax3.annotate("340 bp Dimer Lattice\n(2 x 170 bp: 761.7k pairs)", 
+ax3.annotate("340 bp Dimer Lattice Peak\n(Non-zero maximum: 761.7k pairs)", 
              xy=(340, 761.7), xytext=(360, 680),
              arrowprops=dict(facecolor="#D9381E", shrink=0.08, width=1, headwidth=5),
              fontsize=8.5, fontweight="bold", color="#D9381E")
@@ -180,7 +191,7 @@ ax3.text(142, 550, "150 bp", color="#2B6CB0", fontsize=8, fontweight="bold", ha=
 ax3.plot(190, p_cdr_sub[p_dist_sub == 190], "o", color="#2B6CB0", markersize=6)
 ax3.text(198, 500, "190 bp", color="#2B6CB0", fontsize=8, fontweight="bold", ha="left")
 
-ax3.set_xlabel("Distance Between Adjacent CENP-A Dyads (bp)")
+ax3.set_xlabel("Pairwise Distance Between CENP-A Dyads (bp)")
 ax3.set_ylabel("Pairwise Spatial Dyad Pairs (x 1,000)")
 ax3.set_title("A. CENP-A Spatial Autocorrelation (CDR Phasogram)", loc="left", fontweight="bold")
 ax3.set_xlim(100, 480)
@@ -189,15 +200,10 @@ ax3.spines["top"].set_visible(False)
 ax3.spines["right"].set_visible(False)
 ax3.legend(loc="upper left", frameon=True, framealpha=0.9)
 
-# Panel B: Summary of Chromatin State Transition
+# Panel B: Summary of Chromatin State Transition Models
 ax4 = fig2.add_subplot(gs2[1])
 
-import json
-metrics_file = os.path.join(DATA_DIR, "metrics.json")
-with open(metrics_file) as f:
-    metrics = json.load(f)
-
-lg = metrics["linker_geometry"]
+lg = metrics["linker_geometry_models"]
 noncdr_core = lg["periphery_core_bp"]
 noncdr_linker = lg["periphery_linker_bp"]
 noncdr_nrl = lg["periphery_nrl_bp"]
@@ -206,7 +212,6 @@ cdr_core = lg["cdr_core_bp"]
 cdr_linker_a = lg["cdr_linker_class1_bp"]
 cdr_linker_b = lg["cdr_linker_class2_bp"]
 cdr_linker_mean = lg["cdr_mean_linker_bp"]
-cdr_nrl = lg["cdr_monomer1_nrl_bp"]  # or mean 170
 
 labels = ["Core (bp)", "Linker (bp)", "NRL (bp)"]
 noncdr_lens = [noncdr_core, noncdr_linker, noncdr_nrl]
@@ -215,8 +220,8 @@ cdr_lens = [cdr_core, cdr_linker_mean, 170]
 x = np.arange(len(labels))
 width = 0.35
 
-rects1 = ax4.bar(x - width/2, noncdr_lens, width, label="Periphery (Non-CDR, H3K9me3+)", color="#555555", alpha=0.85)
-rects2 = ax4.bar(x + width/2, cdr_lens, width, label="Kinetochore (CDR, CENP-A+)", color="#D9381E", alpha=0.85)
+rects1 = ax4.bar(x - width/2, noncdr_lens, width, label="Periphery (Non-CDR model)", color="#555555", alpha=0.85)
+rects2 = ax4.bar(x + width/2, cdr_lens, width, label="Kinetochore (CDR model)", color="#D9381E", alpha=0.85)
 
 # Value annotations on bars
 for rect in rects1:
@@ -232,7 +237,7 @@ for i, rect in enumerate(rects2):
     ax4.text(rect.get_x() + rect.get_width()/2., h + 3, txt, ha="center", va="bottom", fontsize=8, fontweight="bold", color="#D9381E")
 
 ax4.set_ylabel("DNA Length (Base Pairs)")
-ax4.set_title("B. Bimodal Centromeric Phase Transition", loc="left", fontweight="bold")
+ax4.set_title("B. Theoretical Chromatin Architecture Models", loc="left", fontweight="bold")
 ax4.set_xticks(x)
 ax4.set_xticklabels(labels, fontweight="bold")
 ax4.set_ylim(0, 210)
@@ -242,11 +247,13 @@ ax4.legend(loc="upper left", frameon=True, framealpha=0.9)
 
 # Additional state box
 text_box = (
-    "Chromatin State Partitioning:\n"
-    "• Periphery: 85% 5mC, H1 bound,\n"
-    "  160 bp NRL, 13 bp linker (compacted).\n"
-    "• CDR Core: 25% 5mC, H1 excluded,\n"
-    "  130 bp core, 20/60 bp linkers (340 bp dimer)."
+    "Chromatin Model Interpretation:\n"
+    "• Periphery (H3K9me3-dense):\n"
+    "  160 bp NRL, ~13 bp linker (compacted).\n"
+    "• CDR Core (CENP-A-dense):\n"
+    "  130-133 bp core, 20/60 bp linkers\n"
+    "  consistent with 340 bp dimer lattice.\n"
+    "  (Mechanistic model inferred from bulk data)"
 )
 ax4.text(0.5, 0.52, text_box, transform=ax4.transAxes, fontsize=7.5,
          verticalalignment="top", bbox=dict(boxstyle="round,pad=0.5", facecolor="#FFF9E6", edgecolor="#E2C974", alpha=0.9))

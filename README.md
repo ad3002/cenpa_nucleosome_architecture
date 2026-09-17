@@ -14,16 +14,16 @@ This repository provides the complete, self-contained codebase, processed data t
 
 ## Key Scientific Findings
 
-1. **Native CENP-A Core Particle is 125–130 bp:**  
-   Direct paired-end MNase ChIP-seq on human T2T centromeres (`SRR13278683`, 4.29M primary proper-pair fragments across 744 alpha-satellite arrays) reveals a dominant mononucleosome protection mode at **125–130 bp**. The ~80 bp hemisome (<2.1%) and the canonical 147 bp closed octamer (<0.3%) are quantitatively rejected *in vivo*, confirming that the terminal ~10 bp of DNA on each flank unpeel from the CENP-A octamer.
-2. **Bipartite CENP-B Box Linker Positioning:**  
-   Distance from the CENP-A dyad to 126,969 canonical 17-bp CENP-B boxes reveals severe dyad occlusion (0–15 bp, **>62-fold depletion**) and two sharp peaks:
-   - **Peak 1 at 50–55 bp** (SHL $\pm 5.5$, directly at the unpeeled gyre exit boundary);
-   - **Peak 2 at 85–100 bp** (free inter-nucleosomal linker DNA).
-3. **Strict 340-bp Dimer Lattice Phasing in the CDR:**  
-   Spatial autocorrelation (phasogram) of 411,919 dyads inside the hypomethylated Centromere Dip Region (CDR) demonstrates an alternating 150/190 bp monomer spacing (mean **170 bp**) that locks into a massive global maximum at **340 bp ($2 \times 170$ bp)** dinucleosome periodicity ($N = 761,698$ pairs).
-4. **Bimodal Phase Transition via H1 Exclusion:**  
-   In the heterochromatic periphery (Non-CDR), linker histone H1 and dense CpG methylation (85%) compress the repeat to **160 bp** (13 bp linkers). Inside the CDR, hypomethylation (25% 5mC) and unpeeled CENP-A ends evict H1, expanding linkers to 30–50 bp and generating an accessible 340-bp lattice for CENP-B dimer clamping.
+1. **Native CENP-A Open Core Particle (125–133 bp):**  
+   Direct paired-end MNase ChIP-seq on human T2T centromeres (`SRR13278683`, 4.29M primary proper-pair fragments across 744 alpha-satellite arrays) reveals a single-base mononucleosome protection mode at **133 bp** ($N = 212,205$ fragments globally), with $177,473$ fragments at 130 bp and **84.29%** of all fragments concentrated in the 110–140 bp window (with 130 bp representing the modal 5-bp bin). In this library, the canonical 150-bp octamer is depleted **177.28-fold** relative to the 133-bp mode ($N = 1,197$, 0.0279%; 148.26-fold relative to 130 bp), and sub-85 bp fragments represent 1.53%, confirming that terminal gyres unpeel from the CENP-A octamer core in native centromeric chromatin.
+2. **Bipartite CENP-B Box Architecture:**  
+   Distance from the CENP-A dyad to 126,969 canonical 17-bp CENP-B boxes reveals severe dyad occlusion (0–15 bp, **66.0-fold contrast** relative to Peak 1; 15.36-fold depletion relative to an idealized lattice null) and two major peaks:
+   - **Peak 1 at 50–55 bp** (SHL $\pm 5.0\text{--}5.5$, directly at the unpeeled gyre exit boundary; 4.30x enrichment vs lattice null);
+   - **Peak 2 at 85–100 bp** (free inter-nucleosomal linker DNA; 6.54x enrichment vs lattice null at 100 bp).
+3. **Dominant 340-bp Dimer Periodicity in the CDR:**  
+   Spatial autocorrelation (phasogram) of 411,919 dyads inside the hypomethylated Centromere Dip Region (CDR) exhibits bimodal monomer lags at 150 bp and 190 bp (mean **170 bp**) that lock into a dominant non-zero maximum at **340 bp ($2 \times 170$ bp)** dinucleosome periodicity ($N = 761,698$ pairs in CDR; 591,711 in Non-CDR).
+4. **Ensemble Phasing & Chromatin Architecture Models:**  
+   Simulating bulk autocorrelation proves that an intramolecular alternating lattice (150/190 bp steps) and a 50:50 mixture of two uniform 340-bp registers produce identically matching autocorrelation spectra ($r = 1.000$, residual difference = 0). Expanded 20 bp and 60 bp linkers (mean 40 bp) and linker histone H1 exclusion represent mechanistic models inferred from bulk spacing and terminal unpeeling, providing an accessible chromatin framework for CENP-B dimer cross-linking.
 
 ---
 
@@ -31,37 +31,38 @@ This repository provides the complete, self-contained codebase, processed data t
 
 ```
 .
-├── README.md                      # This documentation & reproduction guide
-├── run_reproduction.sh            # Master one-click reproduction script (<4s)
+├── README.md                          # Documentation & reproduction guide
+├── run_reproduction.sh                # Master verification suite with dynamic assert checks (<4s)
 ├── paper/
-│   ├── manuscript.md              # Full, watertight manuscript text
-│   ├── index.html                 # Interactive publication article
+│   ├── manuscript.md                  # Comprehensive manuscript text
+│   ├── index.html                     # Interactive publication article
 │   └── figures/
 │       ├── Fig1_cenpa_core_and_box_geometry.{png,pdf,svg}
 │       ├── Fig2_cdr_phasogram_and_chromatin_state.{png,pdf,svg}
 │       ├── Fig3_phasogram_mixture_models.{png,pdf,svg}
 │       └── Fig4_cenpb_box_coupling_and_nulls.{png,pdf,svg}
 ├── data/
-│   ├── ledger_manifest.tsv                # Single-source-of-truth metrics ledger
-│   ├── metrics.json                       # Machine-readable validated parameters
-│   ├── replicate_metadata_manifest.tsv    # Authenticated cross-cohort replicate manifest
-│   ├── chm13_cdr_intervals.bed            # 23 CHM13 CDR genomic coordinates
+│   ├── ledger_manifest.tsv            # Dynamically generated single-source-of-truth ledger
+│   ├── metrics.json                   # Machine-readable verified parameters
+│   ├── replicate_metadata_manifest.tsv# Authenticated cross-cohort replicate manifest
+│   ├── chm13_cdr_intervals.bed        # 23 CHM13 CDR genomic coordinates
 │   ├── input_mnase_fragment_length_hist.tsv # Input MNase fragment distribution
 │   ├── cenpa_chip_fragment_length_hist.tsv  # CENP-A ChIP fragment distribution
-│   ├── cenpa_box_to_dyad_distance.tsv     # CENP-A dyad-to-box distance
-│   ├── cenpa_box_directional_and_nulls.tsv# Dyad-to-box vs Geometric Null calibration
-│   ├── cenpa_cdr_phasogram.tsv            # CENP-A CDR dyad autocorrelation
-│   ├── phasogram_simulation_comparison.tsv# Algebraic equivalence of mixture models
-│   └── cenpa_per_chromosome_summary.tsv   # Per-chromosome metrics across 23 chr
+│   ├── cenpa_box_to_dyad_distance.tsv # CENP-A dyad-to-box distance
+│   ├── cenpa_box_directional_and_nulls.tsv  # Dyad-to-box vs Lattice Null calibration
+│   ├── cenpa_cdr_phasogram.tsv        # CENP-A CDR dyad autocorrelation
+│   ├── phasogram_simulation_comparison.tsv  # Algebraic equivalence of mixture models
+│   ├── cenpa_per_chromosome_summary.tsv     # Per-chromosome metrics across 23 chr
+│   └── archive/                       # Archived prospective/synthetic scratch tables
 └── scripts/
-    ├── generate_ledger.py                 # Reconciles all ledger sums and metrics
-    ├── build_replicate_manifest.py        # Validates public SRA accessions
-    ├── 01_fetch_and_align.sh              # SRA fetch and BWA-MEM alignment
-    ├── 02_analyze_particles.py            # Particle lengths & box distances
-    ├── 03_compute_phasogram.py            # Spatial autocorrelation calculation
-    ├── 04_plot_figures.py                 # Primary empirical figures (Fig 1 & 2)
-    ├── 05_simulate_phasogram_mixtures.py  # Register mixture counterexample (Fig 3)
-    └── 06_analyze_box_coupling_and_nulls.py # CENP-B coupling & Geometric Null (Fig 4)
+    ├── generate_ledger.py             # Dynamically reconciles ledger sums, modes, and ratios
+    ├── build_replicate_manifest.py    # Generates authenticated public SRA metadata
+    ├── 01_fetch_and_align.sh          # SRA fetch and BWA-MEM alignment
+    ├── 02_analyze_particles.py        # Particle lengths & box distances from BAM
+    ├── 03_compute_phasogram.py        # Distance-bounded spatial autocorrelation
+    ├── 04_plot_figures.py             # Primary empirical figures (Fig 1 & 2)
+    ├── 05_simulate_phasogram_mixtures.py    # Register mixture simulation (Fig 3)
+    └── 06_analyze_box_coupling_and_nulls.py # CENP-B coupling & Lattice Null (Fig 4)
 ```
 
 ---
@@ -69,17 +70,17 @@ This repository provides the complete, self-contained codebase, processed data t
 ## Reproduction Guide
 
 ### Option A: Instant Quick Reproduction (< 4 seconds)
-To regenerate all 4 publication figures and verify all ledger assertions from the curated summary data tables:
+To verify all dynamic ledger assertions and regenerate all 4 publication figures from the authentic data tables:
 
 ```bash
 # Clone the repository
 git clone https://github.com/ad3002/cenpa_nucleosome_architecture.git
 cd cenpa_nucleosome_architecture
 
-# Run the master reproduction script in quick mode
+# Run the master reproduction script
 bash run_reproduction.sh
 ```
-This will immediately verify all ledger sums and regenerate:
+This runs independent dynamic recalculations from raw tables and regenerates:
 - `Fig1_cenpa_core_and_box_geometry.{png,pdf,svg}`
 - `Fig2_cdr_phasogram_and_chromatin_state.{png,pdf,svg}`
 - `Fig3_phasogram_mixture_models.{png,pdf,svg}`

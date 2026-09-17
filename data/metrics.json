@@ -1,6 +1,7 @@
 {
   "metadata": {
     "assembly": "T2T-CHM13v2.0 (GCA_009914755.4)",
+    "chrY_provenance": "NC_060948.1 is the HG002 assembled chromosome Y included in T2T-CHM13v2.0; mapped reads represent cross-mapping alpha-satellite reads in 46,XX CHM13",
     "total_alpha_arrays": 744,
     "total_annotated_cenpb_boxes": 126969,
     "primary_chip_run": "SRR13278683",
@@ -13,18 +14,27 @@
     "chip_proper_pairs_chrY": 1736,
     "chip_proper_pairs_cdr_total": 1065332,
     "chip_proper_pairs_cdr_mononucleosome_gated_130_175bp": 411919,
+    "chip_proper_pairs_cdr_mononucleosome_gated_110_180bp": 960496,
     "chip_proper_pairs_noncdr_total": 3224999,
     "chip_proper_pairs_noncdr_23_chromosomes": 3223263,
     "input_proper_pairs_global": 304909
   },
   "particle_sizing": {
-    "mode_length_bp": 130,
-    "mode_count_global": 177473,
+    "single_base_mode_length_bp": 133,
+    "single_base_mode_count_global": 212205,
+    "cdr_single_base_mode_bp": 133,
+    "cdr_single_base_mode_count": 55892,
+    "noncdr_single_base_mode_bp": 133,
+    "noncdr_single_base_mode_count": 156313,
+    "count_130bp_global": 177473,
+    "count_130bp_cdr": 46698,
     "count_150bp_global": 1197,
+    "count_150bp_cdr": 291,
     "count_147_150bp_global": 15584,
     "pct_150bp_of_global": 0.0279,
     "pct_147_150bp_of_global": 0.3632,
-    "fold_depletion_150bp_vs_mode": 148.26,
+    "fold_depletion_150bp_vs_true_mode": 177.28,
+    "fold_depletion_150bp_vs_130bp": 148.26,
     "count_75_85bp_global": 29851,
     "pct_75_85bp_of_global": 0.6958,
     "count_sub_85bp_global": 65742,
@@ -37,21 +47,28 @@
     "gyre_exit_peak1_55bp_count": 164747,
     "trough_65bp_count": 13270,
     "free_linker_peak2_90bp_count": 112228,
+    "free_linker_peak2_100bp_count": 125421,
     "peak_to_dyad_contrast_ratio": 66.0,
     "geometric_null_expected_15bp": 38333.62,
-    "depletion_ratio_vs_geometric_null_15bp": 15.36
+    "depletion_ratio_vs_geometric_null_15bp": 15.36,
+    "observed_over_expected_peak1_55bp": 4.2977,
+    "observed_over_expected_peak2_90bp": 5.8553,
+    "observed_over_expected_peak2_100bp": 6.5437
   },
   "cdr_phasogram": {
     "dimer_lattice_peak_bp": 340,
-    "dimer_lattice_pairs_at_340bp": 761698,
+    "dimer_lattice_pairs_at_340bp_cdr": 761698,
+    "dimer_lattice_pairs_at_340bp_noncdr": 591711,
     "monomer_mode1_bp": 150,
     "monomer_mode1_pairs": 524843,
+    "monomer_trough_170bp_pairs": 309708,
     "monomer_mode2_bp": 190,
     "monomer_mode2_pairs": 474147,
     "monomer_arithmetic_mean_bp": 170.0,
     "total_cdr_dyads_mononucleosome_gated": 411919
   },
-  "linker_geometry": {
+  "linker_geometry_models": {
+    "note": "Theoretical and mechanistic models consistent with bulk data; not single-molecule observations",
     "periphery_nrl_bp": 160,
     "periphery_core_bp": 147,
     "periphery_linker_bp": 13,
@@ -61,9 +78,6 @@
     "cdr_core_bp": 130,
     "cdr_linker_class1_bp": 20,
     "cdr_linker_class2_bp": 60,
-    "cdr_mean_linker_bp": 40,
-    "cdr_model_alternating_linker1_bp": 20,
-    "cdr_model_alternating_linker2_bp": 60,
-    "cdr_model_alternating_mean_linker_bp": 40
+    "cdr_mean_linker_bp": 40
   }
 }

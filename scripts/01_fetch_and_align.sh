@@ -13,15 +13,22 @@ RAW_DIR="$BASE_DIR/raw_cache"
 mkdir -p "$RAW_DIR" "$DATA_DIR"
 
 THREADS=${THREADS:-16}
+# PAIRS_LIMIT=0 means unlimited (full library processing). Default: 3,000,000 for quick verification slice.
 PAIRS_LIMIT=${PAIRS_LIMIT:-3000000}
 
 # 1. References
 ALPHA_FA="$RAW_DIR/chm13_alpha_arrays.fa"
 if [ ! -f "$ALPHA_FA" ]; then
-    echo "Downloading / extracting CHM13 alpha-satellite arrays reference..."
-    # Can be extracted from CHM13v2.0 2bit or downloaded
+    echo "Notice: Reference FASTA $ALPHA_FA not found."
     if [ -f "/mnt/data/claude/2026-09-14_nucleosome_genomics/cache/chm13_alpha_arrays.fa" ]; then
+        echo "Copying reference from local cache..."
         cp "/mnt/data/claude/2026-09-14_nucleosome_genomics/cache/chm13_alpha_arrays.fa" "$ALPHA_FA"
+    elif command -v samtools >/dev/null 2>&1 && [ -f "$RAW_DIR/chm13v2.0.fa" ]; then
+        echo "Extracting alpha-satellite arrays from chm13v2.0.fa..."
+        # Can extract centromeric intervals from whole genome FASTA
+        samtools faidx "$RAW_DIR/chm13v2.0.fa"
+    else
+        echo "To build from NCBI RefSeq: download T2T-CHM13v2.0 (GCA_009914755.4) and extract alpha arrays."
     fi
 fi
 
@@ -54,6 +61,11 @@ align_sra() {
 
     echo "Synchronizing paired-end records for $ACC..."
     python3 "$SCRIPT_DIR/sync_paired.py" "$R1" "$R2" "$S1" "$S2" "$PAIRS_LIMIT"
+
+    if [ ! -f "$ALPHA_FA" ]; then
+        echo "Error: Reference $ALPHA_FA required for alignment. Please provide reference FASTA." >&2
+        exit 1
+    fi
 
     echo "Aligning $ACC with BWA-MEM ($THREADS threads)..."
     bwa mem -t "$THREADS" "$ALPHA_FA" "$S1" "$S2" \

@@ -1,19 +1,22 @@
 metric_id	description	unit	numerator	denominator	calculated_value	context_scope
 CHIP_PAIRS_GLOBAL	Total proper-pair fragments mapped to alpha arrays	read_pairs	4290331	4290331	4290331	All 744 CHM13 arrays
 CHIP_PAIRS_23CHR	Proper pairs mapped to chr1-22, chrX alpha arrays	read_pairs	4288595	4290331	4288595	23 human chromosomes
-CHIP_PAIRS_CHRY	Proper pairs mapped to chrY alpha arrays (NC_060948.1)	read_pairs	1736	4290331	1736	Chromosome Y arrays
+CHIP_PAIRS_CHRY	Proper pairs mapped to chrY alpha arrays (NC_060948.1 cross-mapping)	read_pairs	1736	4290331	1736	Chromosome Y arrays
 CHIP_PAIRS_CDR_TOTAL	Total proper pairs located inside Centromere Dip Regions	read_pairs	1065332	4290331	1065332	23 CDRs (all lengths)
-CHIP_PAIRS_CDR_GATED	Mononucleosome-gated dyads (130-175 bp) analyzed in phasogram	read_pairs	411919	1065332	411919	CDR mononucleosomes
+CHIP_PAIRS_CDR_GATED_130_175	Mononucleosome-gated dyads (130-175 bp) analyzed in phasogram	read_pairs	411919	1065332	411919	CDR mononucleosomes (130-175 bp)
+CHIP_PAIRS_CDR_GATED_110_180	Broad mononucleosome gate (110-180 bp)	read_pairs	960496	1065332	960496	CDR mononucleosomes (110-180 bp)
 CHIP_PAIRS_NONCDR	Proper pairs located outside Centromere Dip Regions	read_pairs	3224999	4290331	3224999	Non-CDR arrays
-CORE_MODE_LENGTH	Modal fragment length of CENP-A ChIP	bp	130	-	130	Global
-CORE_MODE_COUNT	Fragment count at modal length (130 bp)	fragments	177473	4290331	177473	Global
-CANONICAL_OCTAMER_150BP	Fragment count at exactly 150 bp	fragments	1197	4290331	0.0279%	Global
+CORE_SINGLE_BASE_MODE	True single-base modal fragment length of CENP-A ChIP	bp	133	-	133 bp	Global mode (212,205 frags)
+CORE_COUNT_AT_130BP	Fragment count at 130 bp (characteristic open core)	fragments	177473	4290331	177473	Global count at 130 bp
+CANONICAL_OCTAMER_150BP	Fragment count at exactly 150 bp	fragments	1197	4290331	0.02790%	Global
 CANONICAL_OCTAMER_147_150BP	Fragment count across canonical 147-150 bp	fragments	15584	4290331	0.3632%	Global
-OCTAMER_DEPLETION_RATIO	Ratio of mode count (130 bp) to 150 bp count	fold_change	177473	1197	148.26x	Global
+OCTAMER_DEPLETION_VS_TRUE_MODE	Ratio of true single-base mode (133 bp) to 150 bp count	fold_change	212205	1197	177.28x	Global (133 bp vs 150 bp)
+OCTAMER_DEPLETION_VS_130BP	Ratio of 130 bp count to 150 bp count	fold_change	177473	1197	148.26x	Global (130 bp vs 150 bp)
 SUB_NUC_75_85BP	Fragment count across 75-85 bp (putative hemisome window)	fragments	29851	4290331	0.6958%	Global
 SUB_NUC_LE85BP	Fragment count <= 85 bp	fragments	65742	4290331	1.5323%	Global
 DYAD_CONTRAST_RATIO	Ratio of Peak 1 (55 bp) to Dyad (15 bp) count	fold_change	164747	2496	66.00x	Peak-to-dyad contrast
-DYAD_NULL_DEPLETION	Fold-depletion relative to Geometric Null at 15 bp	fold_change	38333.62	2496	15.36x	Geometric null
-CDR_PHASOGRAM_DIMER	Global maximum peak of spatial autocorrelation	bp	340	-	340	CDR dyads
+DYAD_NULL_DEPLETION	Fold-depletion relative to Geometric Lattice Null at 15 bp	fold_change	38333.62	2496	15.36x	Geometric lattice null
+PEAK2_OE_RATIO_100BP	Observed / Expected ratio at Peak 2 (100 bp)	fold_change	125421	19166.81	6.54x	Peak 2 free linker
+CDR_PHASOGRAM_DIMER	Dominant non-zero peak of spatial autocorrelation (100-800 bp)	bp	340	-	340 bp	CDR dyads (100-800 bp)
 CDR_PHASOGRAM_DIMER_PAIRS	Dyad pairs at 340 bp distance in CDR	pairs	761698	-	761698	CDR dyads
 CDR_PHASOGRAM_MONOMERS	Bimodal monomer peaks in CDR	bp	[150, 190]	-	mean 170	CDR dyads
