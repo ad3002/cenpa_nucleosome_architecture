@@ -32,45 +32,59 @@ This repository provides the complete, self-contained codebase, processed data t
 ```
 .
 ├── README.md                      # This documentation & reproduction guide
-├── run_reproduction.sh            # Master one-click reproduction script
+├── run_reproduction.sh            # Master one-click reproduction script (<4s)
 ├── paper/
 │   ├── manuscript.md              # Full, watertight manuscript text
+│   ├── index.html                 # Interactive publication article
 │   └── figures/
-│       ├── Fig1_cenpa_core_and_box_geometry.png (.pdf, .svg)
-│       └── Fig2_cdr_phasogram_and_chromatin_state.png (.pdf, .svg)
+│       ├── Fig1_cenpa_core_and_box_geometry.{png,pdf,svg}
+│       ├── Fig2_cdr_phasogram_and_chromatin_state.{png,pdf,svg}
+│       ├── Fig3_phasogram_mixture_models.{png,pdf,svg}
+│       └── Fig4_cenpb_box_coupling_and_nulls.{png,pdf,svg}
 ├── data/
+│   ├── ledger_manifest.tsv                # Single-source-of-truth metrics ledger
+│   ├── metrics.json                       # Machine-readable validated parameters
+│   ├── replicate_metadata_manifest.tsv    # Authenticated cross-cohort replicate manifest
 │   ├── chm13_cdr_intervals.bed            # 23 CHM13 CDR genomic coordinates
 │   ├── input_mnase_fragment_length_hist.tsv # Input MNase fragment distribution
 │   ├── cenpa_chip_fragment_length_hist.tsv  # CENP-A ChIP fragment distribution
-│   ├── input_box_to_dyad_distance.tsv     # Input dyad-to-box distance
 │   ├── cenpa_box_to_dyad_distance.tsv     # CENP-A dyad-to-box distance
+│   ├── cenpa_box_directional_and_nulls.tsv# Dyad-to-box vs Geometric Null calibration
 │   ├── cenpa_cdr_phasogram.tsv            # CENP-A CDR dyad autocorrelation
-│   ├── cenpa_per_chromosome_summary.tsv   # Per-chromosome metrics across 23 chr
-│   └── input_per_chromosome_summary.tsv   # Input per-chromosome metrics
+│   ├── phasogram_simulation_comparison.tsv# Algebraic equivalence of mixture models
+│   └── cenpa_per_chromosome_summary.tsv   # Per-chromosome metrics across 23 chr
 └── scripts/
-    ├── 01_fetch_and_align.sh      # Pipeline to fetch raw SRA slices and run BWA-MEM
-    ├── 02_analyze_particles.py    # Extracts particle lengths, box distances from BAM
-    ├── 03_compute_phasogram.py    # Spatial autocorrelation calculation
-    ├── 04_plot_figures.py         # Generates vector publication figures (PDF/SVG/PNG)
-    └── sync_paired.py             # FASTQ paired-end record synchronization
+    ├── generate_ledger.py                 # Reconciles all ledger sums and metrics
+    ├── build_replicate_manifest.py        # Validates public SRA accessions
+    ├── 01_fetch_and_align.sh              # SRA fetch and BWA-MEM alignment
+    ├── 02_analyze_particles.py            # Particle lengths & box distances
+    ├── 03_compute_phasogram.py            # Spatial autocorrelation calculation
+    ├── 04_plot_figures.py                 # Primary empirical figures (Fig 1 & 2)
+    ├── 05_simulate_phasogram_mixtures.py  # Register mixture counterexample (Fig 3)
+    └── 06_analyze_box_coupling_and_nulls.py # CENP-B coupling & Geometric Null (Fig 4)
 ```
 
 ---
 
 ## Reproduction Guide
 
-### Option A: Instant Quick Reproduction (< 30 seconds)
-To regenerate all publication figures from the curated summary data tables:
+### Option A: Instant Quick Reproduction (< 4 seconds)
+To regenerate all 4 publication figures and verify all ledger assertions from the curated summary data tables:
 
 ```bash
-# Clone the repository (once remote is added)
-git clone <remote_url> cenpa_nucleosome_architecture
+# Clone the repository
+git clone https://github.com/ad3002/cenpa_nucleosome_architecture.git
 cd cenpa_nucleosome_architecture
 
 # Run the master reproduction script in quick mode
-./run_reproduction.sh
+bash run_reproduction.sh
 ```
-This will immediately generate `Fig1_cenpa_core_and_box_geometry.{png,pdf,svg}` and `Fig2_cdr_phasogram_and_chromatin_state.{png,pdf,svg}` in `paper/figures/`.
+This will immediately verify all ledger sums and regenerate:
+- `Fig1_cenpa_core_and_box_geometry.{png,pdf,svg}`
+- `Fig2_cdr_phasogram_and_chromatin_state.{png,pdf,svg}`
+- `Fig3_phasogram_mixture_models.{png,pdf,svg}`
+- `Fig4_cenpb_box_coupling_and_nulls.{png,pdf,svg}`
+in `paper/figures/`.
 
 ---
 
