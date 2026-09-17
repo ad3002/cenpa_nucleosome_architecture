@@ -122,13 +122,13 @@ def run_package_d():
     ax_b = axes[0, 1]
     ax_b.plot(dists, obs_exp_ratio, color="#0369a1", lw=2.2)
     ax_b.axhline(1.0, color="#64748b", ls="--", lw=1)
-    ax_b.set_title("B. Observed / Expected Fold-Enrichment", fontsize=11, fontweight="bold")
+    ax_b.set_title("B. Observed / Expected Fold-Enrichment vs. Geometric Null", fontsize=11, fontweight="bold")
     ax_b.set_xlabel("Distance from Dyad to Box Center (bp)", fontsize=10)
     ax_b.set_ylabel("Enrichment Ratio (Obs / Exp)", fontsize=10)
     ax_b.axvspan(0, 15, color="#fee2e2", alpha=0.5)
-    ax_b.text(8, 0.15, ">60x Depletion", color="#991b1b", fontsize=9, fontweight="bold")
-    ax_b.text(52, max(obs_exp_ratio)*0.9, "Peak 1 (SHL ±5)", color="#c2410c", fontsize=9, fontweight="bold")
-    ax_b.text(88, max(obs_exp_ratio)*0.75, "Peak 2 (Linker)", color="#0369a1", fontsize=9, fontweight="bold")
+    ax_b.text(8, 0.25, "15.4x Depletion\nvs Null (Obs/Exp = 0.065)\n(66.0x Peak Contrast)", color="#991b1b", fontsize=8.5, fontweight="bold")
+    ax_b.text(52, max(obs_exp_ratio)*0.9, "Peak 1 (4.30x vs Null)", color="#c2410c", fontsize=8.5, fontweight="bold")
+    ax_b.text(88, max(obs_exp_ratio)*0.75, "Peak 2 (3.27x vs Null)", color="#0369a1", fontsize=8.5, fontweight="bold")
     ax_b.grid(True, alpha=0.25, ls="--")
 
     # Panel C: 2D Heatmap (Length x Offset)
@@ -182,10 +182,12 @@ def run_package_d():
     plt.tight_layout()
     fig_png = os.path.join(FIG_DIR, "Fig4_cenpb_box_coupling_and_nulls.png")
     fig_svg = os.path.join(FIG_DIR, "Fig4_cenpb_box_coupling_and_nulls.svg")
+    fig_pdf = os.path.join(FIG_DIR, "Fig4_cenpb_box_coupling_and_nulls.pdf")
     plt.savefig(fig_png)
     plt.savefig(fig_svg)
+    plt.savefig(fig_pdf)
     plt.close()
-    print(f"Generated {fig_png} and {fig_svg}")
+    print(f"Generated {fig_png}, {fig_svg}, and {fig_pdf}")
 
 if __name__ == "__main__":
     run_package_d()

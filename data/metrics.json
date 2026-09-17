@@ -1,18 +1,18 @@
 {
   "metadata": {
-    "assembly": "T2T-CHM13v2.0",
+    "assembly": "T2T-CHM13v2.0 (GCA_009914755.4)",
     "total_alpha_arrays": 744,
     "total_annotated_cenpb_boxes": 126969,
-    "sra_run_chip_rep2": "SRR13278683",
-    "sra_run_input_rep2": "SRR13278681",
-    "sra_run_chip_rep1": "SRR13278684",
-    "sra_run_input_rep1": "SRR13278682"
+    "primary_chip_run": "SRR13278683",
+    "primary_input_run": "SRR13278681",
+    "bioproject": "PRJNA559484"
   },
   "sample_counts": {
     "chip_proper_pairs_global": 4290331,
     "chip_proper_pairs_23_chromosomes": 4288595,
-    "chip_proper_pairs_unplaced_contigs": 1736,
-    "chip_proper_pairs_cdr": 1065332,
+    "chip_proper_pairs_chrY": 1736,
+    "chip_proper_pairs_cdr_total": 1065332,
+    "chip_proper_pairs_cdr_mononucleosome_gated_130_175bp": 411919,
     "chip_proper_pairs_noncdr_total": 3224999,
     "chip_proper_pairs_noncdr_23_chromosomes": 3223263,
     "input_proper_pairs_global": 304909
@@ -33,11 +33,13 @@
     "pct_110_140bp_of_global": 84.29
   },
   "cenpb_box_geometry": {
-    "dyad_occlusion_0_15bp_count": 2496,
+    "dyad_15bp_count": 2496,
     "gyre_exit_peak1_55bp_count": 164747,
     "trough_65bp_count": 13270,
     "free_linker_peak2_90bp_count": 112228,
-    "fold_enrichment_peak1_vs_dyad": 66.0
+    "peak_to_dyad_contrast_ratio": 66.0,
+    "geometric_null_expected_15bp": 38333.62,
+    "depletion_ratio_vs_geometric_null_15bp": 15.36
   },
   "cdr_phasogram": {
     "dimer_lattice_peak_bp": 340,
@@ -47,7 +49,7 @@
     "monomer_mode2_bp": 190,
     "monomer_mode2_pairs": 474147,
     "monomer_arithmetic_mean_bp": 170.0,
-    "total_cdr_dyads_analyzed": 411919
+    "total_cdr_dyads_mononucleosome_gated": 411919
   },
   "linker_geometry": {
     "periphery_nrl_bp": 160,
@@ -59,6 +61,9 @@
     "cdr_core_bp": 130,
     "cdr_linker_class1_bp": 20,
     "cdr_linker_class2_bp": 60,
-    "cdr_mean_linker_bp": 40
+    "cdr_mean_linker_bp": 40,
+    "cdr_model_alternating_linker1_bp": 20,
+    "cdr_model_alternating_linker2_bp": 60,
+    "cdr_model_alternating_mean_linker_bp": 40
   }
 }
