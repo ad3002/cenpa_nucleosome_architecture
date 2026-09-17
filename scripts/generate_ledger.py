@@ -135,8 +135,9 @@ def build_ledger():
     # Find dominant peaks in the non-zero inter-nucleosomal window (100-800 bp)
     cdr_inter_nuc = {d: c[0] for d, c in phas.items() if 100 <= d <= 800}
     dimer_lattice_peak_bp = max(cdr_inter_nuc, key=cdr_inter_nuc.get)
-    dimer_lattice_pairs_at_340bp = cdr_inter_nuc[dimer_lattice_peak_bp]
-    dimer_lattice_noncdr_at_340bp = phas[340][1]
+    dimer_lattice_pairs_at_detected_peak = cdr_inter_nuc[dimer_lattice_peak_bp]
+    pairs_at_exact_340bp_cdr = phas.get(340, (0, 0))[0]
+    dimer_lattice_noncdr_at_340bp = phas.get(340, (0, 0))[1]
 
     peak_150_count = phas.get(150, (0, 0))[0]
     peak_170_count = phas.get(170, (0, 0))[0]
@@ -146,7 +147,7 @@ def build_ledger():
     metrics = {
         "metadata": {
             "assembly": "T2T-CHM13v2.0 (GCA_009914755.4)",
-            "chrY_provenance": "NC_060948.1 is the HG002 assembled chromosome Y included in T2T-CHM13v2.0; mapped reads represent cross-mapping alpha-satellite reads in 46,XX CHM13",
+            "unassigned_residual_provenance": "1,736 proper pairs map to unassigned alpha arrays outside chr1-22 and chrX (including NC_060948.1); they represent 0.04% of total proper pairs",
             "total_alpha_arrays": 744,
             "total_annotated_cenpb_boxes": 126969,
             "primary_chip_run": "SRR13278683",
@@ -156,6 +157,7 @@ def build_ledger():
         "sample_counts": {
             "chip_proper_pairs_global": total_proper_pairs,
             "chip_proper_pairs_23_chromosomes": sum_cdr_23chr + sum_noncdr_23chr,
+            "chip_proper_pairs_unassigned_residual": chry_noncdr,
             "chip_proper_pairs_chrY": chry_noncdr,
             "chip_proper_pairs_cdr_total": global_cdr,
             "chip_proper_pairs_cdr_mononucleosome_gated_130_175bp": cdr_gated_130_175,
@@ -202,7 +204,8 @@ def build_ledger():
         },
         "cdr_phasogram": {
             "dimer_lattice_peak_bp": dimer_lattice_peak_bp,
-            "dimer_lattice_pairs_at_340bp_cdr": dimer_lattice_pairs_at_340bp,
+            "dimer_lattice_pairs_at_detected_peak": dimer_lattice_pairs_at_detected_peak,
+            "dimer_lattice_pairs_at_340bp_cdr": pairs_at_exact_340bp_cdr,
             "dimer_lattice_pairs_at_340bp_noncdr": dimer_lattice_noncdr_at_340bp,
             "monomer_mode1_bp": 150,
             "monomer_mode1_pairs": peak_150_count,
@@ -239,7 +242,7 @@ def build_ledger():
         f.write("metric_id\tdescription\tunit\tnumerator\tdenominator\tcalculated_value\tcontext_scope\n")
         f.write(f"CHIP_PAIRS_GLOBAL\tTotal proper-pair fragments mapped to alpha arrays\tread_pairs\t{total_proper_pairs}\t{total_proper_pairs}\t{total_proper_pairs}\tAll 744 CHM13 arrays\n")
         f.write(f"CHIP_PAIRS_23CHR\tProper pairs mapped to chr1-22, chrX alpha arrays\tread_pairs\t{sum_cdr_23chr + sum_noncdr_23chr}\t{total_proper_pairs}\t{sum_cdr_23chr + sum_noncdr_23chr}\t23 human chromosomes\n")
-        f.write(f"CHIP_PAIRS_CHRY\tProper pairs mapped to chrY alpha arrays (NC_060948.1 cross-mapping)\tread_pairs\t{chry_noncdr}\t{total_proper_pairs}\t{chry_noncdr}\tChromosome Y arrays\n")
+        f.write(f"CHIP_PAIRS_UNASSIGNED_RESIDUAL\tUnassigned alpha array residual pairs outside chr1-22 and chrX\tread_pairs\t{chry_noncdr}\t{total_proper_pairs}\t{chry_noncdr}\tResidual alpha arrays (including NC_060948.1)\n")
         f.write(f"CHIP_PAIRS_CDR_TOTAL\tTotal proper pairs located inside Centromere Dip Regions\tread_pairs\t{global_cdr}\t{total_proper_pairs}\t{global_cdr}\t23 CDRs (all lengths)\n")
         f.write(f"CHIP_PAIRS_CDR_GATED_130_175\tMononucleosome-gated dyads (130-175 bp) analyzed in phasogram\tread_pairs\t{cdr_gated_130_175}\t{global_cdr}\t{cdr_gated_130_175}\tCDR mononucleosomes (130-175 bp)\n")
         f.write(f"CHIP_PAIRS_CDR_GATED_110_180\tBroad mononucleosome gate (110-180 bp)\tread_pairs\t{cdr_gated_110_180}\t{global_cdr}\t{cdr_gated_110_180}\tCDR mononucleosomes (110-180 bp)\n")
@@ -254,9 +257,11 @@ def build_ledger():
         f.write(f"SUB_NUC_LE85BP\tFragment count <= 85 bp\tfragments\t{count_sub_85}\t{total_proper_pairs}\t{count_sub_85 / total_proper_pairs * 100:.4f}%\tGlobal\n")
         f.write(f"DYAD_CONTRAST_RATIO\tRatio of Peak 1 (55 bp) to Dyad (15 bp) count\tfold_change\t{peak1_55_count}\t{dyad_15_count}\t{peak_to_dyad_contrast:.2f}x\tPeak-to-dyad contrast\n")
         f.write(f"DYAD_NULL_DEPLETION\tFold-depletion relative to Geometric Lattice Null at 15 bp\tfold_change\t{null_exp_15:.2f}\t{dyad_15_count}\t{depletion_vs_null_15:.2f}x\tGeometric lattice null\n")
+        f.write(f"PEAK1_OE_RATIO_55BP\tObserved / Expected ratio at Peak 1 (55 bp)\tfold_change\t{nulls_data[55]['observed']}\t{nulls_data[55]['expected']:.2f}\t{oe_peak1_55:.2f}x\tPeak 1 gyre exit\n")
         f.write(f"PEAK2_OE_RATIO_100BP\tObserved / Expected ratio at Peak 2 (100 bp)\tfold_change\t{nulls_data[100]['observed']}\t{nulls_data[100]['expected']:.2f}\t{oe_peak2_100:.2f}x\tPeak 2 free linker\n")
         f.write(f"CDR_PHASOGRAM_DIMER\tDominant non-zero peak of spatial autocorrelation (100-800 bp)\tbp\t{dimer_lattice_peak_bp}\t-\t{dimer_lattice_peak_bp} bp\tCDR dyads (100-800 bp)\n")
-        f.write(f"CDR_PHASOGRAM_DIMER_PAIRS\tDyad pairs at 340 bp distance in CDR\tpairs\t{dimer_lattice_pairs_at_340bp}\t-\t{dimer_lattice_pairs_at_340bp}\tCDR dyads\n")
+        f.write(f"CDR_PHASOGRAM_DIMER_PAIRS\tDyad pairs at detected dimer lattice peak ({dimer_lattice_peak_bp} bp) in CDR\tpairs\t{dimer_lattice_pairs_at_detected_peak}\t-\t{dimer_lattice_pairs_at_detected_peak}\tCDR dyads\n")
+        f.write(f"CDR_PHASOGRAM_PAIRS_AT_340BP\tDyad pairs at exactly 340 bp in CDR\tpairs\t{pairs_at_exact_340bp_cdr}\t-\t{pairs_at_exact_340bp_cdr}\tCDR dyads at 340 bp\n")
         f.write(f"CDR_PHASOGRAM_MONOMERS\tBimodal monomer peaks in CDR\tbp\t[150, 190]\t-\tmean 170\tCDR dyads\n")
     print(f"Wrote {ledger_path}")
 

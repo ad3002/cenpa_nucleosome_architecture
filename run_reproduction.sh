@@ -2,7 +2,7 @@
 # run_reproduction.sh
 # Master reproduction and verification suite for "Human CENP-A Nucleosomes Form an Open 125-130 bp Particle
 # Phased to a 340 bp Alpha-Satellite Dimer Lattice with Bipartite CENP-B Linker Geometry".
-# Version 3.1 (Remediated Validation Suite with Dynamic Sensitivity Testing)
+# Version 3.2 (Audit v4 Remediated Suite with Topological Order & Dynamic Invariants)
 
 set -eo pipefail
 
@@ -22,20 +22,27 @@ if [ "$MODE" == "full" ]; then
     echo "1. Fetching raw SRA slices and running BWA-MEM alignments..."
     bash "$SCRIPT_DIR/scripts/01_fetch_and_align.sh"
 
+    echo "1b. Annotating CENP-B boxes across alpha-satellite arrays..."
+    python3 "$SCRIPT_DIR/scripts/annotate_cenpb_boxes.py" \
+        "$SCRIPT_DIR/raw_cache/chm13_alpha_arrays.fa" \
+        "$SCRIPT_DIR/raw_cache/chm13_cenpb_boxes_coords.tsv"
+
     echo "2. Analyzing particle geometries from BAM files..."
     python3 "$SCRIPT_DIR/scripts/02_analyze_particles.py" \
         "$SCRIPT_DIR/raw_cache/SRR13278681.sorted.bam" \
         "$SCRIPT_DIR/data/chm13_cdr_intervals.bed" \
         "$SCRIPT_DIR/raw_cache/chm13_cenpb_boxes_coords.tsv" \
         "$SCRIPT_DIR/data/input_mnase_fragment_length_hist.tsv" \
-        "$SCRIPT_DIR/data/input_box_to_dyad_distance.tsv"
+        "$SCRIPT_DIR/data/input_box_to_dyad_distance.tsv" \
+        --summary-out "$SCRIPT_DIR/data/input_per_chromosome_summary.tsv"
 
     python3 "$SCRIPT_DIR/scripts/02_analyze_particles.py" \
         "$SCRIPT_DIR/raw_cache/SRR13278683.sorted.bam" \
         "$SCRIPT_DIR/data/chm13_cdr_intervals.bed" \
         "$SCRIPT_DIR/raw_cache/chm13_cenpb_boxes_coords.tsv" \
         "$SCRIPT_DIR/data/cenpa_chip_fragment_length_hist.tsv" \
-        "$SCRIPT_DIR/data/cenpa_box_to_dyad_distance.tsv"
+        "$SCRIPT_DIR/data/cenpa_box_to_dyad_distance.tsv" \
+        --summary-out "$SCRIPT_DIR/data/cenpa_per_chromosome_summary.tsv"
 
     echo "3. Computing spatial phasograms..."
     python3 "$SCRIPT_DIR/scripts/03_compute_phasogram.py" \
@@ -48,18 +55,23 @@ else
     echo "   (To run full raw alignment from EBI/SRA, pass: ./run_reproduction.sh --full-raw)"
 fi
 
-echo "2. Package A: Dynamically generating Single-Source-of-Truth ledger & metrics..."
+# Topological execution order:
+# 1. Package D (computes cenpa_box_directional_and_nulls.tsv and Fig 4 directly from cenpa_box_to_dyad_distance.tsv)
+echo "2. Package D: Evaluating directional profiles, theoretical schema & nulls (Figure 4)..."
+python3 "$SCRIPT_DIR/scripts/06_analyze_box_coupling_and_nulls.py"
+
+# 2. Package E (simulates mixture models and Fig 3 from cenpa_cdr_phasogram.tsv)
+echo "3. Package E: Simulating register mixtures vs alternating lattice (Figure 3)..."
+python3 "$SCRIPT_DIR/scripts/05_simulate_phasogram_mixtures.py"
+
+# 3. Package A (constructs single-source metrics.json and ledger_manifest.tsv from fresh TSVs)
+echo "4. Package A: Dynamically generating Single-Source-of-Truth ledger & metrics..."
 python3 "$SCRIPT_DIR/scripts/generate_ledger.py"
 python3 "$SCRIPT_DIR/scripts/build_replicate_manifest.py"
 
-echo "3. Generating primary empirical figures (Figures 1 & 2)..."
+# 4. Empirical Figures (Figures 1 & 2 dynamically driven by metrics.json and raw TSVs)
+echo "5. Generating primary empirical figures (Figures 1 & 2)..."
 python3 "$SCRIPT_DIR/scripts/04_plot_figures.py"
-
-echo "4. Package E: Simulating register mixtures vs alternating lattice (Figure 3)..."
-python3 "$SCRIPT_DIR/scripts/05_simulate_phasogram_mixtures.py"
-
-echo "5. Package D: Evaluating directional profiles, theoretical schema & nulls (Figure 4)..."
-python3 "$SCRIPT_DIR/scripts/06_analyze_box_coupling_and_nulls.py"
 
 echo ""
 echo "================================================================================"
@@ -120,7 +132,7 @@ glob_noncdr = int(global_row['N_noncdr'])
 assert sum_cdr_23 == glob_cdr, f'CDR chromosome sum mismatch: {sum_cdr_23} != {glob_cdr}'
 assert raw_total_cdr == glob_cdr, f'Histogram CDR total mismatch: {raw_total_cdr} != {glob_cdr}'
 assert raw_total_noncdr == glob_noncdr, f'Histogram Non-CDR total mismatch: {raw_total_noncdr} != {glob_noncdr}'
-chry_remainder = glob_noncdr - sum_noncdr_23
+unassigned_remainder = glob_noncdr - sum_noncdr_23
 
 # 3. Independent phasogram verification
 with open(data_dir / 'cenpa_cdr_phasogram.tsv') as f:
@@ -130,7 +142,8 @@ sub_phas = {d: c for d, c in phas_dict.items() if 100 <= d <= 800}
 phas_max_bp = max(sub_phas, key=sub_phas.get)
 phas_max_pairs = sub_phas[phas_max_bp]
 
-assert phas_max_bp == 340, f'Expected dominant non-zero phasogram peak at 340 bp, found {phas_max_bp} bp'
+# Regression check for CHM13 dataset
+assert phas_max_bp == 340, f'Regression benchmark: expected dominant peak at 340 bp in CHM13 dataset, found {phas_max_bp} bp'
 
 # 4. Independent CENP-B box geometry verification
 with open(data_dir / 'cenpa_box_to_dyad_distance.tsv') as f:
@@ -143,6 +156,7 @@ with open(data_dir / 'cenpa_box_directional_and_nulls.tsv') as f:
     nulls = {int(r['distance_bp']): (float(r['geometric_null_expected']), float(r['observed_over_expected_ratio'])) for r in csv.DictReader(f, delimiter='\t')}
 null_exp_15, oe_15 = nulls[15]
 raw_depletion_null_15 = round(null_exp_15 / raw_dyad_15, 2)
+oe_peak1_55 = nulls[55][1]
 oe_peak2_100 = nulls[100][1]
 
 # 5. Cross-check against metrics.json
@@ -162,6 +176,8 @@ assert ps['single_base_mode_length_bp'] == raw_mode_bp, 'metrics.json mode lengt
 assert ps['single_base_mode_count_global'] == raw_mode_count, 'metrics.json mode count mismatch'
 assert ps['fold_depletion_150bp_vs_true_mode'] == raw_depletion_mode_vs_150, 'metrics.json fold depletion mismatch'
 assert bg['peak_to_dyad_contrast_ratio'] == raw_contrast, 'metrics.json peak-to-dyad contrast mismatch'
+assert bg['gyre_exit_peak1_55bp_count'] == raw_peak1_55, 'metrics.json peak 1 count mismatch'
+assert bg['observed_over_expected_peak1_55bp'] == oe_peak1_55, 'metrics.json peak 1 OE mismatch'
 assert bg['observed_over_expected_peak2_100bp'] == oe_peak2_100, 'metrics.json peak 2 OE mismatch'
 assert cp['dimer_lattice_peak_bp'] == phas_max_bp, 'metrics.json dimer peak mismatch'
 
@@ -174,13 +190,15 @@ assert ledger['CHIP_PAIRS_CDR_GATED_130_175'] == str(raw_cdr_130_175), 'Ledger g
 assert ledger['CORE_SINGLE_BASE_MODE'] == f'{raw_mode_bp} bp', 'Ledger single base mode mismatch'
 assert ledger['OCTAMER_DEPLETION_VS_TRUE_MODE'] == f'{raw_depletion_mode_vs_150:.2f}x', 'Ledger depletion ratio mismatch'
 assert ledger['DYAD_CONTRAST_RATIO'] == f'{raw_contrast:.2f}x', 'Ledger dyad contrast mismatch'
+assert ledger['PEAK1_OE_RATIO_55BP'] == f'{oe_peak1_55:.2f}x', 'Ledger peak 1 OE mismatch'
 assert ledger['PEAK2_OE_RATIO_100BP'] == f'{oe_peak2_100:.2f}x', 'Ledger peak 2 OE mismatch'
+assert ledger['CDR_PHASOGRAM_DIMER'] == f'{phas_max_bp} bp', 'Ledger dimer peak mismatch'
 
-print(f'  [PASS] Single-Source Ledger: {sum_cdr_23 + sum_noncdr_23:,} (23 chr) + {chry_remainder:,} (chrY cross-mapping) = {raw_total_global:,} total proper pairs')
+print(f'  [PASS] Single-Source Ledger: {sum_cdr_23 + sum_noncdr_23:,} (23 chr) + {unassigned_remainder:,} (unassigned residual) = {raw_total_global:,} total proper pairs')
 print(f'  [PASS] CDR Mononucleosome Gates: {raw_total_cdr:,} total CDR pairs -> {raw_cdr_130_175:,} dyads (130-175 bp); {raw_cdr_110_180:,} dyads (110-180 bp)')
 print(f'  [PASS] Particle Sizing: Single-base mode = {raw_mode_bp} bp ({raw_mode_count:,} fragments); 130 bp = {raw_count_130:,}; 150 bp = {raw_count_150:,}')
 print(f'         Fold depletion of 150 bp: {raw_depletion_mode_vs_150:.2f}x vs true mode; {raw_depletion_130_vs_150:.2f}x vs 130 bp')
-print(f'  [PASS] CENP-B Box Geometry: Peak 1 at 55 bp ({raw_contrast:.2f}x contrast vs dyad; {raw_depletion_null_15:.2f}x depletion vs lattice null); Peak 2 at 100 bp ({oe_peak2_100:.2f}x vs null)')
+print(f'  [PASS] CENP-B Box Geometry: Peak 1 at 55 bp ({raw_contrast:.2f}x contrast vs dyad; {oe_peak1_55:.2f}x vs null; {raw_depletion_null_15:.2f}x dyad depletion); Peak 2 at 100 bp ({oe_peak2_100:.2f}x vs null)')
 print(f'  [PASS] CDR Phasogram: Dominant non-zero peak in [100, 800] bp window at {phas_max_bp} bp ({phas_max_pairs:,} pairs); monomer modes at 150 & 190 bp')
 print(f'  [PASS] Mathematical Equivalence (Fig 3): Models A & B residuals identically 0 (algebraic unidentifiability verified)')
 "

@@ -1,7 +1,7 @@
 metric_id	description	unit	numerator	denominator	calculated_value	context_scope
 CHIP_PAIRS_GLOBAL	Total proper-pair fragments mapped to alpha arrays	read_pairs	4290331	4290331	4290331	All 744 CHM13 arrays
 CHIP_PAIRS_23CHR	Proper pairs mapped to chr1-22, chrX alpha arrays	read_pairs	4288595	4290331	4288595	23 human chromosomes
-CHIP_PAIRS_CHRY	Proper pairs mapped to chrY alpha arrays (NC_060948.1 cross-mapping)	read_pairs	1736	4290331	1736	Chromosome Y arrays
+CHIP_PAIRS_UNASSIGNED_RESIDUAL	Unassigned alpha array residual pairs outside chr1-22 and chrX	read_pairs	1736	4290331	1736	Residual alpha arrays (including NC_060948.1)
 CHIP_PAIRS_CDR_TOTAL	Total proper pairs located inside Centromere Dip Regions	read_pairs	1065332	4290331	1065332	23 CDRs (all lengths)
 CHIP_PAIRS_CDR_GATED_130_175	Mononucleosome-gated dyads (130-175 bp) analyzed in phasogram	read_pairs	411919	1065332	411919	CDR mononucleosomes (130-175 bp)
 CHIP_PAIRS_CDR_GATED_110_180	Broad mononucleosome gate (110-180 bp)	read_pairs	960496	1065332	960496	CDR mononucleosomes (110-180 bp)
@@ -16,7 +16,9 @@ SUB_NUC_75_85BP	Fragment count across 75-85 bp (putative hemisome window)	fragme
 SUB_NUC_LE85BP	Fragment count <= 85 bp	fragments	65742	4290331	1.5323%	Global
 DYAD_CONTRAST_RATIO	Ratio of Peak 1 (55 bp) to Dyad (15 bp) count	fold_change	164747	2496	66.00x	Peak-to-dyad contrast
 DYAD_NULL_DEPLETION	Fold-depletion relative to Geometric Lattice Null at 15 bp	fold_change	38333.62	2496	15.36x	Geometric lattice null
+PEAK1_OE_RATIO_55BP	Observed / Expected ratio at Peak 1 (55 bp)	fold_change	164747	38333.62	4.30x	Peak 1 gyre exit
 PEAK2_OE_RATIO_100BP	Observed / Expected ratio at Peak 2 (100 bp)	fold_change	125421	19166.81	6.54x	Peak 2 free linker
 CDR_PHASOGRAM_DIMER	Dominant non-zero peak of spatial autocorrelation (100-800 bp)	bp	340	-	340 bp	CDR dyads (100-800 bp)
-CDR_PHASOGRAM_DIMER_PAIRS	Dyad pairs at 340 bp distance in CDR	pairs	761698	-	761698	CDR dyads
+CDR_PHASOGRAM_DIMER_PAIRS	Dyad pairs at detected dimer lattice peak (340 bp) in CDR	pairs	761698	-	761698	CDR dyads
+CDR_PHASOGRAM_PAIRS_AT_340BP	Dyad pairs at exactly 340 bp in CDR	pairs	761698	-	761698	CDR dyads at 340 bp
 CDR_PHASOGRAM_MONOMERS	Bimodal monomer peaks in CDR	bp	[150, 190]	-	mean 170	CDR dyads

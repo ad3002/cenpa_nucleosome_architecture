@@ -64,7 +64,7 @@ def compute_phasogram(bam_file, cdr_bed, out_tsv, min_len=130, max_len=175, max_
             is_cdr = False
             if acc in cdrs:
                 cs, ce = cdrs[acc]
-                if cs <= genomic_mid <= ce:
+                if cs <= genomic_mid < ce:
                     is_cdr = True
             if is_cdr:
                 dyads_cdr[arr].append(dyad)

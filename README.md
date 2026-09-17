@@ -15,11 +15,11 @@ This repository provides the complete, self-contained codebase, processed data t
 ## Key Scientific Findings
 
 1. **Native CENP-A Open Core Particle (125–133 bp):**  
-   Direct paired-end MNase ChIP-seq on human T2T centromeres (`SRR13278683`, 4.29M primary proper-pair fragments across 744 alpha-satellite arrays) reveals a single-base mononucleosome protection mode at **133 bp** ($N = 212,205$ fragments globally), with $177,473$ fragments at 130 bp and **84.29%** of all fragments concentrated in the 110–140 bp window (with 130 bp representing the modal 5-bp bin). In this library, the canonical 150-bp octamer is depleted **177.28-fold** relative to the 133-bp mode ($N = 1,197$, 0.0279%; 148.26-fold relative to 130 bp), and sub-85 bp fragments represent 1.53%, confirming that terminal gyres unpeel from the CENP-A octamer core in native centromeric chromatin.
+   Direct paired-end MNase ChIP-seq on human T2T centromeres (`SRR13278683`, 4.29M primary proper-pair fragments across 744 alpha-satellite arrays) reveals a single-base mononucleosome protection mode at **133 bp** ($N = 212,205$ fragments globally), with $177,473$ fragments at 130 bp and **84.29%** of all fragments ($N = 3,616,490$) concentrated in the 110–140 bp window (with 130 bp representing the modal 5-bp bin). In this library, the canonical 150-bp octamer is depleted **177.28-fold** relative to the 133-bp mode ($N = 1,197$, 0.0279%; 148.26-fold relative to 130 bp), and sub-85 bp fragments represent 1.53%, confirming that terminal gyres unpeel from the CENP-A octamer core in native centromeric chromatin.
 2. **Bipartite CENP-B Box Architecture:**  
-   Distance from the CENP-A dyad to 126,969 canonical 17-bp CENP-B boxes reveals severe dyad occlusion (0–15 bp, **66.0-fold contrast** relative to Peak 1; 15.36-fold depletion relative to an idealized lattice null) and two major peaks:
-   - **Peak 1 at 50–55 bp** (SHL $\pm 5.0\text{--}5.5$, directly at the unpeeled gyre exit boundary; 4.30x enrichment vs lattice null);
-   - **Peak 2 at 85–100 bp** (free inter-nucleosomal linker DNA; 6.54x enrichment vs lattice null at 100 bp).
+   Distance from the CENP-A dyad to 126,969 canonical 17-bp CENP-B boxes reveals severe dyad occlusion (0–15 bp, **66.0-fold contrast** relative to Peak 1; 15.36-fold depletion relative to an empirical stepwise null model baseline) and two major peaks:
+   - **Peak 1 at 55-bp bin** (SHL $\pm 5.0\text{--}5.5$, $[55, 60)$ bp with box centered at +55 bp; 4.30x enrichment vs stepwise null baseline);
+   - **Peak 2 at 85–100 bp** (free inter-nucleosomal linker DNA; 6.54x enrichment vs stepwise null baseline at 100 bp).
 3. **Dominant 340-bp Dimer Periodicity in the CDR:**  
    Spatial autocorrelation (phasogram) of 411,919 dyads inside the hypomethylated Centromere Dip Region (CDR) exhibits bimodal monomer lags at 150 bp and 190 bp (mean **170 bp**) that lock into a dominant non-zero maximum at **340 bp ($2 \times 170$ bp)** dinucleosome periodicity ($N = 761,698$ pairs in CDR; 591,711 in Non-CDR).
 4. **Ensemble Phasing & Chromatin Architecture Models:**  
@@ -49,7 +49,7 @@ This repository provides the complete, self-contained codebase, processed data t
 │   ├── input_mnase_fragment_length_hist.tsv # Input MNase fragment distribution
 │   ├── cenpa_chip_fragment_length_hist.tsv  # CENP-A ChIP fragment distribution
 │   ├── cenpa_box_to_dyad_distance.tsv # CENP-A dyad-to-box distance
-│   ├── cenpa_box_directional_and_nulls.tsv  # Dyad-to-box vs Lattice Null calibration
+│   ├── cenpa_box_directional_and_nulls.tsv  # Dyad-to-box vs Stepwise Null calibration
 │   ├── cenpa_cdr_phasogram.tsv        # CENP-A CDR dyad autocorrelation
 │   ├── phasogram_simulation_comparison.tsv  # Algebraic equivalence of mixture models
 │   ├── cenpa_per_chromosome_summary.tsv     # Per-chromosome metrics across 23 chr
@@ -57,12 +57,14 @@ This repository provides the complete, self-contained codebase, processed data t
 └── scripts/
     ├── generate_ledger.py             # Dynamically reconciles ledger sums, modes, and ratios
     ├── build_replicate_manifest.py    # Generates authenticated public SRA metadata
+    ├── sync_paired.py                 # Streaming paired-end FASTQ synchronizer & validator
+    ├── annotate_cenpb_boxes.py        # Exact 17-bp CENP-B box motif annotator across alpha arrays
     ├── 01_fetch_and_align.sh          # SRA fetch and BWA-MEM alignment
     ├── 02_analyze_particles.py        # Particle lengths & box distances from BAM
     ├── 03_compute_phasogram.py        # Distance-bounded spatial autocorrelation
     ├── 04_plot_figures.py             # Primary empirical figures (Fig 1 & 2)
     ├── 05_simulate_phasogram_mixtures.py    # Register mixture simulation (Fig 3)
-    └── 06_analyze_box_coupling_and_nulls.py # CENP-B coupling & Lattice Null (Fig 4)
+    └── 06_analyze_box_coupling_and_nulls.py # CENP-B coupling & Stepwise Null Baseline (Fig 4)
 ```
 
 ---

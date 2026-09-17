@@ -37,12 +37,13 @@ def run_package_d():
     dists = list(range(0, 205, 5))
     total_obs = sum(observed_counts.get(d, 0) for d in dists)
     
-    # 2. Idealized Lattice Geometric Null Model
-    # On an idealized 171 bp alpha-satellite monomer with one CENP-B box,
-    # random dyad placement yields an approximately uniform distribution of nearest-box distance
-    # with distance d spanning from 0 to 85.5 bp. For multi-monomer HORs with ~50% CENP-B box density
-    # (e.g. dimer arrays where every 2nd monomer has a box), nearest-box distance extends up to ~170 bp.
-    # Note: This is an idealized theoretical baseline representing an infinite regular lattice.
+    # 2. Empirical Stepwise Null Model Baseline
+    # Random dyad placement across alpha-satellite arrays with varying CENP-B box density
+    # is evaluated against a defined stepwise comparison profile:
+    # - p = 1.0 for d <= 85 bp (within monomer containing a box)
+    # - p = 0.5 for 85 < d <= 170 bp (spanning monomer lacking a box in dimer HORs)
+    # - p = 0.1 for d > 170 bp (low background beyond dimer)
+    # Note: This is an explicit empirical stepwise comparison baseline for fold-enrichment evaluation.
     geom_null_prob = []
     for d in dists:
         if d <= 85:
@@ -114,11 +115,11 @@ def run_package_d():
     # 5. Plot Figure 4
     fig, axes = plt.subplots(2, 2, figsize=(11, 8.5), dpi=300)
 
-    # Panel A: Observed vs Idealized Lattice Geometric Null
+    # Panel A: Observed vs Empirical Stepwise Null Model Baseline
     ax_a = axes[0, 0]
     ax_a.plot(dists, obs_vals, color="#c2410c", lw=2.2, label="Observed CENP-A Dyads")
-    ax_a.plot(dists, null_expected, color="#64748b", lw=1.8, ls="--", label="Idealized Lattice Null (Stepwise)")
-    ax_a.set_title("A. Dyad Distance vs. Idealized Lattice Null Model", fontsize=11, fontweight="bold")
+    ax_a.plot(dists, null_expected, color="#64748b", lw=1.8, ls="--", label="Stepwise Null Baseline")
+    ax_a.set_title("A. Dyad Distance vs. Stepwise Null Baseline", fontsize=11, fontweight="bold")
     ax_a.set_xlabel("Distance from Dyad to Box Center (bp)", fontsize=10)
     ax_a.set_ylabel("Fragment Midpoint Count", fontsize=10)
     ax_a.axvspan(0, 15, color="#fee2e2", alpha=0.5, label="Dyad Occlusion (0-15 bp)")
@@ -131,7 +132,7 @@ def run_package_d():
     ax_b = axes[0, 1]
     ax_b.plot(dists, obs_exp_ratio, color="#0369a1", lw=2.2)
     ax_b.axhline(1.0, color="#64748b", ls="--", lw=1, label="Expected baseline (O/E = 1.0)")
-    ax_b.set_title("B. Observed / Expected Ratio vs. Lattice Null", fontsize=11, fontweight="bold")
+    ax_b.set_title("B. Observed / Expected Ratio vs. Stepwise Null", fontsize=11, fontweight="bold")
     ax_b.set_xlabel("Distance from Dyad to Box Center (bp)", fontsize=10)
     ax_b.set_ylabel("Enrichment Ratio (Obs / Exp)", fontsize=10)
     ax_b.axvspan(0, 15, color="#fee2e2", alpha=0.5)

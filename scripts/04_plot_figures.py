@@ -118,14 +118,20 @@ ax2.axvspan(65, 180, color="#2B6CB0", alpha=0.05, label="Inter-nucleosomal Linke
 contrast_ratio = metrics["cenpb_box_geometry"]["peak_to_dyad_contrast_ratio"]
 depletion_null = metrics["cenpb_box_geometry"]["depletion_ratio_vs_geometric_null_15bp"]
 
-# Peak labels
-ax2.annotate("Peak 1: 55 bp\n(Gyre Exit / SHL ±5.5)\n164.7k events", 
-             xy=(55, 164.7), xytext=(20, 135),
+dist_map = dict(zip(dist_data[:, 0], dist_data[:, 1]))
+c55 = dist_map.get(55, 0.0)
+c100 = dist_map.get(100, 0.0)
+y55 = c55 / 1000.0
+y100 = c100 / 1000.0
+
+# Peak labels (dynamically formatted from data)
+ax2.annotate(f"Peak 1: 55 bp\n(Gyre Exit / SHL ±5.5)\n{y55:.1f}k events", 
+             xy=(55, y55), xytext=(20, max(y55 * 0.82, 10)),
              arrowprops=dict(facecolor="#D9381E", shrink=0.08, width=1, headwidth=5),
              fontsize=8, fontweight="bold", color="#D9381E")
 
-ax2.annotate("Peak 2: 90–100 bp\n(Free Linker DNA)\n125.4k events at 100 bp", 
-             xy=(95, 125.4), xytext=(115, 120),
+ax2.annotate(f"Peak 2: 90–100 bp\n(Free Linker DNA)\n{y100:.1f}k events at 100 bp", 
+             xy=(100, y100), xytext=(115, max(y100 * 0.95, 10)),
              arrowprops=dict(facecolor="#2B6CB0", shrink=0.08, width=1, headwidth=5),
              fontsize=8, fontweight="bold", color="#2B6CB0")
 

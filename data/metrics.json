@@ -1,7 +1,7 @@
 {
   "metadata": {
     "assembly": "T2T-CHM13v2.0 (GCA_009914755.4)",
-    "chrY_provenance": "NC_060948.1 is the HG002 assembled chromosome Y included in T2T-CHM13v2.0; mapped reads represent cross-mapping alpha-satellite reads in 46,XX CHM13",
+    "unassigned_residual_provenance": "1,736 proper pairs map to unassigned alpha arrays outside chr1-22 and chrX (including NC_060948.1); they represent 0.04% of total proper pairs",
     "total_alpha_arrays": 744,
     "total_annotated_cenpb_boxes": 126969,
     "primary_chip_run": "SRR13278683",
@@ -11,6 +11,7 @@
   "sample_counts": {
     "chip_proper_pairs_global": 4290331,
     "chip_proper_pairs_23_chromosomes": 4288595,
+    "chip_proper_pairs_unassigned_residual": 1736,
     "chip_proper_pairs_chrY": 1736,
     "chip_proper_pairs_cdr_total": 1065332,
     "chip_proper_pairs_cdr_mononucleosome_gated_130_175bp": 411919,
@@ -57,6 +58,7 @@
   },
   "cdr_phasogram": {
     "dimer_lattice_peak_bp": 340,
+    "dimer_lattice_pairs_at_detected_peak": 761698,
     "dimer_lattice_pairs_at_340bp_cdr": 761698,
     "dimer_lattice_pairs_at_340bp_noncdr": 591711,
     "monomer_mode1_bp": 150,
