@@ -88,7 +88,7 @@
     "physical_caliper_sub85bp_pct": 1.22,
     "physical_caliper_150bp_pct": 0.0,
     "physical_caliper_verified_pairs": 88481,
-    "caliper_to_tlen_exact_agreement_count": 74765,
+    "caliper_to_tlen_exact_agreement_count": 74763,
     "caliper_to_tlen_total_pairs": 75911,
     "caliper_to_tlen_exact_agreement_pct": 98.49,
     "caliper_to_tlen_weighted_mean_diff_bp": -0.31,

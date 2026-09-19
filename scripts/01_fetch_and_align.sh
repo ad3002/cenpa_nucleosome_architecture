@@ -44,10 +44,37 @@ align_sra() {
     local ACC=$1
     local VOL=$2
     local OUT_BAM="$RAW_DIR/${ACC}.sorted.bam"
+    local MANIFEST="$RAW_DIR/cache_manifest.json"
 
+    # Check if existing BAM satisfies the requested PAIRS_LIMIT / is_full
     if [ -s "$OUT_BAM" ]; then
-        echo "BAM for $ACC already exists: $OUT_BAM"
-        return
+        local IS_VALID=0
+        if python3 -c "
+import json, sys, os
+manifest_file = '$MANIFEST'
+acc = '$ACC'
+limit = int('$PAIRS_LIMIT')
+is_full_req = (limit <= 0)
+if os.path.exists(manifest_file):
+    try:
+        with open(manifest_file) as f:
+            data = json.load(f)
+        acc_info = data.get(acc, {})
+        if acc_info.get('completed'):
+            if is_full_req and not acc_info.get('is_full'):
+                sys.exit(1) # Incompatible: existing BAM is a slice, full raw required
+            sys.exit(0) # Compatible
+    except Exception:
+        pass
+sys.exit(1)
+"; then
+            echo "BAM for $ACC already exists and satisfies requested scope (full or slice): $OUT_BAM"
+            return
+        else
+            echo "Notice: Existing BAM for $ACC was generated from a slice, but full-raw (PAIRS_LIMIT<=0) was requested."
+            echo "Removing previous slice cache to perform full library alignment..."
+            rm -f "$OUT_BAM" "$OUT_BAM.bai" "$RAW_DIR/${ACC}_raw_1.fastq.gz" "$RAW_DIR/${ACC}_raw_2.fastq.gz" "$RAW_DIR/${ACC}_sync_1.fastq.gz" "$RAW_DIR/${ACC}_sync_2.fastq.gz"
+        fi
     fi
 
     local U1="ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR132/${VOL}/${ACC}/${ACC}_1.fastq.gz"
@@ -81,6 +108,25 @@ align_sra() {
         | samtools view -b -F 4 - \
         | samtools sort -@ "$THREADS" -o "$OUT_BAM" -
     samtools index "$OUT_BAM"
+
+    # Record manifest
+    python3 -c "
+import json, os
+manifest_file = '$MANIFEST'
+acc = '$ACC'
+limit = int('$PAIRS_LIMIT')
+is_full = (limit <= 0)
+data = {}
+if os.path.exists(manifest_file):
+    try:
+        with open(manifest_file) as f:
+            data = json.load(f)
+    except Exception:
+        pass
+data[acc] = {'pairs_limit': limit, 'is_full': is_full, 'completed': True}
+with open(manifest_file, 'w') as f:
+    json.dump(data, f, indent=2)
+"
     echo "Completed $ACC alignment."
 }
 

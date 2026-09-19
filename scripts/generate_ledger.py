@@ -180,8 +180,8 @@ def build_ledger():
     cov_xy = sum(n * (x - mean_x) * (y - mean_y) for n, x, y in zip(n_vals, c_vals, mean_t_vals)) / conc_tot_pairs
     conc_r2 = round((cov_xy ** 2) / (var_x * var_y), 4) if (var_x * var_y) > 0 else 0.0
     conc_weighted_mean_diff = round(mean_y - mean_x, 2)
-    conc_exact_pct = round(sum(n * p for n, p in zip(n_vals, exact_p_vals)) / conc_tot_pairs, 2)
-    conc_exact_count = int(round(conc_exact_pct / 100.0 * conc_tot_pairs))
+    conc_exact_count = sum(int(round(n * p / 100.0)) for n, p in zip(n_vals, exact_p_vals))
+    conc_exact_pct = round(conc_exact_count / conc_tot_pairs * 100.0, 2)
 
     row_diffs = [m - c for m, c in zip(med_t_vals, c_vals)]
     w_0 = sum(n for n, d in zip(n_vals, row_diffs) if d == 0.0)
@@ -227,7 +227,7 @@ def build_ledger():
     ia_both_133 = sum(r["cdr_mode_bp"] == r["flank_mode_bp"] == "133" for r in ia_chr)
     ia_unequal = sum(r["cdr_mode_bp"] != r["flank_mode_bp"] for r in ia_chr)
     
-    diffs = [float(r["cdr_density_rp_per_kb"]) - float(r["flank_density_rp_per_kb"]) for r in ia_chr]
+    diffs = [(float(r["cdr_reads"]) / float(r["cdr_span_kb"])) - (float(r["flank_reads"]) / (float(r["flank_span_mb"]) * 1000.0)) for r in ia_chr]
     from scipy.stats import binomtest
     non_zeros = [d for d in diffs if d != 0]
     n_nz = len(non_zeros)

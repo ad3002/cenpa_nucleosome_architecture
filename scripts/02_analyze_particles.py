@@ -11,6 +11,7 @@ centromeric alpha-satellite arrays to compute:
 
 import sys
 import os
+import math
 import csv
 import bisect
 import collections
@@ -28,9 +29,9 @@ def run_analysis(bam_file, cdr_bed, boxes_tsv, hist_out, dist_out, summary_out=N
         bin_counts = collections.Counter()
         for l, cnt in counter.items():
             if min_len <= l <= max_len:
-                b = int(round(l / 5.0)) * 5
+                b = int(math.floor((l + 2.5) / 5.0)) * 5
                 bin_counts[b] += cnt
-        if not bin_counts:
+        if not bin_counts or sum(bin_counts.values()) == 0:
             return "NA"
         return max(bin_counts, key=bin_counts.get)
 
@@ -38,9 +39,9 @@ def run_analysis(bam_file, cdr_bed, boxes_tsv, hist_out, dist_out, summary_out=N
         bin_counts = collections.Counter()
         for l, cnt in counter.items():
             if min_len <= l <= max_len:
-                b = int(round(l / 5.0)) * 5
+                b = int(math.floor((l + 2.5) / 5.0)) * 5
                 bin_counts[b] += cnt
-        if not bin_counts:
+        if not bin_counts or sum(bin_counts.values()) == 0:
             return None
         tot_in_window = sum(bin_counts.values())
         if tot_in_window < min_support:

@@ -29,7 +29,7 @@ A second central question concerns the spatial relationship between the CENP-A n
 
 Finally, complete telomere-to-telomere (T2T) assemblies revealed that active centromeres reside within a hypomethylated domain termed the **Centromere Dip Region (CDR)**, where CpG methylation drops from >80% to 20–40% 5mC and CENP-A reaches peak density$^{2,21,22}$. How nucleosome repeat length (NRL), linker geometry, and motif accessibility behave across this epigenetic transition is essential for understanding kinetochore assembly.
 
-Here, we present an analysis of native human centromeric chromatin across all 744 alpha-satellite arrays of the T2T-CHM13v2.0 genome, evaluating 4,290,331 primary proper-pair fragments of CENP-A MNase ChIP-seq against matched Input MNase, supported by strict ledger accounting and mathematical simulations of ensemble chromatin phasing.
+Here, we present an analysis of native human centromeric chromatin across the 23 active higher-order repeat (HOR) alpha-satellite arrays of the T2T-CHM13v2.0 genome (spanning 60.1 Mb total; harboring 119,159 canonical 17-bp CENP-B boxes), evaluating 4,290,331 primary proper-pair fragments of CENP-A MNase ChIP-seq against matched Input MNase, supported by strict ledger accounting and mathematical simulations of ensemble chromatin phasing.
 
 ---
 
@@ -37,7 +37,7 @@ Here, we present an analysis of native human centromeric chromatin across all 74
 
 ### 1. Native CENP-A Nucleosomes Protect a 125–133 bp Open Core Particle
 
-Micrococcal nuclease (MNase) cleaves accessible linker DNA until sterically constrained by protein-DNA complexes. We mapped paired-end MNase sequencing reads from centromeric Input (`SRR13278681`, 304,909 proper pairs) and CENP-A ChIP-seq (`SRR13278683`, 4,290,331 primary proper pairs) to all 744 alpha-satellite arrays extracted from the T2T-CHM13v2.0 assembly (**Methods**, **Supplementary Table S1**).
+Micrococcal nuclease (MNase) cleaves accessible linker DNA until sterically constrained by protein-DNA complexes. We mapped paired-end MNase sequencing reads from centromeric Input (`SRR13278681`, 304,909 proper pairs) and CENP-A ChIP-seq (`SRR13278683`, 4,290,331 primary proper pairs) to the 23 active HOR arrays containing the Centromere Dip Regions (CDRs) extracted from the T2T-CHM13v2.0 assembly (**Methods**, **Supplementary Table S1**).
 
 In total centromeric chromatin (Input MNase, dominated by canonical H3 nucleosomes), the fragment length distribution exhibits a canonical peak at **147–150 bp** with a full-width at half-maximum (FWHM) of 25 bp (**Fig. 1A**). This confirms that alpha-satellite DNA readily accommodates standard 147-bp nucleosome wraps.
 
@@ -53,7 +53,7 @@ Quantitative evaluation of particle size yields the following observations:
 
 ### 2. Bipartite CENP-B Box Architecture: Gyre Flank (55 bp) and Inter-Nucleosomal Linker (90–100 bp)
 
-We mapped all 126,969 canonical 17-bp CENP-B boxes (`[CT]TTCGTTGGAA[AG]CGGGA`) across the 744 CHM13 arrays and calculated the distance from each fragment midpoint (dyad) to the nearest CENP-B box center (**Fig. 1B**, **Fig. 4**).
+We mapped all 119,159 canonical 17-bp CENP-B boxes (`[CT]TTCGTTGGAA[AG]CGGGA`) across the 23 active CHM13 HOR arrays and calculated the distance from each fragment midpoint (dyad) to the nearest CENP-B box center (**Fig. 1B**, **Fig. 4**).
 
 The dyad-to-box distance distribution displays a **bipartite architecture**:
 - **Dyad Exclusion:** At the central dyad axis (0–15 bp), CENP-B boxes are strongly depleted ($N = 2,496$ at 15 bp vs $164,747$ at the 55-bp bin, representing a **66.0-fold contrast**) (**Fig. 4A**).
@@ -139,21 +139,21 @@ By restricting measurements to flanks of identical arrays, primary repeat unit s
 While the core architecture (125–133 bp protection, bipartite CENP-B coupling, 340-bp dimer lattice, physical caliper invariance, and intra-array epigenetic contrast) was established in the CHM13 discovery dataset ($N = 4,290,331$ proper pairs), establishing biological universality requires testing across independent biological replicates, diploid karyotypes, and independent epigenomic mapping technologies (**Fig. 7**, **Table 2**):
 
 #### 1. Independent Biological Replicate (CHM13 Rep 1)
-Evaluating 74,932 mapped proper pairs from independent biological replicate `SRR13278684` (CENP-A MNase ChIP-seq, PE150):
+Evaluating 74,925 mapped proper pairs from independent biological replicate `SRR13278684` (CENP-A MNase ChIP-seq, PE150):
 - **Identical Single-Base Protection Mode:** CENP-A ChIP fragments exhibit a single-base mode at **133 bp** (modal 5-bp bin at 130 bp; **Fig. 7A**), exactly replicating the discovery dataset ($\Delta = 0$ bp). Fragments in the [110, 140] bp open core gate constitute **76.64%** of the library ($N = 57,426$).
 - **Canonical Octamer Depletion:** Fragments at exactly 150 bp represent **0.215%** of reads ($N = 161$), representing a **26.91-fold depletion** relative to the 133-bp mode ($N = 4,333$), confirming that 150-bp octamer wraps are depleted in native CENP-A chromatin.
 - **Reference-Free Caliper Confirmation:** Computing reference-free insert lengths directly from raw FASTQ read overlaps without reference alignment within the observable window ($L \le 138$ bp) yields an identical single-base mode at **133 bp** (**Fig. 7B**), confirming that the open core particle is an intrinsic biophysical feature of independent chromatin preparations.
-- **340-bp Dimer Lattice Preservation:** Spatial autocorrelation of mononucleosome dyads independently recovers the **340-bp dimer lattice peak** ($N = 779$ pairs at 340 bp for Rep 1; $N = 844$ pairs in Rep 2) and bimodal monomer spacing at 150 bp and 190 bp (**Fig. 7C**).
+- **340-bp Dimer Lattice Preservation:** Spatial autocorrelation of mononucleosome dyads independently recovers the **~340-bp dimer lattice peak** ($N = 537$ pairs at 340 bp for Rep 1; $N = 557$ pairs at 340 bp and $N = 587$ at 341 bp for Rep 2; **Fig. 7C**). In the sub-dimer monomer region (<200 bp), the replicates exhibit preparation- and line-specific variation: whereas Rep 1 displays a prominent monomer density peaking near 146–150 bp ($N = 654$ at 146 bp; $N = 623$ at 150 bp) that declines monotonically toward 190 bp, Rep 2 exhibits an additional shoulder/peak centered near 170 bp. Both datasets robustly replicate the supranucleosomal ~340 bp alpha-satellite dimer organization, while highlighting local monomer heterogeneity.
 
 #### 2. Diploid Centromeres (HG002 T2T)
-To test particle sizing in a diploid male genome (HG002/GM24385, EBV-transformed B-lymphoblastoid cell line), we evaluated CENP-A CUT&RUN from HG002 (`SRR15395857`, $N = 11,497$ mapped pairs aligned across alpha-satellite arrays; **Fig. 7A**):
-- **Cleavage Dynamics and Modal Sizing:** Due to targeted pAG-MNase tethering kinetics, 38.64% of fragments reside in the sub-nucleosomal range ($\le 85$ bp), giving an unconditioned global mode of 20 bp. Within the mononucleosome size window [100, 180] bp, the conditional mononucleosome mode centers at **120 bp** (modal 5-bp bin at 125 bp; 16.12% in [110, 140] bp). Canonical 150-bp fragments represent **0.435%** ($N = 50$).
+To test particle sizing in a diploid male genome (HG002/GM24385, EBV-transformed B-lymphoblastoid cell line), we evaluated CENP-A CUT&RUN from HG002 (`SRR15395857`, $N = 11,456$ mapped pairs aligned across alpha-satellite arrays; **Fig. 7A**):
+- **Cleavage Dynamics and Modal Sizing:** Due to targeted pAG-MNase tethering kinetics, 38.74% of fragments reside in the sub-nucleosomal range ($\le 85$ bp, $N = 4,438 / 11,456$), giving an unconditioned global mode of 20 bp. Within the mononucleosome size window [100, 180] bp, the conditional mononucleosome mode centers at **120 bp** (modal 5-bp bin at 125 bp; 16.12% in [110, 140] bp, $N = 1,847 / 11,456$). Canonical 150-bp fragments represent **0.436%** ($N = 50 / 11,456$).
 - **Physical Caliper Distribution:** Reference-free FASTQ caliper sizing of PE150 reads yields a modal insert length at **90 bp** (**Fig. 7B**), reflecting the sub-nucleosomal enrichment characteristic of CUT&RUN.
 
 #### 3. Non-Transformed Diploid Architecture & Factor Contrast (RPE-1)
-Evaluating human female near-diploid RPE-1 cells using CENP-A CUT&RUN (`SRR9201843`, $N = 12,991$ mapped pairs) alongside paired CENP-B CUT&RUN (`SRR9201844`, $N = 1,347$ pairs; Corda et al. 2025):
-- **CENP-A Particle Distribution:** In RPE-1 CENP-A CUT&RUN, fragments exhibit a single-base mode at **175 bp**, with 22.12% of fragments ($N = 2,874 / 12,991$) in the [147, 175] bp window and 12.39% ($N = 1,610$) in the [110, 140] bp gate. Fragments at exactly 150 bp represent **0.608%** ($N = 79$).
-- **Histone Variant Wrap vs. Multi-Protein Factor Complex (CENP-B):** In paired RPE-1 CENP-B CUT&RUN (**Fig. 7D**), fragments display a broad factor complex footprint with a modal bin at **165 bp** (tied single-base modes at 126, 162, 163, and 165 bp). Only 10 fragments (0.74%) fall into the 45–65 bp window and 32 fragments (2.38%) fall $\le 85$ bp, indicating that CENP-B in native centromeres protects broad multiprotein kinetochore complexes rather than isolated 17-bp minimal peptides.
+Evaluating human female near-diploid RPE-1 cells using CENP-A CUT&RUN (`SRR9201843`, $N = 12,923$ mapped pairs) alongside paired CENP-B CUT&RUN (`SRR9201844`, $N = 1,308$ pairs; Corda et al. 2025):
+- **CENP-A Particle Distribution:** In RPE-1 CENP-A CUT&RUN, fragments exhibit a single-base mode at **175 bp**, with 22.24% of fragments ($N = 2,874 / 12,923$) in the [147, 175] bp window and 12.45% ($N = 1,609 / 12,923$) in the [110, 140] bp gate. Fragments at exactly 150 bp represent **0.611%** ($N = 79$).
+- **Histone Variant Wrap vs. Multi-Protein Factor Complex (CENP-B):** In paired RPE-1 CENP-B CUT&RUN (**Fig. 7D**), fragments display a broad factor complex footprint with a modal bin at **165 bp** (tied single-base modes at 126, 162, 163, and 165 bp). Only 10 fragments (0.76%, $N = 10 / 1,308$) fall into the 45–65 bp window and 32 fragments (2.45%, $N = 32 / 1,308$) fall $\le 85$ bp, indicating that CENP-B in native centromeres protects broad multiprotein kinetochore complexes rather than isolated 17-bp minimal peptides.
 
 ---
 
@@ -161,7 +161,7 @@ Evaluating human female near-diploid RPE-1 cells using CENP-A CUT&RUN (`SRR92018
 
 ### Stereochemical Integration of the Centromeric Unit
 Our findings integrate native chromatin measurements into a refined physical model:
-1. **Core Footprint:** Evaluating 4.29M primary proper pairs across 744 T2T alpha arrays resolves a native modal protection of 125–133 bp (mode 133 bp; 84.3% in 110–140 bp), in agreement with in vitro cryo-EM structures showing terminal gyre flexibility$^{13,14}$ and native RPE-1 footprints$^{18}$.
+1. **Core Footprint:** Evaluating 4.29M primary proper pairs across the 23 active T2T alpha-satellite arrays resolves a native modal protection of 125–133 bp (mode 133 bp; 84.3% in 110–140 bp), in agreement with in vitro cryo-EM structures showing terminal gyre flexibility$^{13,14}$ and native RPE-1 footprints$^{18}$.
 2. **CENP-B Coupling:** CENP-B boxes are depleted from the central dyad and localized to the unpeeled gyre exit (+55 bp) and linker DNA (+90–100 bp). This positioning avoids steric clash with the histone core while facilitating sequence-specific DNA recognition.
 3. **Ensemble Phasing vs. Single-Molecule Architecture:** The 340-bp dimer periodicity demonstrates that CENP-A nucleosomes are organized in 340-bp spatial units. However, our mathematical simulations highlight that bulk autocorrelation cannot distinguish between true intramolecular 150/190 bp alternation and an ensemble mixture of 340-bp registers. Resolving this distinction represents an exciting objective for single-molecule long-read profiling.
 
@@ -170,7 +170,7 @@ Our findings integrate native chromatin measurements into a refined physical mod
 ## Methods
 
 ### Reference Extraction & CENP-B Box Annotation
-Alpha-satellite arrays were extracted from T2T-CHM13v2.0 (`GCA_009914755.4`) using CHM13 Censat track annotations, yielding 744 arrays (114.7 Mb) indexed with BWA (v0.7.17). Canonical 17-bp CENP-B boxes were annotated by exact regular expression matching (`[CT]TTCGTTGGAA[AG]CGGGA`) on both strands, yielding 126,969 sites.
+Active higher-order repeat (HOR) alpha-satellite arrays containing the Centromere Dip Regions (CDRs) were extracted from T2T-CHM13v2.0 (`GCA_009914755.4`) using CHM13 Censat track annotations, yielding 23 active arrays spanning 60.1 Mb (harboring 119,159 canonical 17-bp CENP-B boxes on both forward and reverse strands, annotated by exact regular expression matching `[CT]TTCGTTGGAA[AG]CGGGA`). Whole-genome alpha-satellite annotations encompass 744 total intervals (114.7 Mb), but primary active centromeric chromatin resides exclusively within these 23 active HOR domains.
 
 ### Sequencing Processing & Ledger Accounting
 Datasets were obtained from BioProject `PRJNA559484`: `SRR13278683` (CENP-A MNase ChIP) and `SRR13278681` (Input MNase). Reads were aligned using `bwa mem -t 64` and filtered with `samtools view -f 2 -F 2304` to retain primary proper pairs. All sample counts, percentages, and metrics were compiled into an immutable ledger (`data/ledger_manifest.tsv`, `data/metrics.json`).
@@ -183,8 +183,8 @@ Datasets were obtained from BioProject `PRJNA559484`: `SRR13278683` (CENP-A MNas
 
 ![](figures/Fig1_cenpa_core_and_box_geometry.png){width=92%}
 
-**(A)** Fragment length distribution of paired-end MNase sequencing across 744 T2T-CHM13 alpha arrays. Input MNase (grey, $N = 304,909$) peaks at 147–150 bp. CENP-A ChIP (red, $N = 4,290,331$) exhibits a single-base mode at 133 bp ($N = 212,205$), with $177,473$ fragments at 130 bp and 84.29% of fragments ($N = 3,616,490$) between 110 and 140 bp. Fragments at 150 bp represent 0.0279% ($N = 1,197$; 177.28-fold depletion vs 133-bp mode; 148.26-fold vs 130 bp); fragments $\le 85$ bp represent 1.53% ($N = 65,742$).  
-**(B)** Distance from nucleosome dyads to 126,969 CENP-B boxes. Strong dyad depletion (0–15 bp) is followed by Peak 1 at the 55-bp bin (unpeeled gyre exit, SHL $\pm 5.0\text{--}5.5$) and Peak 2 at 85–100 bp (linker DNA).
+**(A)** Fragment length distribution of paired-end MNase sequencing across the 23 active T2T-CHM13 alpha arrays. Input MNase (grey, $N = 304,909$) peaks at 147–150 bp. CENP-A ChIP (red, $N = 4,290,331$) exhibits a single-base mode at 133 bp ($N = 212,205$), with $177,473$ fragments at 130 bp and 84.29% of fragments ($N = 3,616,490$) between 110 and 140 bp. Fragments at 150 bp represent 0.0279% ($N = 1,197$; 177.28-fold depletion vs 133-bp mode; 148.26-fold vs 130 bp); fragments $\le 85$ bp represent 1.53% ($N = 65,742$).  
+**(B)** Distance from nucleosome dyads to 119,159 CENP-B boxes. Strong dyad depletion (0–15 bp) is followed by Peak 1 at the 55-bp bin (unpeeled gyre exit, SHL $\pm 5.0\text{--}5.5$) and Peak 2 at 85–100 bp (linker DNA).
 
 ### Figure 2: Spatial Autocorrelation in the CDR and Chromatin State Transition Models.
 
@@ -230,16 +230,20 @@ Comparison of pairwise autocorrelation between **Model A** (intramolecular alter
 
 ![](figures/Fig7_cross_lineage_replication.png){width=92%}
 
-**(A)** Fragment length distributions across cohorts: CHM13 Rep 2 (discovery benchmark, red; mode 133 bp), CHM13 Rep 1 (independent biological replicate, orange; mode 133 bp, 26.91-fold depleted at 150 bp), HG002 (phased diploid, blue; unconditioned mode 20 bp, conditional mononucleosome 120 bp), and RPE-1 CENP-A (non-transformed diploid, green; mode 175 bp).  
+**(A)** Fragment length distributions across cohorts: CHM13 Rep 2 (discovery benchmark, red; mode 133 bp), CHM13 Rep 1 (independent biological replicate, orange; mode 133 bp, 26.91-fold depleted at 150 bp), HG002 (diploid B-lymphoblastoid line, blue; unconditioned mode 20 bp, conditional mononucleosome mode 120 bp), and RPE-1 CENP-A (non-transformed diploid, green; mode 175 bp).  
 **(B)** Reference-free physical FASTQ caliper distributions derived from raw read overlaps without reference alignment within the observable window ($L \le 138$ bp; CHM13 mode 133 bp; HG002 mode 90 bp).  
-**(C)** Cross-lineage dyad spatial autocorrelation (phasogram), showing preservation of the 340-bp dimer lattice peak and 150/190 bp monomer spacing in both independent CHM13 replicates.  
+**(C)** Cross-lineage dyad spatial autocorrelation (phasogram), showing independent replication of the ~340-bp dimer lattice peak across CHM13 replicates alongside line-specific monomer fine-structure.  
 **(D)** Architectural contrast in RPE-1 cells: histone variant nucleosome wrapping (CENP-A, 125–175 bp particles) versus sequence-specific kinetochore factor complex footprinting (CENP-B, broad multi-protein footprint with modal bin at 165 bp).
 
 ---
 
 ### Table 1: Chromosome-by-Chromosome CENP-A MNase Metrics Across 23 CHM13 Centromeres.
+
+\begingroup
+\footnotesize
+
 | Chromosome | N CDR | CDR Mode | Di CDR | NRL CDR | N Non-CDR | Non-CDR Mode | Di Non-CDR | NRL Non-CDR | Delta NRL |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|:-------------------|:------------:|:---------:|:--------:|:---------:|:----------------:|:-------------:|:------------:|:-------------:|:----------:|
 | chr1 | 43,439 | 130 | — | — | 179,722 | 130 | — | — | — |
 | chr2 | 93,675 | 130 | — | — | 109,100 | 130 | — | — | — |
 | chr3 | 60,139 | 130 | — | — | 137,443 | 130 | — | — | — |
@@ -267,17 +271,25 @@ Comparison of pairwise autocorrelation between **Model A** (intramolecular alter
 | Residual arrays | — | — | — | — | **1,736** | **130** | — | — | — |
 | **GLOBAL TOTAL** | **1,065,332** | **130** | — | — | **3,224,999** | **130** | — | — | — |
 
-*Note: Table reports empirical data matching `data/cenpa_per_chromosome_summary.tsv`. Modes are 5-bp binned modal insert sizes (130 bp bin, representing 128–132 bp). Due to mononucleosome size selection of the library (only 11 CDR and 33 Non-CDR fragments in the 250–350 bp dinucleosome range across 4.29M reads), fragment-length dinucleosome calling yields no statistically supported peak (reported as —); repeat spacing (NRL = 340 bp dimer lattice) is independently and directly determined by spatial dyad autocorrelation (phasogram, Fig. 2). Residual arrays outside chr1–22 and chrX account for 1,736 pairs (0.04% of total proper pairs).*
+\endgroup
+
+*Note: Table reports empirical data matching `data/cenpa_per_chromosome_summary.tsv`. Modes are 5-bp binned modal insert sizes (130 bp bin, representing 128–132 bp). Due to mononucleosome size selection of the library (only 11 CDR and 33 Non-CDR fragments in the 250–350 bp dinucleosome range across 4.29M reads), fragment-length dinucleosome calling yields no statistically supported peak (reported as —); supranucleosomal repeat spacing (~340 bp dimer lattice) is independently determined by spatial dyad autocorrelation (phasogram, Fig. 2), whereas elementary adjacent nucleosome repeat lengths (e.g., 150 vs 190 bp) cannot be uniquely resolved from bulk unphased phasograms alone (Fig. 3). Residual unassigned alignments outside the primary 23 chromosome records account for 1,736 pairs (0.04% of total proper pairs).*
 
 ---
 
 ### Table 2: Cross-Lineage Validation Cohorts and Replicate Manifest.
-| Cohort | Cell Line | Karyotype | Target | Run | Control | Control Run | BioProject | Status |
-|:---|:---|:---|:---|:---|:---|:---|:---|:---|
+
+\begingroup
+\scriptsize
+
+| Cohort | Cell Line | Karyo | Target | Run Accession | Control Assay | Control Run | BioProject | Status |
+|:--------------|:-------------|:-----:|:--------------|:------------|:------------|:------------|:------------|:----------:|
 | **CHM13_REP2** | CHM13hTERT | 46,XX | CENP-A ChIP | `SRR13278683` | Input MNase | `SRR13278681` | `PRJNA559484` | Discovery |
 | **CHM13_REP1** | CHM13hTERT | 46,XX | CENP-A ChIP | `SRR13278684` | Input MNase | `SRR13278682` | `PRJNA559484` | Validated |
-| **HG002_T2T** | HG002 (EBV-LCL) | 46,XY | CENP-A CUT&RUN | `SRR15395857` | IgG Control | `SRR15395854` | `PRJNA752795` | Validated |
-| **RPE1_DIPLOID** | hTERT RPE-1 | 46,XX | CENP-A CUT&RUN | `SRR9201843` | CENP-B CUT&RUN | `SRR9201844` | `PRJNA546288` | Validated |
+| **HG002_T2T** | HG002 (EBV) | 46,XY | CENP-A C&R | `SRR15395857` | IgG Control | `SRR15395854` | `PRJNA752795` | Validated |
+| **RPE1_DIP** | hTERT RPE-1 | 46,XX | CENP-A C&R | `SRR9201843` | CENP-B C&R | `SRR9201844` | `PRJNA546288` | Validated |
+
+\endgroup
 
 *Note: In RPE-1, CENP-B CUT&RUN serves as a structural comparator distinguishing sequence-specific factor complexes from histone wrapping (see Methods and Supplementary Table S6). HG002 is an EBV-transformed B-lymphoblastoid cell line (GM24385).*
 

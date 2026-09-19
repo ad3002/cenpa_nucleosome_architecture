@@ -90,8 +90,14 @@ def run_intra_array_analysis():
                         except ValueError:
                             arr_s, arr_e = 0, span
                         # Check if this array harbors the CDR
-                        if max(arr_s, cs) < min(arr_e, ce):
-                            active_hor_arrays[c] = (arr, span, arr_s, arr_e)
+                        overlap = max(0, min(arr_e, ce) - max(arr_s, cs))
+                        if overlap > 0:
+                            if c in active_hor_arrays:
+                                prev_arr, prev_span, prev_s, prev_e, prev_ov = active_hor_arrays[c]
+                                if overlap > prev_ov:
+                                    active_hor_arrays[c] = (arr, span, arr_s, arr_e, overlap)
+                            else:
+                                active_hor_arrays[c] = (arr, span, arr_s, arr_e, overlap)
 
         # 3. Stream reads from BAM
         chr_stats = collections.defaultdict(lambda: {
@@ -122,16 +128,16 @@ def run_intra_array_analysis():
                 c = acc_to_chr.get(acc)
                 # Restrict comparison strictly to the active HOR array harboring the CDR
                 if c and c in active_hor_arrays and arr == active_hor_arrays[c][0]:
-                    arr_name, arr_span, arr_s, arr_e = active_hor_arrays[c]
+                    arr_name, arr_span, arr_s, arr_e, arr_ov = active_hor_arrays[c]
                     dyad = pos + tlen / 2.0
                     genomic_mid = arr_s + dyad
                     cs, ce = cdrs[acc]
                     
-                    if cs <= genomic_mid < ce:
+                    if max(cs, arr_s) <= genomic_mid < min(ce, arr_e):
                         chr_stats[c]["cdr_reads"] += 1
                         per_chr_cdr_lens[c][tlen] += 1
                         global_cdr_lens[tlen] += 1
-                    else:
+                    elif arr_s <= genomic_mid < arr_e:
                         chr_stats[c]["flank_reads"] += 1
                         per_chr_flank_lens[c][tlen] += 1
                         global_flank_lens[tlen] += 1
@@ -149,9 +155,10 @@ def run_intra_array_analysis():
             acc = chrom_map[c]
             if acc in cdrs and c in active_hor_arrays:
                 cs, ce = cdrs[acc]
-                arr_name, arr_span, arr_s, arr_e = active_hor_arrays[c]
+                arr_name, arr_span, arr_s, arr_e, arr_ov = active_hor_arrays[c]
                 
-                cdr_span = ce - cs
+                # Exact intra-array CDR span is the overlap of CDR with this array
+                cdr_span = max(0, min(ce, arr_e) - max(cs, arr_s))
                 flank_span = max(0, arr_span - cdr_span)
                 
                 c_reads = chr_stats[c]["cdr_reads"]
@@ -213,10 +220,11 @@ def run_intra_array_analysis():
                 writer.writerow(r)
         print(f"Wrote {out_tsv}")
 
-        # Compute Wilcoxon and Sign Test p-values
+        # Compute Wilcoxon and Sign Test p-values from unrounded densities
         from scipy import stats
         from scipy.stats import binomtest
-        diffs = [float(r["cdr_density_rp_per_kb"]) - float(r["flank_density_rp_per_kb"]) for r in table_rows if r["chrom"] != "GLOBAL"]
+        chr_only = [r for r in table_rows if r["chrom"] != "GLOBAL"]
+        diffs = [(float(r["cdr_reads"]) / float(r["cdr_span_kb"])) - (float(r["flank_reads"]) / (float(r["flank_span_mb"]) * 1000.0)) for r in chr_only]
         res_w = stats.wilcoxon(diffs, alternative="two-sided")
         p_val_wilcoxon = float(res_w.pvalue)
         
@@ -272,11 +280,17 @@ def run_intra_array_analysis():
         glob_c_dens = float(glob_row["cdr_density_rp_per_kb"])
         glob_f_dens = float(glob_row["flank_density_rp_per_kb"])
         glob_fold = float(glob_row["fold_enrichment"].replace("x", ""))
+        chr_only = [r for r in table_rows if r["chrom"] != "GLOBAL"]
+        diffs = [(float(r["cdr_reads"]) / float(r["cdr_span_kb"])) - (float(r["flank_reads"]) / (float(r["flank_span_mb"]) * 1000.0)) for r in chr_only]
+        from scipy.stats import binomtest
+        non_zeros = [d for d in diffs if d != 0]
+        n_nz = len(non_zeros)
+        p_val_exact_sign = float(binomtest(sum(1 for d in non_zeros if d > 0), n_nz, p=0.5, alternative="two-sided").pvalue) if n_nz > 0 else 1.0
 
     # Plot Figure 6
-    plot_figure_6(table_rows, glob_fold, glob_c_dens, glob_f_dens)
+    plot_figure_6(table_rows, glob_fold, glob_c_dens, glob_f_dens, p_val_exact_sign)
 
-def plot_figure_6(table_rows, glob_fold, glob_c_dens, glob_f_dens):
+def plot_figure_6(table_rows, glob_fold, glob_c_dens, glob_f_dens, p_val_exact_sign=2.38e-07):
     fig = plt.figure(figsize=(13, 10), dpi=300)
     gs = fig.add_gridspec(2, 2, hspace=0.35, wspace=0.25)
 
@@ -290,22 +304,22 @@ def plot_figure_6(table_rows, glob_fold, glob_c_dens, glob_f_dens):
     ax_a.set_title("A. Continuous Intra-Array Epigenetic Architecture", fontsize=11, fontweight="bold", loc="left")
 
     # 5' Flank
-    ax_a.fill_between([5, 33], [3.2, 3.2], [5.2, 5.2], color="#94a3b8", alpha=0.9, edgecolor="#475569", lw=1.2)
-    ax_a.text(19, 4.2, "5' Flanking HOR\n~88% 5mC (Lit.) • H3K9me3\n160 bp NRL • ~13 bp Linker\nH1 Bound (Hypothesis)", ha="center", va="center", color="#ffffff", fontsize=7.5, fontweight="bold")
+    ax_a.fill_between([5, 33], [3.0, 3.0], [5.5, 5.5], color="#94a3b8", alpha=0.9, edgecolor="#475569", lw=1.2)
+    ax_a.text(19, 4.25, "5' Flanking HOR\n~88% 5mC (Lit.) • H3K9me3\n160 bp NRL • ~13 bp Linker\nH1 Bound (Hypothesis)", ha="center", va="center", color="#ffffff", fontsize=7.0, fontweight="bold", linespacing=1.2)
 
     # Active CDR Core
-    ax_a.fill_between([33, 67], [2.8, 2.8], [5.6, 5.6], color="#ea580c", alpha=0.95, edgecolor="#9a3412", lw=1.5)
-    ax_a.text(50, 4.2, "Active CDR Core\n~28% 5mC (Lit.) • CENP-A High\n340 bp Dimer Lattice\n20/60 bp Linkers • H1 Excluded (Hypothesis)", ha="center", va="center", color="#ffffff", fontsize=8, fontweight="bold")
+    ax_a.fill_between([33, 67], [2.7, 2.7], [5.8, 5.8], color="#ea580c", alpha=0.95, edgecolor="#9a3412", lw=1.5)
+    ax_a.text(50, 4.25, "Active CDR Core\n~28% 5mC (Lit.) • CENP-A High\n340 bp Dimer Lattice\n20/60 bp Linkers • H1 Excluded (Hypothesis)", ha="center", va="center", color="#ffffff", fontsize=7.5, fontweight="bold", linespacing=1.2)
 
     # 3' Flank
-    ax_a.fill_between([67, 95], [3.2, 3.2], [5.2, 5.2], color="#94a3b8", alpha=0.9, edgecolor="#475569", lw=1.2)
-    ax_a.text(81, 4.2, "3' Flanking HOR\n~88% 5mC (Lit.) • H3K9me3\n160 bp NRL • ~13 bp Linker\nH1 Bound (Hypothesis)", ha="center", va="center", color="#ffffff", fontsize=7.5, fontweight="bold")
+    ax_a.fill_between([67, 95], [3.0, 3.0], [5.5, 5.5], color="#94a3b8", alpha=0.9, edgecolor="#475569", lw=1.2)
+    ax_a.text(81, 4.25, "3' Flanking HOR\n~88% 5mC (Lit.) • H3K9me3\n160 bp NRL • ~13 bp Linker\nH1 Bound (Hypothesis)", ha="center", va="center", color="#ffffff", fontsize=7.0, fontweight="bold", linespacing=1.2)
 
     # Base annotation
     ax_a.annotate("", xy=(95, 2.2), xytext=(5, 2.2), arrowprops=dict(arrowstyle="<->", color="#0f172a", lw=1.5))
     ax_a.text(50, 1.4, "Paired Comparison Within Single Continuous Active HOR Arrays (e.g., chr1 hor_1_5, 4.5 Mb)\n"
                        "Homologous higher-order repeat units; shared structural array context.\n"
-                       "CENP-A displays 3.84-fold pooled density enrichment in CDR vs flank (p = 2.38e-07).",
+                       f"CENP-A displays {glob_fold:.2f}-fold pooled density enrichment in CDR vs flank (p = {p_val_exact_sign:.2e}).",
               ha="center", va="center", fontsize=7.5, color="#0f172a",
               bbox=dict(boxstyle="round,pad=0.4", facecolor="#f8fafc", edgecolor="#cbd5e1", lw=0.8))
 
@@ -354,7 +368,7 @@ def plot_figure_6(table_rows, glob_fold, glob_c_dens, glob_f_dens):
     # Panel D: Stereochemical Linker Length & CENP-B Box Accommodating Model
     # -------------------------------------------------------------
     ax_d = fig.add_subplot(gs[1, 1])
-    ax_d.set_xlim(0, 100)
+    ax_d.set_xlim(0, 105)
     ax_d.set_ylim(-0.5, 7.5)
     ax_d.axis("off")
     ax_d.set_title("D. Linker Geometry and CENP-B Box Compatibility Model", fontsize=11, fontweight="bold", loc="left")
@@ -369,7 +383,7 @@ def plot_figure_6(table_rows, glob_fold, glob_c_dens, glob_f_dens):
     ax_d.text(58.5, 5.8, "13 bp", ha="center", va="center", color="#0f172a", fontsize=6.5, fontweight="bold")
     # Box conflict
     ax_d.annotate("", xy=(65, 4.8), xytext=(52, 4.8), arrowprops=dict(arrowstyle="<->", color="#dc2626", lw=1.5))
-    ax_d.text(78, 5.4, "17-bp CENP-B box CANNOT fit\nin 13-bp linker! (Steric clash)", fontsize=7, color="#dc2626", fontweight="bold")
+    ax_d.text(68, 5.4, "17-bp CENP-B box CANNOT fit\nin 13-bp linker! (Steric clash)", fontsize=7, color="#dc2626", fontweight="bold")
 
     # CDR Kinetochore model
     ax_d.text(3, 3.8, "Active CDR Kinetochore Domain (CENP-A Dimer Lattice)", fontsize=8.5, fontweight="bold", color="#9a3412")
@@ -382,7 +396,7 @@ def plot_figure_6(table_rows, glob_fold, glob_c_dens, glob_f_dens):
     # Box bound
     ax_d.fill_between([40, 57], [1.3, 1.3], [1.9, 1.9], color="#16a34a", alpha=0.85, edgecolor="#15803d")
     ax_d.text(48.5, 1.6, "17-bp Box (+55 bp)", ha="center", va="center", color="#ffffff", fontsize=6.5, fontweight="bold")
-    ax_d.text(78, 2.4, "Expanded linkers (20 & 60 bp)\naccommodate 17-bp box\nat unpeeled gyre (+55 bp)\nand linker (+90–100 bp)!", fontsize=7, color="#15803d", fontweight="bold")
+    ax_d.text(68, 2.4, "Expanded linkers (20 & 60 bp)\naccommodate 17-bp box\nat unpeeled gyre (+55 bp)\nand linker (+90–100 bp)!", fontsize=7, color="#15803d", fontweight="bold")
 
     # Save figure
     png_p = os.path.join(FIG_DIR, "Fig6_intra_array_epigenetic_contrast.png")

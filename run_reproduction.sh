@@ -11,6 +11,7 @@ MODE="quick"
 
 if [ "$1" == "--full-raw" ]; then
     MODE="full"
+    export PAIRS_LIMIT=0
 fi
 
 echo "================================================================================"

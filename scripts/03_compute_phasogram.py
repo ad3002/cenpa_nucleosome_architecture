@@ -12,6 +12,7 @@ and supports parameterized fragment-length gates (default: 130-175 bp mononucleo
 
 import sys
 import os
+import math
 import argparse
 import subprocess
 import collections
@@ -93,7 +94,7 @@ def compute_phasogram(bam_file, cdr_bed, out_tsv, min_len=130, max_len=175, max_
                     dist = dlist[j] - dlist[i]
                     if dist > max_dist:
                         break
-                    bin_idx = int(round(dist / float(bsize)) * bsize)
+                    bin_idx = int(math.floor((dist + bsize / 2.0) / float(bsize))) * bsize
                     phas[bin_idx] += 1
                     j += 1
         return phas

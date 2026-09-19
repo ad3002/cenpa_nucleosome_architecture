@@ -18,9 +18,53 @@ if not sha_file.is_file():
     print("  [FAIL] Missing SHA256SUMS.txt!")
     sys.exit(1)
 
+REQUIRED_FILES = {
+    'README.md',
+    'REVIEWER_GUIDE.md',
+    'manuscript_integrated.pdf',
+    'manuscript.pdf',
+    'manuscript.md',
+    'index.html',
+    'reproduce.sh',
+    'tables/Supplementary_Tables_S1_to_S8.xlsx',
+    'tables/Table_S1_cenpa_per_chromosome_summary.tsv',
+    'tables/Table_S2_ledger_manifest.tsv',
+    'tables/Table_S3_caliper_vs_tlen_concordance.tsv',
+    'tables/Table_S4_fragment_length_by_mapq.tsv',
+    'tables/Table_S5_intra_array_cdr_vs_flank_metrics.tsv',
+    'tables/Table_S6_cross_lineage_metrics_summary.tsv',
+    'tables/Table_S7_cenpa_box_directional_and_nulls.tsv',
+    'tables/Table_S8_phasogram_simulation_comparison.tsv',
+    'tables/cross_lineage_caliper_distributions.tsv',
+    'ledger/metrics.json',
+    'ledger/ledger_manifest.tsv',
+    'ledger/replicate_metadata_manifest.tsv',
+    'figures/Fig1_cenpa_core_and_box_geometry.pdf',
+    'figures/Fig1_cenpa_core_and_box_geometry.png',
+    'figures/Fig1_cenpa_core_and_box_geometry.svg',
+    'figures/Fig2_cdr_phasogram_and_chromatin_state.pdf',
+    'figures/Fig2_cdr_phasogram_and_chromatin_state.png',
+    'figures/Fig2_cdr_phasogram_and_chromatin_state.svg',
+    'figures/Fig3_phasogram_mixture_models.pdf',
+    'figures/Fig3_phasogram_mixture_models.png',
+    'figures/Fig3_phasogram_mixture_models.svg',
+    'figures/Fig4_cenpb_box_coupling_and_nulls.pdf',
+    'figures/Fig4_cenpb_box_coupling_and_nulls.png',
+    'figures/Fig4_cenpb_box_coupling_and_nulls.svg',
+    'figures/Fig5_physical_caliper_and_mapq_invariance.pdf',
+    'figures/Fig5_physical_caliper_and_mapq_invariance.png',
+    'figures/Fig5_physical_caliper_and_mapq_invariance.svg',
+    'figures/Fig6_intra_array_epigenetic_contrast.pdf',
+    'figures/Fig6_intra_array_epigenetic_contrast.png',
+    'figures/Fig6_intra_array_epigenetic_contrast.svg',
+    'figures/Fig7_cross_lineage_replication.pdf',
+    'figures/Fig7_cross_lineage_replication.png',
+    'figures/Fig7_cross_lineage_replication.svg',
+}
+
 bad = []
 missing = []
-total = 0
+seen_files = set()
 for line in sha_file.read_text().splitlines():
     line = line.strip()
     if not line:
@@ -30,17 +74,27 @@ for line in sha_file.read_text().splitlines():
         print(f"  [FAIL] Malformed line in SHA256SUMS.txt: '{line}'")
         sys.exit(1)
     expected, name = parts
-    p = root / name.lstrip('*')
+    rel_name = name.lstrip('*').strip()
+    norm_name = str(Path(rel_name).as_posix())
+    if norm_name in seen_files:
+        print(f"  [FAIL] Duplicate file in SHA256SUMS.txt: {norm_name}")
+        sys.exit(1)
+    seen_files.add(norm_name)
+    p = root / norm_name
     if not p.is_file():
-        missing.append(name)
+        missing.append(norm_name)
         continue
     h = hashlib.sha256(p.read_bytes()).hexdigest()
     if h != expected:
-        bad.append(name)
-    total += 1
+        bad.append(norm_name)
 
-if total < 41:
-    print(f"  [FAIL] Incomplete manifest inventory! Expected at least 41 files, found {total}.")
+missing_required = REQUIRED_FILES - seen_files
+if missing_required:
+    print(f"  [FAIL] Missing required files in manifest inventory ({len(missing_required)}): {list(missing_required)[:5]}")
+    sys.exit(1)
+
+if len(seen_files) < 41:
+    print(f"  [FAIL] Incomplete manifest inventory! Expected at least 41 unique files, found {len(seen_files)}.")
     sys.exit(1)
 
 if missing or bad:
@@ -50,7 +104,7 @@ if missing or bad:
         print(f"  [FAIL] Checksum mismatches ({len(bad)}): {bad[:5]}")
     sys.exit(1)
 
-print(f"  [PASS] All {total} package artifacts cryptographically verified against SHA256SUMS.txt")
+print(f"  [PASS] All {len(seen_files)} package artifacts cryptographically verified against SHA256SUMS.txt")
 EOF
 
 echo "2. Inspecting single-source-of-truth ledger metrics..."
@@ -94,6 +148,12 @@ if not (110 <= mode <= 150):
 if mode_count <= 0 or glob_pairs <= 0 or cdr_pairs <= 0 or noncdr_pairs <= 0:
     print(f"  [FAIL] Non-positive fragment counts in particle sizing/sample counts: mode={mode_count}, glob={glob_pairs}")
     sys.exit(1)
+if not (0 < mode_count <= glob_pairs):
+    print(f"  [FAIL] Single-base mode count ({mode_count}) exceeds global library pairs ({glob_pairs})")
+    sys.exit(1)
+if cdr_pairs + noncdr_pairs != glob_pairs:
+    print(f"  [FAIL] Partition sum mismatch: CDR ({cdr_pairs}) + Non-CDR ({noncdr_pairs}) != Global ({glob_pairs})")
+    sys.exit(1)
 if core_pct is None or not (0.0 <= core_pct <= 100.0):
     print(f"  [FAIL] Impossible or missing core percentage: {core_pct}%")
     sys.exit(1)
@@ -104,7 +164,22 @@ if pct_sub85 is None or not (0.0 <= pct_sub85 <= 100.0):
     print(f"  [FAIL] Impossible or missing sub-85 bp percentage: {pct_sub85}%")
     sys.exit(1)
 
-print(f"  [PASS] Single-base mode: {mode} bp (N={mode_count:,})")
+# Check count-to-percentage parity
+core_cnt = p.get('count_110_140bp_global', 0)
+if core_cnt > 0 and glob_pairs > 0:
+    calc_core_pct = round(core_cnt / glob_pairs * 100.0, 2)
+    if abs(calc_core_pct - core_pct) > 0.05:
+        print(f"  [FAIL] Core percentage mismatch: calculated {calc_core_pct}% vs recorded {core_pct}%")
+        sys.exit(1)
+
+cnt_150 = p.get('count_150bp_global', 0)
+if cnt_150 > 0 and glob_pairs > 0:
+    calc_150_pct = round(cnt_150 / glob_pairs * 100.0, 4)
+    if abs(calc_150_pct - pct_150) > 0.005:
+        print(f"  [FAIL] 150 bp percentage mismatch: calculated {calc_150_pct}% vs recorded {pct_150}%")
+        sys.exit(1)
+
+print(f"  [PASS] Single-base mode: {mode} bp (N={mode_count:,} <= {glob_pairs:,} total proper pairs)")
 print(f"  [PASS] Core gate [110, 140] bp: {core_pct}%, Canonical 150 bp: {pct_150}%, Sub-85 bp: {pct_sub85}%")
 
 # B. CDR Phasogram
@@ -131,6 +206,8 @@ cq = m['physical_caliper_and_mapping']
 cal_mode = cq.get('physical_caliper_single_base_mode_bp', 0)
 cal_core = cq.get('physical_caliper_core_gate_110_140bp_pct', None)
 cal_exact = cq.get('caliper_to_tlen_exact_agreement_pct', None)
+cal_exact_cnt = cq.get('caliper_to_tlen_exact_agreement_count', 0)
+cal_tot = cq.get('caliper_to_tlen_total_pairs', 0)
 cal_r2 = cq.get('caliper_to_tlen_r2', None)
 if not (110 <= cal_mode <= 150):
     print(f"  [FAIL] Impossible caliper mode: {cal_mode} bp")
@@ -141,10 +218,20 @@ if cal_core is None or not (0.0 <= cal_core <= 100.0):
 if cal_exact is None or not (0.0 <= cal_exact <= 100.0):
     print(f"  [FAIL] Impossible caliper exact agreement pct: {cal_exact}")
     sys.exit(1)
+if cal_tot <= 0:
+    print(f"  [FAIL] Caliper total pairs must be positive: {cal_tot}")
+    sys.exit(1)
+if not (0 < cal_exact_cnt <= cal_tot):
+    print(f"  [FAIL] Caliper exact agreement count invalid: {cal_exact_cnt} (total: {cal_tot})")
+    sys.exit(1)
+calc_exact_pct = round(cal_exact_cnt / cal_tot * 100.0, 2)
+if abs(calc_exact_pct - cal_exact) > 0.05:
+    print(f"  [FAIL] Caliper exact agreement pct mismatch: {calc_exact_pct}% vs recorded {cal_exact}%")
+    sys.exit(1)
 if cal_r2 is None or not (0.0 <= cal_r2 <= 1.0):
     print(f"  [FAIL] Impossible caliper R2: {cal_r2}")
     sys.exit(1)
-print(f"  [PASS] Physical caliper: mode={cal_mode} bp, core={cal_core}%, R2={cal_r2}, exact={cal_exact}%")
+print(f"  [PASS] Physical caliper: mode={cal_mode} bp, core={cal_core}%, R2={cal_r2}, exact={cal_exact}% (N={cal_exact_cnt:,} / {cal_tot:,})")
 
 # E. Intra-array contrast
 ia = m['intra_array_contrast']
@@ -246,6 +333,18 @@ if int(s6_rows['RPE1_CENPA']['analyzed_pairs']) != rpe1_a_pairs:
 if int(s6_rows['RPE1_CENPB']['analyzed_pairs']) != rpe1_b_pairs:
     print(f"  [FAIL] Table S6 RPE-1 CENP-B pairs mismatch")
     sys.exit(1)
+
+for cid, r in s6_rows.items():
+    n = int(r['analyzed_pairs'])
+    if n <= 0:
+        print(f"  [FAIL] Table S6 non-positive analyzed pairs for {cid}: {n}")
+        sys.exit(1)
+    cp = float(r['core_pct_110_140bp'].rstrip('%'))
+    p150 = float(r['canonical_150bp_pct'].rstrip('%'))
+    sub85 = float(r['sub85bp_pct'].rstrip('%'))
+    if not (0.0 <= cp <= 100.0 and 0.0 <= p150 <= 100.0 and 0.0 <= sub85 <= 100.0):
+        print(f"  [FAIL] Table S6 percentage out of bounds for {cid}")
+        sys.exit(1)
 
 print(f"  [PASS] Cross-Lineage Replication verified across 4 cohorts:")
 print(f"         - CHM13 Rep 1: mode={rep1_mode} bp, N={rep1_pairs:,}, core={rep1_core}%, 150bp={rep1_150}%")

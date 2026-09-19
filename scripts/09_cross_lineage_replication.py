@@ -125,7 +125,8 @@ def run_bam_phasogram(bam_path, min_len=100, max_len=180, max_lag=600):
                 dist = d_arr[j] - d_arr[i]
                 if dist > max_lag:
                     break
-                lags[int(round(dist))] += 1
+                # Uniform half-open binning [k-0.5, k+0.5) without banker's rounding bias
+                lags[int(np.floor(dist + 0.5))] += 1
                 j += 1
     return lags
 
@@ -322,25 +323,6 @@ def run_cross_lineage_analysis():
                     length = int(r["fragment_length_bp"])
                     for s in samples:
                         length_distributions[length][s["id"]] = int(r.get(s["id"], 0))
-            # Mathematically reconcile summary metrics with distribution counts so they never diverge
-            for sm in sample_metrics:
-                sid = sm["cohort_id"]
-                counts = {l: length_distributions[l].get(sid, 0) for l in length_distributions}
-                tot = sum(counts.values())
-                if tot > 0:
-                    sm["analyzed_pairs"] = tot
-                    core_c = sum(counts.get(l, 0) for l in range(110, 141))
-                    p150_c = counts.get(150, 0)
-                    sub85_c = sum(counts.get(l, 0) for l in range(0, 86))
-                    sm["core_pct_110_140bp"] = f"{(core_c / tot * 100.0):.2f}%"
-                    sm["canonical_150bp_pct"] = f"{(p150_c / tot * 100.0):.3f}%"
-                    sm["sub85bp_pct"] = f"{(sub85_c / tot * 100.0):.2f}%"
-            with open(summary_file, "w") as f:
-                writer = csv.DictWriter(f, fieldnames=list(sample_metrics[0].keys()), delimiter="\t")
-                writer.writeheader()
-                for r in sample_metrics:
-                    writer.writerow(r)
-        
         # Load caliper distributions
         if os.path.exists(caliper_file):
             with open(caliper_file) as f:
@@ -349,6 +331,39 @@ def run_cross_lineage_analysis():
                     length = int(r["fragment_length_bp"])
                     for s in samples:
                         caliper_distributions[length][s["id"]] = int(r.get(s["id"], 0))
+
+        # Mathematically reconcile summary metrics with distribution counts so they never diverge
+        for sm in sample_metrics:
+            sid = sm["cohort_id"]
+            counts = {l: length_distributions[l].get(sid, 0) for l in length_distributions}
+            tot = sum(counts.values())
+            if tot > 0:
+                sm["analyzed_pairs"] = tot
+                single_mode = max(counts, key=counts.get)
+                binned = collections.Counter()
+                for l, c in counts.items():
+                    b = int(np.floor((l + 2.5) / 5.0)) * 5
+                    binned[b] += c
+                binned_mode = max(binned, key=binned.get)
+                sm["single_base_mode_bp"] = single_mode
+                sm["binned_5bp_mode_bp"] = binned_mode
+                core_c = sum(counts.get(l, 0) for l in range(110, 141))
+                p150_c = counts.get(150, 0)
+                sub85_c = sum(counts.get(l, 0) for l in range(0, 86))
+                sm["core_pct_110_140bp"] = f"{(core_c / tot * 100.0):.2f}%"
+                sm["canonical_150bp_pct"] = f"{(p150_c / tot * 100.0):.3f}%"
+                sm["sub85bp_pct"] = f"{(sub85_c / tot * 100.0):.2f}%"
+                cal_lens = {l: caliper_distributions[l].get(sid, 0) for l in caliper_distributions}
+                if any(cal_lens.values()):
+                    cal_m = max(cal_lens, key=cal_lens.get)
+                    sm["physical_caliper_mode"] = f"{cal_m} bp"
+                else:
+                    sm["physical_caliper_mode"] = "NA"
+        with open(summary_file, "w") as f:
+            writer = csv.DictWriter(f, fieldnames=list(sample_metrics[0].keys()), delimiter="\t")
+            writer.writeheader()
+            for r in sample_metrics:
+                writer.writerow(r)
 
         # Load phasograms
         if os.path.exists(phas_file):
@@ -410,8 +425,13 @@ def plot_figure_7(samples, length_dist, caliper_dist, phas_dist):
             mode_cal = x_cal_vals[np.argmax(y_vals)]
             ax_b.plot(x_cal_vals, y_norm, label=f"{s['name']} (Mode: {mode_cal} bp)", color=s["color"], lw=1.8)
 
-    ax_b.axvline(133, color="#c2410c", ls="--", lw=1.2, alpha=0.8, label="CHM13 Caliper Mode (133 bp)")
-    ax_b.axvline(90, color="#0369a1", ls=":", lw=1.2, alpha=0.8, label="HG002 Caliper Mode (90 bp)")
+    chm13_cal = {x: caliper_dist[x].get("CHM13_REP2", 0) for x in x_cal_vals}
+    chm13_m = max(chm13_cal, key=chm13_cal.get) if any(chm13_cal.values()) else 133
+    hg002_cal = {x: caliper_dist[x].get("HG002_T2T", 0) for x in x_cal_vals}
+    hg002_m = max(hg002_cal, key=hg002_cal.get) if any(hg002_cal.values()) else 90
+
+    ax_b.axvline(chm13_m, color="#c2410c", ls="--", lw=1.2, alpha=0.8, label=f"CHM13 Caliper Mode ({chm13_m} bp)")
+    ax_b.axvline(hg002_m, color="#0369a1", ls=":", lw=1.2, alpha=0.8, label=f"HG002 Caliper Mode ({hg002_m} bp)")
     ax_b.set_title("B. Reference-Free Overlap Caliper (L <= 138 bp window)", fontsize=11, fontweight="bold", loc="left")
     ax_b.set_xlabel("Physical Insert Length (bp)", fontsize=9.5)
     ax_b.set_ylabel("Normalized Density (%)", fontsize=9.5)
@@ -437,12 +457,12 @@ def plot_figure_7(samples, length_dist, caliper_dist, phas_dist):
 
     ax_c.axvline(150, color="#64748b", ls=":", lw=1.0, alpha=0.7)
     ax_c.axvline(190, color="#64748b", ls=":", lw=1.0, alpha=0.7)
-    ax_c.axvline(340, color="#ea580c", ls="--", lw=1.4, label="340 bp Dimer Peak")
-    ax_c.text(150, ax_c.get_ylim()[1]*0.9 if ax_c.get_ylim()[1] > 0 else 0.5, "150", ha="center", fontsize=7.5, color="#64748b")
-    ax_c.text(190, ax_c.get_ylim()[1]*0.9 if ax_c.get_ylim()[1] > 0 else 0.5, "190", ha="center", fontsize=7.5, color="#64748b")
-    ax_c.text(340, ax_c.get_ylim()[1]*0.8 if ax_c.get_ylim()[1] > 0 else 0.4, "340 bp", ha="center", fontsize=8, color="#ea580c", fontweight="bold")
+    ax_c.axvline(340, color="#ea580c", ls="--", lw=1.4, label="340 bp Dimer Lattice Landmark")
+    ax_c.text(150, ax_c.get_ylim()[1]*0.9 if ax_c.get_ylim()[1] > 0 else 0.5, "150 bp", ha="center", fontsize=7.5, color="#64748b")
+    ax_c.text(190, ax_c.get_ylim()[1]*0.9 if ax_c.get_ylim()[1] > 0 else 0.5, "190 bp", ha="center", fontsize=7.5, color="#64748b")
+    ax_c.text(340, ax_c.get_ylim()[1]*0.8 if ax_c.get_ylim()[1] > 0 else 0.4, "340 bp Dimer", ha="center", fontsize=8, color="#ea580c", fontweight="bold")
 
-    ax_c.set_title("C. Spatial Autocorrelation & 340 bp Dimer Lattice", fontsize=11, fontweight="bold", loc="left")
+    ax_c.set_title("C. Spatial Autocorrelation & 340 bp Dimer Lattice Organization", fontsize=11, fontweight="bold", loc="left")
     ax_c.set_xlabel("Dyad-to-Dyad Lag (bp)", fontsize=9.5)
     ax_c.set_ylabel("Pairwise Autocorrelation Density (%)", fontsize=9.5)
     ax_c.set_xlim(80, 520)

@@ -229,7 +229,9 @@ def plot_figure_5(caliper_hist, mapq_0_hist, mapq_ge20_hist, concordance_pairs):
     
     # 110-140 bp gate shading
     ax_b.axvspan(110, 140, color="#f0fdf4", alpha=0.5, zorder=0)
-    ax_b.text(125, max(cnts)*0.88, "88.2% in Core Gate\n[110–140 bp]", ha="center", fontsize=8.5, color="#166534", fontweight="bold")
+    core_cnt = sum(cnt for l, cnt in caliper_hist.items() if 110 <= l <= 140)
+    core_pct = (core_cnt / tot_caliper * 100.0) if tot_caliper > 0 else 0.0
+    ax_b.text(125, max(cnts)*0.88, f"{core_pct:.1f}% in Core Gate\n[110–140 bp]", ha="center", fontsize=8.5, color="#166534", fontweight="bold")
     
     ax_b.set_title("B. Empirical Physical Overlap Sizing (Raw FASTQ)", fontsize=11, fontweight="bold", loc="left")
     ax_b.set_xlabel("Physical Insert Length (bp, L <= 138 bp window)", fontsize=9.5)
@@ -306,7 +308,7 @@ def plot_figure_5(caliper_hist, mapq_0_hist, mapq_ge20_hist, concordance_pairs):
         ax_c.scatter(c_vals, mean_t, s=np.sqrt(n_p)*1.8, color="#0284c7", alpha=0.75, edgecolors="#0369a1", label="Binned mean TLEN")
         ax_c.errorbar(c_vals, mean_t, yerr=std_t, fmt='none', ecolor="#94a3b8", elinewidth=0.8, alpha=0.6, capsize=1.5)
         ax_c.plot([70, 150], [70, 150], color="#dc2626", ls="--", lw=1.5, label="Identity line (y = x)")
-        ax_c.text(75, 142, f"N = {tot_n:,} pairs\n$R^2$ = {r2:.4f}\nMedian diff = {median_diff:.1f} bp\nMean diff = {mean_diff:.2f} bp\nExact match = {exact_pct:.2f}%",
+        ax_c.text(75, 142, f"N = {tot_n:,} pairs\n$R^2$ = {r2:.4f}\nBinned median diff = {median_diff:.1f} bp\nMean diff = {mean_diff:.2f} bp\nExact match = {exact_pct:.2f}%",
                   fontsize=8.5, va="top", bbox=dict(boxstyle="round,pad=0.4", facecolor="#ffffff", edgecolor="#cbd5e1"))
         ax_c.legend(fontsize=8, loc="lower right")
     else:
