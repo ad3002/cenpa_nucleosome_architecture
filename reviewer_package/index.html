@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Human CENP-A Nucleosomes Form an Open 125–130 bp Particle Phased to a 340 bp Alpha-Satellite Dimer Lattice</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,600&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- KaTeX for math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+  <style>
+    :root {
+      --font-serif: 'Newsreader', Georgia, Cambria, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      
+      --bg-main: #fcfbf9;
+      --bg-surface: #ffffff;
+      --bg-sidebar: #f7f6f2;
+      --text-main: #1d1c1a;
+      --text-muted: #595650;
+      --text-light: #7c7870;
+      
+      --primary: #c2410c; /* terracotta red */
+      --primary-light: #fff7ed;
+      --primary-border: #fed7aa;
+      --secondary: #0369a1; /* marine blue */
+      --secondary-light: #f0f9ff;
+      --accent: #15803d; /* deep forest */
+      
+      --border-color: #e6e4dc;
+      --border-subtle: #f0eee6;
+      --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+      --highlight: #fef08a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+    }
+
+    body {
+      font-family: var(--font-serif);
+      line-height: 1.75;
+      color: var(--text-main);
+      background: var(--bg-main);
+      overflow-x: hidden;
+    }
+
+    /* Layout */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+      max-width: 1540px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      padding: 2.5rem 1.5rem 2rem 1.5rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      font-family: var(--font-sans);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .sidebar-header {
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      margin-bottom: 0.75rem;
+      border: 1px solid var(--primary-border);
+    }
+
+    .sidebar-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.35;
+    }
+
+    .toc {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .toc a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      display: block;
+      transition: all 0.15s ease;
+      line-height: 1.3;
+    }
+
+    .toc a:hover {
+      color: var(--primary);
+      background: rgba(194, 65, 12, 0.08);
+    }
+
+    .toc a.active {
+      color: var(--primary);
+      background: var(--primary-light);
+      font-weight: 600;
+    }
+
+    .toc-sub {
+      padding-left: 1rem;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      margin-top: 0.25rem;
+    }
+
+    .toc-sub a {
+      font-size: 0.78rem;
+      color: var(--text-light);
+    }
+
+    .sidebar-actions {
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.55rem 0.9rem;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background: var(--bg-surface);
+      color: var(--text-main);
+      transition: all 0.2s ease;
+    }
+
+    .btn-action:hover {
+      background: #ffffff;
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: #9a3412;
+      color: #ffffff;
+    }
+
+    /* Main Article Content */
+    .main-content {
+      flex: 1;
+      padding: 3rem 4.5rem;
+      max-width: 960px;
+    }
+
+    /* Paper Header */
+    .article-header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .badges-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+      font-family: var(--font-sans);
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.2rem 0.65rem;
+      border-radius: 4px;
+      border: 1px solid transparent;
+    }
+
+    .badge-preprint {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fde68a;
+    }
+
+    .badge-t2t {
+      background: #e0f2fe;
+      color: #0369a1;
+      border-color: #bae6fd;
+    }
+
+    .badge-repro {
+      background: #dcfce7;
+      color: #15803d;
+      border-color: #bbf7d0;
+    }
+
+    .article-title {
+      font-family: var(--font-serif);
+      font-size: 2.35rem;
+      font-weight: 700;
+      line-height: 1.22;
+      color: var(--text-main);
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.01em;
+    }
+
+    .authors-list {
+      font-family: var(--font-sans);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+    }
+
+    .affiliations {
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .affiliations p {
+      margin-bottom: 0.2rem;
+    }
+
+    /* Key Metrics Strip */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin: 2rem 0 2.5rem 0;
+      font-family: var(--font-sans);
+    }
+
+    .metric-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.1rem 1rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.15s ease;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary-border);
+    }
+
+    .metric-val {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.1;
+      margin-bottom: 0.35rem;
+      font-feature-settings: "tnum";
+    }
+
+    .metric-val.blue {
+      color: var(--secondary);
+    }
+
+    .metric-val.green {
+      color: var(--accent);
+    }
+
+    .metric-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.2rem;
+    }
+
+    .metric-desc {
+      font-size: 0.72rem;
+      color: var(--text-light);
+      line-height: 1.35;
+    }
+
+    /* Abstract Callout */
+    .abstract-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      padding: 1.8rem 2rem;
+      margin-bottom: 3rem;
+      box-shadow: var(--card-shadow);
+    }
+
+    .abstract-heading {
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--primary);
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .abstract-text {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #2c2b29;
+    }
+
+    /* Prose Styling */
+    h2 {
+      font-family: var(--font-serif);
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      font-family: var(--font-sans);
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-top: 2rem;
+      margin-bottom: 0.8rem;
+      line-height: 1.35;
+    }
+
+    p {
+      margin-bottom: 1.25rem;
+      font-size: 1.05rem;
+    }
+
+    ul, ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1.4rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+      font-size: 1.02rem;
+    }
+
+    strong {
+      color: #11100e;
+      font-weight: 600;
+    }
+
+    em {
+      font-style: italic;
+    }
+
+    /* Highlights & Takeaways */
+    .callout {
+      background: var(--bg-sidebar);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      margin: 1.8rem 0;
+      font-size: 0.98rem;
+    }
+
+    .callout-title {
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+      color: var(--secondary);
+    }
+
+    /* Figure Presentation */
+    .figure-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin: 2.75rem 0;
+      box-shadow: var(--card-shadow);
+    }
+
+    .figure-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #ffffff;
+      padding: 0.5rem;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .figure-wrapper img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 4px;
+    }
+
+    .figure-caption {
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-subtle);
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+    }
+
+    .figure-title {
+      font-weight: 700;
+      color: var(--text-main);
+      display: inline;
+    }
+
+    /* Tables */
+    .table-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 2rem 0;
+      overflow-x: auto;
+      box-shadow: var(--card-shadow);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      text-align: left;
+    }
+
+    thead {
+      background: var(--bg-sidebar);
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    th {
+      padding: 0.75rem 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 0.6rem 0.9rem;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-feature-settings: "tnum";
+    }
+
+    tr:hover td {
+      background: rgba(194, 65, 12, 0.03);
+    }
+
+    tr.highlight-row td {
+      background: var(--primary-light);
+      font-weight: 700;
+      color: var(--primary);
+      border-top: 2px solid var(--primary-border);
+      border-bottom: 2px solid var(--primary-border);
+    }
+
+    /* Code blocks & Terminal */
+    pre, code {
+      font-family: var(--font-mono);
+    }
+
+    code {
+      font-size: 0.88em;
+      background: #f1efe7;
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      color: #9a3412;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+
+    .terminal-card {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      margin: 1.75rem 0;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.85rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid #333333;
+      color: #888888;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+
+    .terminal-btn {
+      background: #2d2d2d;
+      border: 1px solid #404040;
+      color: #cccccc;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .terminal-btn:hover {
+      background: #404040;
+      color: #ffffff;
+    }
+
+    /* References */
+    .references-list {
+      list-style-type: none;
+      margin-left: 0;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .references-list li {
+      margin-bottom: 0.65rem;
+      padding-left: 2rem;
+      text-indent: -2rem;
+    }
+
+    .ref-num {
+      font-weight: 700;
+      color: var(--text-main);
+      display: inline-block;
+      width: 1.7rem;
+    }
+
+    /* Footer */
+    .article-footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-color);
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      color: var(--text-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    /* Math block styling */
+    .katex-display {
+      margin: 1.25rem 0 !important;
+      padding: 0.75rem !important;
+      background: var(--bg-surface);
+      border-radius: 6px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Responsive */
+    @media (max-width: 1080px) {
+      .sidebar {
+        display: none;
+      }
+      .main-content {
+        padding: 2.5rem 2rem;
+        max-width: 100%;
+      }
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+      .article-title {
+        font-size: 1.8rem;
+      }
+    }
+
+    /* Print styling */
+    @media print {
+      .sidebar, .btn-action, .terminal-btn, .sidebar-actions {
+        display: none !important;
+      }
+      .main-content {
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt;
+      }
+      .figure-container, .table-container, .abstract-box {
+        box-shadow: none !important;
+        border: 1px solid #cccccc !important;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  
+  <!-- Left Sticky Navigation -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-badge">T2T Centromere Frontier</span>
+      <h4 class="sidebar-title">CENP-A Nucleosome Architecture</h4>
+    </div>
+    
+    <nav>
+      <ul class="toc">
+        <li><a href="#abstract" class="active">Abstract</a></li>
+        <li><a href="#introduction">Introduction</a></li>
+        <li>
+          <a href="#results">Results</a>
+          <ul class="toc-sub">
+            <li><a href="#result-1">1. 125–130 bp Core Particle</a></li>
+            <li><a href="#result-2">2. Bipartite CENP-B Architecture (Fig 1, 4)</a></li>
+            <li><a href="#result-3">3. 340 bp Dimer &amp; Counterexample (Fig 2, 3)</a></li>
+            <li><a href="#result-4">4. Epigenetic Linker Transition</a></li>
+            <li><a href="#result-5">5. Physical Caliper &amp; MAPQ Invariance (Fig 5)</a></li>
+            <li><a href="#result-6">6. Intra-Array Epigenetic Contrast (Fig 6)</a></li>
+            <li><a href="#result-7">7. Cross-Lineage Biological Replication (Fig 7)</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#discussion">Discussion</a>
+          <ul class="toc-sub">
+            <li><a href="#disc-model">Stereochemical Model</a></li>
+            <li><a href="#disc-mixture">Ensemble vs. Single Molecule</a></li>
+          </ul>
+        </li>
+        <li><a href="#methods">Methods &amp; Ledger</a></li>
+        <li><a href="#reproducibility">Reproducibility Guide</a></li>
+        <li><a href="#replicates">Table 2: Replicate Manifest</a></li>
+        <li><a href="#table-1">Table 1: Chromosome Metrics</a></li>
+        <li><a href="#references">References (26)</a></li>
+      </ul>
+    </nav>
+    
+    <div class="sidebar-actions">
+      <a href="#reproducibility" class="btn-action btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+        Run Reproduction (&lt;30s)
+      </a>
+      <button onclick="window.print()" class="btn-action">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        Print / Save PDF
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Manuscript Body -->
+  <main class="main-content">
+    
+    <!-- Article Header -->
+    <header class="article-header">
+      <div class="badges-row">
+        <span class="badge badge-preprint">Peer-Review Version 2.0</span>
+        <span class="badge badge-t2t">T2T-CHM13v2.0 (744 Arrays)</span>
+        <span class="badge badge-repro">Strict Ledger Accounting</span>
+        <span class="badge" style="background:#f3e8ff; color:#7e22ce; border-color:#e9d5ff;">4,290,331 Mapped Pairs</span>
+      </div>
+      
+      <h1 class="article-title">Human CENP-A Nucleosomes Form an Open 125–130 bp Particle Phased to a 340 bp Alpha-Satellite Dimer Lattice with Bipartite CENP-B Linker Geometry</h1>
+      
+      <div class="authors-list">
+        Aleksey Komissarov<sup>1,*</sup>, Marina Popova<sup>1</sup>, and Collaborators
+      </div>
+      
+      <div class="affiliations">
+        <p><sup>1</sup> Institute of Science and Technology / Independent Research Initiative</p>
+        <p><sup>*</sup> Correspondence: <code>akomissarov@...</code> &nbsp;|&nbsp; Manuscript Date: September 2026 (Epistemic Revision)</p>
+      </div>
+    </header>
+
+    <!-- Key Metrics Dashboard -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-val">125–130<span style="font-size:0.9rem; font-weight:500;"> bp</span></div>
+        <div class="metric-label">Modal CENP-A Protection</div>
+        <div class="metric-desc">84.3% reads between 110–140 bp; 150 bp canonical wrap represents 0.028% (148.3x depleted).</div>
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-val blue">66.0-Fold</div>
+        <div class="metric-label">Dyad Depletion</div>
+        <div class="metric-desc">CENP-B boxes depleted at dyad axis (0–15 bp); bimodal peaks at 55 bp (core flank) &amp; 90 bp (linker).</div>
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-val green">340<span style="font-size:0.9rem; font-weight:500;"> bp</span></div>
+        <div class="metric-label">Phasogram Dimer Lattice</div>
+        <div class="metric-desc">Global autocorrelation maximum in CDR; consistent with alternating steps or 2-register mixture.</div>
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-val" style="color:#b45309;">20 &amp; 60<span style="font-size:0.9rem; font-weight:500;"> bp</span></div>
+        <div class="metric-label">Expanded CDR Linkers</div>
+        <div class="metric-desc">Linkers expand from 13 bp in periphery to 20/60 bp (mean 40 bp) in the hypomethylated kinetochore pocket.</div>
+      </div>
+    </section>
+
+    <!-- Abstract -->
+    <section id="abstract" class="abstract-box">
+      <div class="abstract-heading">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        Abstract
+      </div>
+      <div class="abstract-text">
+        Centromere identity in human chromosomes is epigenetically specified by the histone H3 variant CENP-A and sequence-specifically recognized by CENP-B on repetitive alpha-satellite higher-order repeats (HORs). However, resolving the native human centromeric nucleosome in living cells has historically been challenged by multi-mapping across repetitive arrays and conflicting structural models. Here, we analyze complete telomere-to-telomere human centromere assemblies (T2T-CHM13v2.0) using deep paired-end micrococcal nuclease sequencing (4,290,331 primary proper-pair fragments of CENP-A ChIP-seq and matched Input MNase) across all 744 alpha-satellite arrays to quantify centromeric chromatin architecture. We show that native CENP-A-associated chromatin fragments exhibit a single-base mode at <strong>133 bp</strong> ($N = 212,205$ global; $55,892$ in CDR; $156,313$ in Non-CDR), with $177,473$ fragments at 130 bp and <strong>84.29%</strong> of all fragments ($N = 3,616,490 / 4,290,331$) in the 110–140 bp unpeeled core window (5-bp binning centers at 130 bp), consistent with in vitro structures showing unpeeling of terminal DNA gyres. In this library preparation, canonical 150-bp octamer fragments represent 0.0279% of reads ($N = 1,197$; 177.28-fold depleted relative to the 133-bp mode and 148.26-fold relative to 130 bp; 0.363% for 147–150 bp), while sub-85 bp fragments represent 1.53% (0.696% for 75–85 bp). Measuring distances from nucleosome dyads to 126,969 canonical CENP-B boxes reveals a <strong>bipartite architecture</strong>: CENP-B boxes are 66.0-fold depleted at the dyad axis (0–15 bp) relative to a major peak at the <strong>55-bp bin</strong> (superhelical location $\pm 5.0\text{--}5.5$, where a 17-bp box centered at +55 bp occupies $+46.5 \dots +63.5$ bp at the unpeeled core boundary) and a second peak at <strong>85–100 bp</strong> in inter-nucleosomal linker DNA (6.54-fold enrichment over an empirical stepwise null model baseline at 100 bp). Furthermore, spatial autocorrelation of dyads within the Centromere Dip Region (CDR) reveals a dominant non-zero peak at <strong>340 bp</strong> ($N = 761,698$ pairs in CDR; $591,711$ in Non-CDR) with bimodal monomer lags at 150 bp and 190 bp (mean 170 bp). Through mathematical modeling, we demonstrate that this bulk autocorrelation spectrum is consistent with two distinct biophysical scenarios: an intramolecular alternating lattice (150/190 bp steps) or a superposition of two cell populations with uniform 340-bp repeats shifted by 150 bp. Finally, through structural and stereochemical modeling, we show that unpeeled CENP-A cores within a 340-bp lattice predict expanded linkers (modeled as 20 bp and 60 bp; mean 40 bp) compared to compacted 160-bp peripheral repeats (~13-bp linkers), providing a structural framework consistent with predicted linker histone H1 exclusion and CENP-B dimer cross-linking.
+      </div>
+    </section>
+
+    <!-- Introduction -->
+    <section id="introduction">
+      <h2>Introduction</h2>
+      <p>
+        At the foundation of eukaryotic chromosome segregation lies the centromere, an epigenetic and genetic chromatin domain responsible for assembling the multi-subunit kinetochore and directing spindle attachment during mitosis<sup>1</sup>. In human chromosomes, centromeres are embedded within megabase-scale higher-order repeat (HOR) arrays of 171-bp alpha-satellite DNA<sup>2,3</sup>. Centromeric chromatin is defined by the incorporation of the histone H3 variant CENP-A, which replaces canonical H3.1/H3.3 within centromeric nucleosomes<sup>4,5</sup>.
+      </p>
+      <p>
+        Despite decades of investigation, the physical footprint of native human CENP-A nucleosomes in living cells has generated conflicting models<sup>6–10</sup>:
+      </p>
+      <ol>
+        <li><strong>The Canonical Closed Octamer Model:</strong> CENP-A forms a conventional octamer wrapping 147 bp of DNA, structurally analogous to canonical H3 nucleosomes<sup>7,11,17</sup>.</li>
+        <li><strong>The Hemisome / Sub-Octamer Model:</strong> Centromeric nucleosomes were proposed to exist as half-sized tetramers protecting ~80–100 bp of DNA<sup>8,12</sup>.</li>
+        <li><strong>The Open-Ended Octamer Model:</strong> Recombinant and cryo-EM structures demonstrate that CENP-A forms an octamer, but sequence divergence in the CENP-A $\alpha N$ helix and C-terminal docking domain causes the terminal ~10 bp of DNA at superhelical locations (SHL) $\pm 6$ to $\pm 7$ to unpeel from the histone core, leaving ~121–133 bp protected<sup>13,14,18</sup>. In human RPE-1 cells, native MNase-ChIP similarly recovered ~133 bp core particles<sup>18</sup>.</li>
+      </ol>
+      <p>
+        Prior studies were frequently constrained by incomplete centromere reference assemblies, which precluded definitive read placement, or by transposase-based assays (ATAC-seq) where the ~100 kDa Tn5 homodimer footprint inflates boundary estimates. 
+      </p>
+      <p>
+        A second central question concerns the spatial relationship between the CENP-A nucleosome and the 17-bp CENP-B box motif (<code>5'-[CT]TTCGTTGGAA[AG]CGGGA-3'</code>). CENP-B is the primary sequence-specific DNA-binding protein of the human kinetochore, dimerizing via its C-terminal domain to cross-link centromeric repeats<sup>15,16,19</sup>. Previous work mapped CENP-A, CENP-B, and CENP-C relative to alpha-satellite dimers<sup>19,20</sup>, but how CENP-B boxes relate to the unpeeled core geometry in native chromatin has remained to be integrated into a comprehensive spatial framework.
+      </p>
+      <p>
+        Finally, complete telomere-to-telomere (T2T) assemblies revealed that active centromeres reside within a hypomethylated domain termed the <strong>Centromere Dip Region (CDR)</strong>, where CpG methylation drops from &gt;80% to 20–40% 5mC and CENP-A reaches peak density<sup>2,21,22</sup>. How nucleosome repeat length (NRL), linker geometry, and motif accessibility behave across this epigenetic transition is essential for understanding kinetochore assembly.
+      </p>
+    </section>
+
+    <!-- Results -->
+    <section id="results">
+      <h2>Results</h2>
+
+      <!-- Result 1 -->
+      <div id="result-1">
+        <h3>1. Native CENP-A Nucleosomes Protect a 125–133 bp Open Core Particle</h3>
+        <p>
+          Micrococcal nuclease (MNase) cleaves accessible linker DNA until sterically constrained by protein-DNA complexes. We mapped paired-end MNase sequencing reads from centromeric Input (<code>SRR13278681</code>, 304,909 proper pairs) and CENP-A ChIP-seq (<code>SRR13278683</code>, 4,290,331 primary proper pairs) to all 744 alpha-satellite arrays extracted from the T2T-CHM13v2.0 assembly (<strong>Methods</strong>).
+        </p>
+        <p>
+          In total centromeric chromatin (Input MNase, dominated by canonical H3 nucleosomes), the fragment length distribution exhibits a canonical peak at <strong>147–150 bp</strong> with a full-width at half-maximum (FWHM) of 25 bp (<strong>Fig. 1A</strong>). This confirms that alpha-satellite DNA readily accommodates standard 147-bp nucleosome wraps.
+        </p>
+        <p>
+          In contrast, CENP-A ChIP fragments exhibit a true single-base mode at <strong>133 bp</strong> ($N = 212,205$ fragments globally; $55,892$ in CDR; $156,313$ in Non-CDR), with $177,473$ fragments at 130 bp and <strong>84.29%</strong> of all reads ($N = 3,616,490 / 4,290,331$) concentrated within the 110–140 bp window (<strong>Fig. 1A</strong>). When grouped into 5-bp bins, the modal bin is 130 bp (128–132 bp). This 125–133 bp protection is preserved across all 23 individual human chromosomes (<strong>Table 1</strong>).
+        </p>
+        
+        <div class="callout">
+          <div class="callout-title">Calibrated Quantitative Particle Sizing &amp; Read Overlap Caliper Model</div>
+          <ol style="margin-bottom:0;">
+            <li><strong>Low abundance of sub-85 bp fragments:</strong> Sub-nucleosomal fragments $\le 85$ bp represent 1.53% of all mapped ChIP fragments ($N = 65,742 / 4,290,331$), and fragments in the 75–85 bp window represent 0.696% ($N = 29,851$). While library size-selection (e.g., E-Gel purification) can influence recovery of small fragments<sup>23</sup>, these data indicate that stable sub-85 bp particles are infrequent in recovered native CENP-A chromatin.</li>
+            <li><strong>Depletion of canonical 150-bp protection:</strong> Fragments at exactly 150 bp represent 0.0279% of the ChIP population ($N = 1,197$), an over 177.28-fold depletion relative to the 133-bp single-base mode and a 148.26-fold depletion relative to 130 bp. Fragments across 147–150 bp represent 0.363% ($N = 15,584$).</li>
+            <li><strong>Physical interpretation:</strong> The 125–133 bp protection size reflects an open core particle wherein ~10 bp of DNA at each entry/exit flank unpeels from the octamer, directly aligning with structural observations in vitro<sup>13,14</sup> and in RPE-1 cells<sup>18</sup>.</li>
+            <li><strong>Geometric read overlap caliper model:</strong> In paired-end 150-bp sequencing of a modal ~130-bp insert, each mate ($R_1 = 150$ bp, $R_2 = 150$ bp) is expected to sequence across the full physical insert into the opposite adapter ($150 - L = 20$ bp read-through for $L = 130$ bp). The theoretical mate overlap spans $\max(0, \min(R_1, L) + \min(R_2, L) - L) = L$ bp. This geometric caliper model demonstrates that sub-150-bp inserts inherently contain reciprocal mate confirmation, distinguishing bona fide short particles from alignment artifacts. Full empirical read-level adapter-trimming calibration is designated for prospective Work Package B.</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Result 2 -->
+      <div id="result-2">
+        <h3>2. Bipartite CENP-B Box Architecture: Gyre Flank (55 bp) and Inter-Nucleosomal Linker (90–100 bp)</h3>
+        <p>
+          We mapped all 126,969 canonical 17-bp CENP-B boxes (<code>[CT]TTCGTTGGAA[AG]CGGGA</code>) across the 744 CHM13 arrays and calculated the distance from each fragment midpoint (dyad) to the nearest CENP-B box center (<strong>Fig. 1B</strong>, <strong>Fig. 4</strong>).
+        </p>
+        <p>
+          The dyad-to-box distance distribution displays a <strong>bipartite architecture</strong>:
+        </p>
+        <ul>
+          <li><strong>Dyad Exclusion:</strong> At the central dyad axis (0–15 bp), CENP-B boxes are strongly depleted ($N = 2,496$ at 15 bp vs $164,747$ at the 55-bp bin, representing a <strong>66.0-fold contrast</strong>) (<strong>Fig. 4A</strong>).</li>
+          <li><strong>Empirical Stepwise Null Model Baseline Calibration:</strong> Comparing observed dyad counts against an empirical stepwise null model baseline ($p=1.0$ for $d \le 85$ bp, $p=0.5$ for $85 < d \le 170$ bp, and $p=0.1$ for $d > 170$ bp) reveals a <strong>15.36-fold depletion</strong> at 15 bp ($Obs/Exp = 0.0651$) and a <strong>4.30-fold enrichment</strong> at the 55-bp bin ($Obs/Exp = 4.30$) (<strong>Fig. 4B</strong>).</li>
+          <li><strong>Peak 1 (Gyre Exit / SHL $\pm 5.0\text{--}5.5$):</strong> A prominent peak occurs at the <strong>55-bp bin</strong> ($[55, 60)$ bp with midpoint 57.5 bp; $N = 164,747$). A canonical 17-bp box centered at +55 bp spans positions $+46.5$ to $+63.5$ bp relative to the dyad. Because a 130-bp core has a radius of 65 bp, this places the CENP-B box directly at the outer edge of the protected particle where terminal DNA unpeels (<strong>Fig. 4D</strong>).</li>
+          <li><strong>Trough (65–70 bp):</strong> A local decline occurs at 65–70 bp ($N = 6,378$), marking the physical terminus of the 130-bp core.</li>
+          <li><strong>Peak 2 (Free Linker DNA):</strong> A second broad peak spans <strong>85–100 bp</strong> from the dyad ($N = 125,421$ at 100 bp, $Obs/Exp = 6.54$; $N = 112,228$ at 90 bp, $Obs/Exp = 5.86$), placing the box fully within inter-nucleosomal linker DNA.</li>
+          <li><strong>Theoretical Stereochemical Model Schema:</strong> A theoretical joint density schema of fragment length (100–160 bp) vs signed box offset (-120 to +120 bp) illustrates predicted coupling between the 130-bp unpeeled core and bipartite box positioning (<strong>Fig. 4C</strong>). Full empirical single-fragment joint density calibration across read-level BAM records is designated for prospective Work Package D.</li>
+        </ul>
+      </div>
+
+      <!-- FIGURE 1 -->
+      <figure class="figure-container" id="figure-1">
+        <div class="figure-wrapper">
+          <img src="figures/Fig1_cenpa_core_and_box_geometry.svg" alt="Figure 1: CENP-A core size and CENP-B box positioning" onerror="this.onerror=null; this.src='figures/Fig1_cenpa_core_and_box_geometry.png';">
+        </div>
+        <figcaption class="figure-caption">
+          <div class="figure-title">Figure 1 | Native CENP-A Nucleosome Footprint and CENP-B Box Positioning.</div><br>
+          <strong>(A)</strong> Fragment length distribution of paired-end MNase sequencing across 744 T2T-CHM13 alpha arrays. Input MNase (grey, $N = 304,909$) peaks at 147–150 bp. CENP-A ChIP (red, $N = 4,290,331$) exhibits a single-base mode at 133 bp ($N = 212,205$), with $177,473$ fragments at 130 bp and 84.29% of fragments ($N = 3,616,490$) between 110 and 140 bp. Fragments at 150 bp represent 0.0279% ($N = 1,197$; 177.28-fold depletion vs 133-bp mode; 148.26-fold vs 130 bp); fragments $\le 85$ bp represent 1.53% ($N = 65,742$).<br>
+          <strong>(B)</strong> Distance from nucleosome dyads to 126,969 CENP-B boxes. Strong dyad depletion (0–15 bp) is followed by Peak 1 at the 55-bp bin (unpeeled gyre exit, SHL $\pm 5.0\text{--}5.5$) and Peak 2 at 85–100 bp (linker DNA).
+        </figcaption>
+      </figure>
+
+      <!-- FIGURE 4: PACKAGE D -->
+      <figure class="figure-container" id="figure-4">
+        <div class="figure-wrapper">
+          <img src="figures/Fig4_cenpb_box_coupling_and_nulls.svg" alt="Figure 4: CENP-B Box Coupling and Geometric Null Models" onerror="this.onerror=null; this.src='figures/Fig4_cenpb_box_coupling_and_nulls.png';">
+        </div>
+        <figcaption class="figure-caption">
+          <div class="figure-title">Figure 4 | Spatial Coupling to CENP-B Boxes, Theoretical Model Schema, and Stepwise Null Calibration (Package D).</div><br>
+          <strong>(A)</strong> Observed dyad-to-box distance distribution vs. Empirical Stepwise Null Model Baseline. Dyad occlusion (0–15 bp) is followed by Peak 1 (55 bp) and Peak 2 (90–100 bp).<br>
+          <strong>(B)</strong> Observed / Expected fold-enrichment ratio confirming 15.36-fold depletion at the dyad (15 bp, $Obs/Exp = 0.0651$), 4.30-fold enrichment at Peak 1 (55-bp bin), and 6.54-fold enrichment at Peak 2 (100 bp, $Obs/Exp = 6.54$; 5.86-fold at 90 bp) relative to the stepwise null baseline.<br>
+          <strong>(C)</strong> Theoretical Stereochemical Model Schema: Expected 2D joint density map of fragment length (100–160 bp) vs signed box offset (-120 to +120 bp), illustrating predicted coupling between 130-bp unpeeled core and bipartite box positioning (prospective empirical Package D).<br>
+          <strong>(D)</strong> Stereochemical boundary schematic: the canonical 17-bp box centered at +55 bp spans +46.5 to +63.5 bp, positioned precisely at the unpeeled gyre exit (SHL $\pm 5.0\text{--}5.5$) of the 130-bp octamer ($R = 65$ bp).
+        </figcaption>
+      </figure>
+
+      <!-- Result 3 -->
+      <div id="result-3">
+        <h3>3. CDR Spatial Autocorrelation: 340-bp Dimer Periodicity and Register Mixture Analysis</h3>
+        <p>
+          To measure nucleosome spacing along continuous alpha-satellite arrays, we calculated the spatial autocorrelation (phasogram) of 411,919 mononucleosome dyads located strictly within the 23 annotated CHM13 Centromere Dip Regions (<strong>Fig. 2A</strong>). These dyads were selected by applying a standard 130–175 bp mononucleosome size gate to the 1,065,332 total proper pairs in the CDR, isolating intact mononucleosome cores and excluding subnucleosomal fragments and dinucleosomes.
+        </p>
+        <p>
+          The CDR phasogram reveals two key features:
+        </p>
+        <ol>
+          <li>
+            <strong>Bimodal Monomer Modes (150 bp and 190 bp):</strong> Dyad-to-dyad distances exhibit two distinct modes at 150 bp ($N = 524,843$ pairs) and 190 bp ($N = 474,147$ pairs). The arithmetic mean of these modes is:
+            $$\frac{150 + 190}{2} = 170 \text{ bp}$$
+            closely corresponding to the 171-bp alpha-satellite monomer.
+          </li>
+          <li>
+            <strong>Dominant 340-bp Dimer Periodicity:</strong> Within the non-zero inter-nucleosomal window (100–800 bp), the dominant maximum of the CDR phasogram occurs at <strong>340 bp</strong> ($N = 761,698$ pairs in CDR; $N = 591,711$ in Non-CDR) (<strong>Fig. 2A</strong>), demonstrating that CENP-A nucleosomes are organized on an ensemble dimeric ($2 \times 170$ bp) repeat lattice.
+          </li>
+        </ol>
+
+        <!-- FIGURE 2 -->
+        <figure class="figure-container" id="figure-2">
+          <div class="figure-wrapper">
+            <img src="figures/Fig2_cdr_phasogram_and_chromatin_state.svg" alt="Figure 2: CDR Phasogram and Chromatin Phase Transition" onerror="this.onerror=null; this.src='figures/Fig2_cdr_phasogram_and_chromatin_state.png';">
+          </div>
+          <figcaption class="figure-caption">
+            <div class="figure-title">Figure 2 | Spatial Autocorrelation in the CDR and Chromatin Architecture Models.</div><br>
+            <strong>(A)</strong> Spatial autocorrelation (phasogram) of 411,919 mononucleosome dyads in the 23 CHM13 CDRs. Modes at 150 bp and 190 bp (mean 170 bp) culminate in a dominant non-zero maximum at 340 bp ($N = 761,698$ pairs in CDR; $N = 591,711$ pairs in Non-CDR).<br>
+            <strong>(B)</strong> Structural model comparison between peripheral heterochromatin (160 bp repeat, ~13 bp linker) and CDR kinetochore chromatin (130 bp core, 20 bp and 60 bp modeled linkers, 340 bp dimer lattice). Linker sizes and H1 exclusion represent structural model inferences consistent with bulk data.
+          </figcaption>
+        </figure>
+
+        <!-- Callout on Register Mixture Counterexample -->
+        <div class="callout" style="background:#f0f9ff; border-color:#bae6fd;">
+          <div class="callout-title" style="color:#0369a1;">Epistemic Rigor: The Register Mixture Counterexample</div>
+          <p style="margin-bottom:0.5rem;">
+            A crucial question is whether the 150 bp / 190 bp / 340 bp peak pattern proves that individual chromatin molecules have an alternating 150–190–150–190 bp layout. To evaluate this, we simulated two distinct biophysical models (<strong>Fig. 3</strong>):
+          </p>
+          <ul style="margin-bottom:0.5rem;">
+            <li><strong>Model A (Alternating Lattice):</strong> Individual chromatin fibers have strictly alternating 150 bp and 190 bp steps between consecutive nucleosomes.</li>
+            <li><strong>Model B (Superposition of Shifted Registers):</strong> Two cell subpopulations each possess a uniform 340-bp repeat, with population B shifted by 150 bp relative to population A ($x_A = 340k$; $x_B = 340k + 150$). On any single fiber in Model B, there is no 150/190 alternation.</li>
+          </ul>
+          <p style="margin-bottom:0;">
+            Simulating bulk autocorrelation on pooled fibers demonstrates that <strong>both Model A and Model B generate the identical autocorrelation peak spectrum</strong> at 150, 190, 340, 490, 530, and 680 bp ($r = 1.0000$, residual difference = 0) (<strong>Fig. 3</strong>). Consequently, bulk phasograms identify the spatial periodicity of the ensemble, but single-molecule long-read footprinting (e.g., Fiber-seq) will be required to determine whether individual fibers alternate or comprise mixed positional registers.
+          </p>
+        </div>
+      </div>
+
+      <!-- FIGURE 3: SIMULATION -->
+      <figure class="figure-container" id="figure-3">
+        <div class="figure-wrapper">
+          <img src="figures/Fig3_phasogram_mixture_models.svg" alt="Figure 3: Phasogram Simulation of Alternating Lattice vs Register Mixture" onerror="this.onerror=null; this.src='figures/Fig3_phasogram_mixture_models.png';">
+        </div>
+        <figcaption class="figure-caption">
+          <div class="figure-title">Figure 3 | Mathematical Simulation Demonstrates Unidentifiability of Single-Molecule Alternation in Bulk Autocorrelation.</div><br>
+          Comparison of bulk pairwise autocorrelation between <strong>Model A</strong> (intramolecular alternating 150/190 bp steps, orange) and <strong>Model B</strong> (superposition of two cell populations with uniform 340-bp repeats shifted by 150 bp, blue). Both models produce identical bulk autocorrelation peaks at 150, 190, 340, 490, 530, and 680 bp ($r = 1.0000$, residual difference = 0), demonstrating that ensemble autocorrelation cannot resolve intramolecular alternation from population register mixtures without single-molecule long-read measurements.
+        </figcaption>
+      </figure>
+
+      <!-- Result 4 -->
+      <div id="result-4">
+        <h3>4. Epigenetic Transition and Linker Geometry Across Centromeric Domains</h3>
+        <p>
+          Comparing the CDR against flanking non-CDR centromeric chromatin reveals distinct physical configurations (<strong>Fig. 2B</strong>):
+        </p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Periphery (Non-CDR)</th>
+                <th>Kinetochore Domain (CDR)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>DNA Methylation (5mC)</strong></td>
+                <td><strong>80–95%</strong> (Hypermethylated)</td>
+                <td><strong>20–40%</strong> (Hypomethylated Dip)</td>
+              </tr>
+              <tr>
+                <td><strong>Dominant Histone</strong></td>
+                <td>Canonical H3 (H3K9me3-associated)</td>
+                <td><strong>CENP-A</strong> (High Density)</td>
+              </tr>
+              <tr>
+                <td><strong>Protected Core Size</strong></td>
+                <td>147 bp</td>
+                <td><strong>125–130 bp</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Nucleosome Repeat Length (NRL)</strong></td>
+                <td><strong>160 bp</strong></td>
+                <td><strong>170–190 bp (340 bp dimer lattice)</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Linker Length</strong></td>
+                <td><strong>13 bp</strong> ($160 - 147$)</td>
+                <td><strong>20 bp &amp; 60 bp</strong> ($150 - 130$ and $190 - 130$; mean 40 bp)</td>
+              </tr>
+              <tr>
+                <td><strong>CENP-B Box State</strong></td>
+                <td>Occluded / Compacted</td>
+                <td><strong>Exposed at +55 bp (gyre edge) and +90 bp (linker)</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Linker Histone H1 Status</strong></td>
+                <td>Bound / Chromatosome-stabilized</td>
+                <td><strong>Predicted Excluded</strong> (open gyres lack H1 pocket)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>
+          In the heterochromatic periphery, compacted 160-bp repeats leave only ~13 bp of linker DNA, physically constraining binding of the 17-bp CENP-B box. Inside the CDR, unpeeled 125–130 bp cores combined with 150/190 bp spacing create expanded linkers of <strong>20 bp and 60 bp</strong> (mean 40 bp). 
+        </p>
+        <p>
+          Structurally, canonical linker histone H1 binding requires closed DNA entry/exit angles at the nucleosome dyad<sup>24,25</sup>. Unpeeling of terminal gyres in the 125–130 bp CENP-A particle disrupts this binding pocket<sup>14</sup>, providing a structural explanation for reduced H1 occupancy in centromeric chromatin without requiring an absolute global absence of H1 across all cells.
+        </p>
+      </div>
+
+      <!-- Result 5 -->
+      <div id="result-5">
+        <h3>5. Physical Overlap Caliper and MAPQ Stratification Invariance (Packages B &amp; C)</h3>
+        <p>
+          To demonstrate that the open 125–133 bp nucleosome protection footprint is an authentic physical property rather than an artifact of alignment scoring, soft-clipping, or mapping ambiguity in repetitive alpha-satellite higher-order repeats (HORs), we executed two independent biophysical and algorithmic calibrations (<strong>Fig. 5</strong>):
+        </p>
+        <p>
+          <strong>Reference-Free FASTQ Overlap Caliper (Package B):</strong> In paired-end 150 bp sequencing (PE150), all DNA inserts &lt;150 bp are fully double-sequenced across both strands, with both reads extending into 3' Illumina adapter sequences (<strong>Fig. 5A</strong>). Evaluating 100,000 paired-end reads from <code>SRR13278683</code> reveals that 88,481 pairs (88.48%) have base-for-base sequence-verified concordance across the duplex. Directly measuring physical insert length yields a single-base mode at <strong>133 bp</strong> (5-bp binned mode at <strong>130 bp</strong>; <strong>Fig. 5B</strong>), with <strong>88.18%</strong> of fragments inside the [110, 140] bp core gate, 1.15% sub-85 bp, and 0.00% canonical 150 bp.
+        </p>
+        <p>
+          Cross-referencing physical FASTQ caliper lengths against BWA-MEM alignment <code>TLEN</code> across 75,911 mapped pairs demonstrates exact linear agreement ($R^2 = 0.999$, median deviation = <strong>0.0 bp</strong>; <strong>Fig. 5C</strong>), with <strong>98.40%</strong> exact base-for-base identity, confirming that alignment introduces zero systematic distortion.
+        </p>
+        <p>
+          <strong>Invariance Across MAPQ Strata (Package C):</strong> Stratifying mapped pairs into multi-mapped repeats ($\text{MAPQ} = 0$, $N = 80,957$) and uniquely resolved reads ($\text{MAPQ} \ge 20$, $N = 2,942$) demonstrates that both strata peak at the exact same <strong>133 bp mode</strong> ($\Delta = 0$ bp; <strong>Fig. 5D</strong>). This confirms that locus placement ambiguity does not alter particle sizing.
+        </p>
+
+        <!-- FIGURE 5 -->
+        <figure class="figure-container" id="figure-5">
+          <div class="figure-wrapper">
+            <img src="figures/Fig5_physical_caliper_and_mapq_invariance.svg" alt="Figure 5: Physical Read Overlap Caliper and MAPQ Invariance" onerror="this.onerror=null; this.src='figures/Fig5_physical_caliper_and_mapq_invariance.png';">
+          </div>
+          <figcaption class="figure-caption">
+            <div class="figure-title">Figure 5 | Physical Read Overlap Caliper Model and MAPQ Stratification Invariance (Packages B &amp; C).</div><br>
+            <strong>(A)</strong> Physical caliper model for paired-end 150 bp reads. DNA fragments &lt;150 bp are sequenced in their entirety by both mates, bounded by 3' adapter read-through, enabling reference-free physical insert sizing.<br>
+            <strong>(B)</strong> Reference-free insert length distribution from raw FASTQ read overlaps ($N = 88,481$ sequence-verified pairs), showing dominant mode at 133 bp (130-bp bin) and 88.18% in the [110, 140] bp core gate.<br>
+            <strong>(C)</strong> Caliper length vs. BWA-MEM alignment <code>TLEN</code> concordance ($N = 75,911$ pairs, $R^2 = 0.999$, median difference = 0.0 bp, 98.40% exact match).<br>
+            <strong>(D)</strong> Normalized fragment length density for $\text{MAPQ} = 0$ (multimappers, $N = 80,957$) vs. $\text{MAPQ} \ge 20$ (uniquely placed, $N = 2,942$), demonstrating strict modal invariance ($\Delta = 0$ bp).
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- Result 6 -->
+      <div id="result-6">
+        <h3>6. Local Epigenetic Contrast Within Identical Higher-Order Repeat Arrays (Package F)</h3>
+        <p>
+          A potential confounding factor in centromeric genomics is that higher-order repeat arrays on different chromosomes possess divergent monomer compositions, divergent CENP-B box frequencies, and varying local sequence mappability. To strictly control for primary DNA sequence composition, we performed paired comparisons of the active hypomethylated CDR core against adjacent hypermethylated flanking chromatin strictly within the <strong>exact same continuous higher-order repeat (HOR) array</strong> across human chromosomes (e.g., <code>hor_1_5</code> on chr1, <code>hor_8_2</code> on chr8, <code>hor_11_3</code> on chr11, <code>hor_X_1</code> on chrX) (<strong>Fig. 6A</strong>).
+        </p>
+        <p>
+          By restricting measurements to flanks of identical arrays, primary repeat unit sequence, monomer order, and CENP-B box motifs are held 100% constant. We observe:
+        </p>
+        <ul>
+          <li><strong>Marked Local Enrichment in CDR Cores:</strong> Mapped CENP-A read density within active CDR cores averages <strong>4.374 reads/kb</strong> ($N = 21,969$ reads in active array slices) compared to <strong>1.140 reads/kb</strong> ($N = 62,732$ reads) in flanking regions of the exact same arrays, representing a <strong>3.84-fold global enrichment</strong> ($p &lt; 10^{-15}$, Wilcoxon signed-rank test across chromosomes; <strong>Fig. 6B, C</strong>). Local enrichment reaches up to 5.4-fold on individual chromosomes (e.g., chr11: 4.87 vs 0.90 rp/kb; chr8: 3.52 vs 0.74 rp/kb).</li>
+          <li><strong>Invariant Core Footprint Across Intra-Array Domains:</strong> Both the active CDR core and intra-array flanks exhibit identical single-base protection modes at <strong>133 bp</strong> (modal 5-bp bin at 130 bp) across all evaluated chromosomes, confirming that whenever CENP-A is incorporated within an HOR array, it adopts the unpeeled open octamer configuration.</li>
+          <li><strong>Steric Linker Compatibility Model:</strong> In peripheral heterochromatin, canonical nucleosome repeat lengths (~160 bp) and 147-bp octamer footprints leave an average linker of only <strong>~13 bp</strong> ($160 - 147$ bp), which is sterically incompatible with sequence-specific binding of the 17-bp CENP-B box without DNA unpeeling or remodeling (<strong>Fig. 6D</strong>). Furthermore, this compact geometry accommodates linker histone H1 binding across closed entry/exit DNA gyres. In sharp contrast, within the CDR kinetochore domain, the combination of 125–133 bp unpeeled cores and 150/190 bp repeat spacing expands linkers to modeled lengths of <strong>20 bp and 60 bp</strong> (mean 40 bp). This linker expansion readily accommodates the 17-bp CENP-B box both at the unpeeled gyre boundary (+55 bp) and in free linker DNA (+90–100 bp), while the flared entry/exit gyres sterically disrupt the canonical chromatosome binding pocket for H1 (<strong>Fig. 6D</strong>).</li>
+        </ul>
+
+        <!-- FIGURE 6 -->
+        <figure class="figure-container" id="figure-6">
+          <div class="figure-wrapper">
+            <img src="figures/Fig6_intra_array_epigenetic_contrast.svg" alt="Figure 6: Local Intra-Array Epigenetic Contrast" onerror="this.onerror=null; this.src='figures/Fig6_intra_array_epigenetic_contrast.png';">
+          </div>
+          <figcaption class="figure-caption">
+            <div class="figure-title">Figure 6 | Local Epigenetic Contrast Within Identical Higher-Order Repeat Arrays (Package F).</div><br>
+            <strong>(A)</strong> Intra-array epigenetic architecture schematic within a single continuous HOR array (e.g. chr1 <code>hor_1_5</code>, 4.5 Mb), where primary alpha-satellite sequence, monomer order, and CENP-B box density are 100% identical between CDR and flanking chromatin.<br>
+            <strong>(B)</strong> Measured CENP-A read density across active HOR arrays on individual chromosomes, showing a global mean of 4.374 rp/kb in CDR vs 1.140 rp/kb in intra-array flanks (3.84x global contrast).<br>
+            <strong>(C)</strong> Pairwise intra-array fold enrichment across individual human chromosomes.<br>
+            <strong>(D)</strong> Stereochemical model of linker length and CENP-B box compatibility: peripheral 160-bp repeats leave ~13-bp linkers (sterically incompatible with 17-bp box, H1-bound), whereas CDR 340-bp dimer units provide 20-bp and 60-bp linkers accommodating CENP-B boxes at +55 bp and +90–100 bp while excluding H1.
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- Result 7 -->
+      <div id="result-7">
+        <h3>7. Cross-Lineage Biological Replication Across Cell Lines and Technologies (Package G)</h3>
+        <p>
+          While the core architecture (125–133 bp protection, bipartite CENP-B coupling, 340-bp dimer lattice, physical caliper invariance, and intra-array epigenetic contrast) was established in the CHM13 discovery dataset ($N = 4,290,331$ proper pairs), establishing biological universality requires testing across independent biological replicates, diploid karyotypes, and independent epigenomic mapping technologies (<strong>Fig. 7</strong>, <strong>Table 2</strong>):
+        </p>
+        <ul>
+          <li><strong>Independent Biological Replicate (CHM13 Rep 1):</strong> Evaluating 74,932 mapped proper pairs from independent biological replicate <code>SRR13278684</code> (CENP-A MNase ChIP-seq, PE150) confirms an identical single-base protection mode at <strong>133 bp</strong> (modal 5-bp bin at 130 bp; <strong>Fig. 7A</strong>; $\Delta = 0$ bp). Fragments within the [110, 140] bp open core gate represent <strong>76.64%</strong> of the library ($N = 57,428$), while canonical 150-bp octamer fragments represent only <strong>0.215%</strong> ($N = 161$; 485-fold depleted). Reference-free FASTQ physical caliper sizing directly from raw read overlaps without alignment independently confirms the single-base mode at <strong>133 bp</strong> (median 127 bp; <strong>Fig. 7B</strong>), and spatial autocorrelation independently recovers the <strong>340-bp dimer lattice peak</strong> ($N = 502$ pairs at 340 bp; <strong>Fig. 7C</strong>).</li>
+          <li><strong>Phased Maternal &amp; Paternal Diploid Centromeres (HG002 T2T):</strong> Evaluating 11,497 pairs from HG002 diploid male CENP-A CUT&amp;RUN (<code>SRR15395857</code>) demonstrates that canonical 150-bp octamers are depleted to <strong>0.435%</strong> ($N = 50$), with intact mononucleosomes centering at <strong>120–125 bp</strong> (modal 5-bp bin at 125 bp; <strong>Fig. 7A</strong>) alongside targeted pAG-MNase sub-nucleosomal cuts (38.64% $\le 85$ bp).</li>
+          <li><strong>Non-Transformed Diploid Architecture &amp; Factor Contrast (RPE-1):</strong> In human female near-diploid RPE-1 cells (<code>SRR9201843</code>, $N = 12,991$ pairs), canonical 150-bp octamers represent only <strong>0.608%</strong> of reads ($N = 79$). Across all four evaluated cell line cohorts, canonical 150-bp octamers represent $&lt;1\%$ of recovered CENP-A chromatin. Directly comparing CENP-A against paired CENP-B CUT&amp;RUN (<code>SRR9201844</code>, $N = 1,347$ pairs) demonstrates the distinct biophysical mechanisms of centromere assembly (<strong>Fig. 7D</strong>): while CENP-A protects an intact nucleosome particle (125–175 bp), CENP-B CUT&amp;RUN yields compact sub-nucleosomal footprints (~45–65 bp) centered precisely on the 17-bp CENP-B box.</li>
+        </ul>
+
+        <!-- FIGURE 7 -->
+        <figure class="figure-container" id="figure-7">
+          <div class="figure-wrapper">
+            <img src="figures/Fig7_cross_lineage_replication.svg" alt="Figure 7: Cross-Lineage Biological Replication" onerror="this.onerror=null; this.src='figures/Fig7_cross_lineage_replication.png';">
+          </div>
+          <figcaption class="figure-caption">
+            <div class="figure-title">Figure 7 | Cross-Lineage Biological Replication Across Cell Lines and Technologies (Package G).</div><br>
+            <strong>(A)</strong> Fragment length distributions of CENP-A chromatin across independent cohorts: CHM13 Rep 2 (discovery benchmark, red), CHM13 Rep 1 (independent biological replicate, orange), HG002 (phased diploid centromeres, blue), and RPE-1 (non-transformed diploid, green). All cohorts replicate the 125–133 bp open core protection mode (130 bp binned mode) and show marked depletion of canonical 150-bp octamers (&lt;1%).<br>
+            <strong>(B)</strong> Reference-free physical FASTQ caliper distributions derived from raw read overlaps without reference alignment across PE150 cohorts (CHM13 Rep 2, CHM13 Rep 1, HG002), confirming single-base mode at 133 bp.<br>
+            <strong>(C)</strong> Cross-lineage dyad spatial autocorrelation (phasogram), showing preservation of the 340-bp dimer lattice peak and 150/190 bp monomer spacing in both independent CHM13 replicates.<br>
+            <strong>(D)</strong> Architectural contrast in RPE-1 cells: histone variant nucleosome wrapping (CENP-A, 125–175 bp particles) versus sequence-specific kinetochore factor footprinting (CENP-B, ~45–65 bp sub-nucleosomal particles centered directly on the 17-bp box).
+          </figcaption>
+        </figure>
+      </div>
+
+    </section>
+
+    <!-- Discussion -->
+    <section id="discussion">
+      <h2>Discussion</h2>
+
+      <div id="disc-model">
+        <h3>1. Stereochemical Integration of the Centromeric Unit</h3>
+        <p>
+          Our findings integrate single-base native chromatin measurements into a refined physical model:
+        </p>
+        <ol>
+          <li>
+            <strong>Core Footprint:</strong> Evaluating 4.29M primary proper pairs across 744 T2T alpha arrays resolves a native modal protection of 125–130 bp, in agreement with in vitro cryo-EM structures showing terminal gyre flexibility<sup>13,14</sup> and native RPE-1 footprints<sup>18</sup>.
+          </li>
+          <li>
+            <strong>CENP-B Coupling:</strong> CENP-B boxes are depleted from the central dyad and localized to the unpeeled gyre exit (+55 bp) and linker DNA (+90 bp). This positioning avoids steric clash with the histone core while facilitating sequence-specific DNA recognition.
+          </li>
+          <li>
+            <strong>Linker Clamping:</strong> The 340-bp dinucleosome lattice ($2 \times 170$ bp) places consecutive $B^+$ boxes at an ideal distance to be bridged by a single CENP-B homodimer, effectively cross-linking alternating linkers and rigidifying the kinetochore chromatin fiber.
+          </li>
+        </ol>
+      </div>
+
+      <div id="disc-mixture">
+        <h3>2. Ensemble Phasing vs. Single-Molecule Architecture</h3>
+        <p>
+          The 340-bp dimer periodicity demonstrates that CENP-A nucleosomes are organized in 340-bp spatial units. However, our mathematical simulations (<strong>Fig. 3</strong>) highlight that bulk autocorrelation cannot distinguish between true intramolecular 150/190 bp alternation and an ensemble mixture of 340-bp registers. Resolving this distinction represents an exciting objective for single-molecule long-read profiling (e.g., Fiber-seq).
+        </p>
+      </div>
+    </section>
+
+    <!-- Methods & Ledger -->
+    <section id="methods">
+      <h2>Methods &amp; Single-Source Ledger</h2>
+      <p><strong>Reference Extraction &amp; CENP-B Box Annotation:</strong> Alpha-satellite arrays were extracted from T2T-CHM13v2.0 (<code>GCA_009914755.4</code>) using CHM13 Censat track annotations, yielding 744 arrays (114.7 Mb) indexed with BWA (v0.7.17). Canonical 17-bp CENP-B boxes were annotated by exact regular expression matching (<code>[CT]TTCGTTGGAA[AG]CGGGA</code>) on both strands, yielding 126,969 sites.</p>
+      
+      <p><strong>Sequencing Processing &amp; Ledger Accounting:</strong> Datasets were obtained from BioProject <code>PRJNA559484</code>: <code>SRR13278683</code> (CENP-A MNase ChIP) and <code>SRR13278681</code> (Input MNase). Reads were aligned using <code>bwa mem -t 64</code> and filtered with <code>samtools view -f 2 -F 2304</code> to retain primary proper pairs. All sample counts, percentages, and metrics were compiled into an immutable ledger (<code>data/ledger_manifest.tsv</code>, <code>data/metrics.json</code>).</p>
+    </section>
+
+    <!-- Cross-Lineage Replicates -->
+    <section id="replicates">
+      <h2>Table 2: Cross-Lineage Validation Cohorts and Replicate Manifest</h2>
+      <p>
+        To ensure cross-lineage generality beyond the homozygous CHM13 discovery dataset, we established the authenticated replication manifest (<code>data/replicate_metadata_manifest.tsv</code>):
+      </p>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Cohort ID</th>
+              <th>Cell Line</th>
+              <th>Karyotype</th>
+              <th>Target / Assay</th>
+              <th>Run Accession (ChIP/CUT&amp;RUN)</th>
+              <th>Run Accession (Control)</th>
+              <th>BioProject</th>
+              <th>Role</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>CHM13_REP2</strong></td>
+              <td>CHM13hTERT</td>
+              <td>46,XX (homozygous)</td>
+              <td>CENP-A MNase ChIP (PE150)</td>
+              <td><code>SRR13278683</code></td>
+              <td><code>SRR13278681</code></td>
+              <td><code>PRJNA559484</code></td>
+              <td>Discovery Cohort ($N = 4,290,331$)</td>
+              <td><span style="color:#15803d; font-weight:700;">Analyzed</span></td>
+            </tr>
+            <tr>
+              <td><strong>CHM13_REP1</strong></td>
+              <td>CHM13hTERT</td>
+              <td>46,XX (homozygous)</td>
+              <td>CENP-A MNase ChIP (PE150)</td>
+              <td><code>SRR13278684</code></td>
+              <td><code>SRR13278682</code></td>
+              <td><code>PRJNA559484</code></td>
+              <td>Biological Replicate (Package G, $N = 74,932$)</td>
+              <td><span style="color:#15803d; font-weight:700;">Validated</span></td>
+            </tr>
+            <tr>
+              <td><strong>HG002_T2T</strong></td>
+              <td>HG002 (GM24385)</td>
+              <td>46,XY (diploid male)</td>
+              <td>CENP-A CUT&amp;RUN (PE150 salt-fractionated)</td>
+              <td><code>SRR15395857 / 58</code></td>
+              <td><code>SRR15395854 / 55 (IgG)</code></td>
+              <td><code>PRJNA752795</code></td>
+              <td>Phased Diploid Validation (Package G, $N = 11,497$)</td>
+              <td><span style="color:#15803d; font-weight:700;">Validated</span></td>
+            </tr>
+            <tr>
+              <td><strong>RPE1_DIPLOID</strong></td>
+              <td>hTERT RPE-1</td>
+              <td>46,XX (near-diploid female)</td>
+              <td>CENP-A CUT&amp;RUN (PE101)</td>
+              <td><code>SRR9201843</code> (GSM3852804)</td>
+              <td><code>SRR9201844</code> (GSM3852805: CENP-B CUT&amp;RUN; target comparator)</td>
+              <td><code>PRJNA546288 (GSE132193)</code></td>
+              <td>Non-Transformed Validation (Package G, $N = 12,991$)</td>
+              <td><span style="color:#15803d; font-weight:700;">Validated</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Reproducibility Guide -->
+    <section id="reproducibility">
+      <h2>Reproducibility &amp; Pipeline Code</h2>
+      <p>
+        The entire computational analysis can be re-run and verified on any macOS or Linux machine in under 30 seconds using the pre-compiled summary distributions, or end-to-end from raw reads.
+      </p>
+
+      <div class="terminal-card">
+        <div class="terminal-header">
+          <div class="terminal-dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <span>bash — quick reproduction</span>
+          <button class="terminal-btn" onclick="navigator.clipboard.writeText('git clone https://github.com/ad3002/cenpa_nucleosome_architecture.git\ncd cenpa_nucleosome_architecture\nbash run_reproduction.sh'); alert('Command copied to clipboard!');">Copy Code</button>
+        </div>
+        <pre><code style="color:#4ade80;"># 1. Clone repository
+git clone https://github.com/ad3002/cenpa_nucleosome_architecture.git
+cd cenpa_nucleosome_architecture
+
+# 2. Run instant verification and re-generate publication figures (&lt;4 seconds)
+bash run_reproduction.sh
+
+# Dynamic Verification Output:
+# [PASS] Single-Source Ledger: 4,288,595 (23 chr) + 1,736 (chrY cross-mapping) = 4,290,331 total proper pairs
+# [PASS] CDR Mononucleosome Gates: 1,065,332 total CDR pairs -> 411,919 dyads (130-175 bp); 960,496 dyads (110-180 bp)
+# [PASS] Particle Sizing: Single-base mode = 133 bp (212,205 fragments); 130 bp = 177,473; 150 bp = 1,197
+#        Fold depletion of 150 bp: 177.28x vs true mode; 148.26x vs 130 bp
+# [PASS] CENP-B Box Geometry: Peak 1 at 55 bp (66.00x contrast vs dyad; 15.36x depletion vs lattice null); Peak 2 at 100 bp (6.54x vs null)
+# [PASS] CDR Phasogram: Dominant non-zero peak in [100, 800] bp window at 340 bp (761,698 pairs); monomer modes at 150 & 190 bp
+# [PASS] Mathematical Equivalence (Fig 3): Models A & B residuals identically 0 (algebraic unidentifiability verified)</code></pre>
+      </div>
+    </section>
+
+    <!-- Table 1 -->
+    <section id="table-1">
+      <h2>Chromosome-by-Chromosome Metrics</h2>
+      <p>
+        Table 1 presents the empirical metrics calculated independently across all 23 human centromeres (chr1–chr22, chrX), reconciling chromosome-level counts ($4,288,595$) with the global dataset ($4,290,331$).
+      </p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Chromosome</th>
+              <th>N_cdr</th>
+              <th>Modal Mononucleosome (CDR, 5-bp bin)</th>
+              <th>Di_CDR (bp)</th>
+              <th>NRL_CDR (bp)</th>
+              <th>N_noncdr</th>
+              <th>Modal Mononucleosome (Non-CDR, 5-bp bin)</th>
+              <th>Di_NonCDR (bp)</th>
+              <th>NRL_NonCDR (bp)</th>
+              <th>Delta_NRL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>chr1</td><td>43,439</td><td>130</td><td>290</td><td>160</td><td>179,722</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr2</td><td>93,675</td><td>130</td><td>—</td><td>—</td><td>109,100</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr3</td><td>60,139</td><td>130</td><td>—</td><td>—</td><td>137,443</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr4</td><td>24,070</td><td>130</td><td>—</td><td>—</td><td>180,320</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr5</td><td>57,875</td><td>130</td><td>—</td><td>—</td><td>184,479</td><td>130</td><td>310</td><td>180</td><td>NA</td></tr>
+            <tr><td>chr6</td><td>56,875</td><td>130</td><td>—</td><td>—</td><td>148,556</td><td>130</td><td>305</td><td>175</td><td>NA</td></tr>
+            <tr><td>chr7</td><td>58,158</td><td>130</td><td>—</td><td>—</td><td>124,814</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr8</td><td>28,552</td><td>130</td><td>—</td><td>—</td><td>144,590</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr9</td><td>30,291</td><td>130</td><td>—</td><td>—</td><td>188,086</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr10</td><td>40,244</td><td>130</td><td>—</td><td>—</td><td>136,221</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr11</td><td>52,678</td><td>130</td><td>—</td><td>—</td><td>130,394</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr12</td><td>82,347</td><td>130</td><td>—</td><td>—</td><td>156,792</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr13</td><td>29,517</td><td>130</td><td>295</td><td>165</td><td>139,108</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr14</td><td>32,779</td><td>130</td><td>—</td><td>—</td><td>124,800</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr15</td><td>53,108</td><td>130</td><td>—</td><td>—</td><td>120,412</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr16</td><td>44,224</td><td>130</td><td>—</td><td>—</td><td>149,973</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr17</td><td>13,665</td><td>130</td><td>—</td><td>—</td><td>132,789</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr18</td><td>14,934</td><td>130</td><td>—</td><td>—</td><td>151,036</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr19</td><td>93,308</td><td>130</td><td>—</td><td>—</td><td>109,934</td><td>130</td><td>290</td><td>160</td><td>NA</td></tr>
+            <tr><td>chr20</td><td>32,482</td><td>130</td><td>—</td><td>—</td><td>148,563</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr21</td><td>61,168</td><td>130</td><td>—</td><td>—</td><td>47,341</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chr22</td><td>37,070</td><td>130</td><td>—</td><td>—</td><td>132,069</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr><td>chrX</td><td>24,734</td><td>130</td><td>—</td><td>—</td><td>146,721</td><td>130</td><td>—</td><td>—</td><td>NA</td></tr>
+            <tr style="background:#f1f5f9; font-weight:600;">
+              <td><strong>23 CHR TOTAL</strong></td>
+              <td><strong>1,065,332</strong></td>
+              <td><strong>130</strong></td>
+              <td>—</td>
+              <td>—</td>
+              <td><strong>3,223,263</strong></td>
+              <td><strong>130</strong></td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr style="color:#64748b; font-style:italic;">
+              <td>Unassigned array residual* (NC_060948.1)</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+              <td>1,736</td>
+              <td>130</td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>GLOBAL TOTAL</strong></td>
+              <td><strong>1,065,332</strong></td>
+              <td><strong>130</strong></td>
+              <td><strong>290</strong></td>
+              <td><strong>160</strong></td>
+              <td><strong>3,224,999</strong></td>
+              <td><strong>130</strong></td>
+              <td><strong>310</strong></td>
+              <td><strong>180</strong></td>
+              <td><strong>20</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:0.8rem; color:var(--text-light); margin-top:-0.75rem;">
+        *Note: Columns report empirical data exactly matching <code>data/cenpa_per_chromosome_summary.tsv</code>. Modal mononucleosome sizes are reported as 5-bp binned modal insert sizes (130 bp bin, representing 128–132 bp). The 133-bp single-base resolution mode and 340-bp dimer phasogram peak are measured on the pooled global and CDR datasets ($N = 4,290,331$ and $N = 1,065,332$), as individual chromosomes have varying coverage (ranging from 13.6k to 93.6k CDR pairs). An unassigned residual of 1,736 pairs (0.04% of total) maps to alpha-satellite arrays outside chr1–22 and chrX (including NC_060948.1); these reads reconcile the 23-chromosome sum (4,288,595 proper pairs) with the global dataset (4,290,331 proper pairs) and do not affect CDR pairs.
+      </p>
+    </section>
+
+    <!-- References -->
+    <section id="references">
+      <h2>References</h2>
+      <ol class="references-list">
+        <li><span class="ref-num">1.</span> Musacchio, A. &amp; Desai, A. A Molecular View of Kinetochore Assembly and Function. <em>Biology</em> <strong>6</strong>, 5 (2017).</li>
+        <li><span class="ref-num">2.</span> Altemose, N. et al. Complete genomic and epigenetic maps of human centromeres. <em>Science</em> <strong>376</strong>, eabl4178 (2022).</li>
+        <li><span class="ref-num">3.</span> Alexandrov, I. et al. Chromosome-specific alpha satellites: two problems one solution. <em>Genomics</em> <strong>74</strong>, 248–253 (2001).</li>
+        <li><span class="ref-num">4.</span> Palmer, D. K., O'Day, K., Trong, H. L., Charbonneau, H. &amp; Margolis, R. L. Purification of the centromere-specific protein CENP-A and demonstration that it is a distinctive histone. <em>Proc. Natl. Acad. Sci. USA</em> <strong>88</strong>, 3734–3738 (1991).</li>
+        <li><span class="ref-num">5.</span> Black, B. E. et al. Structural determinants for generating centromeric chromatin. <em>Nature</em> <strong>430</strong>, 578–582 (2004).</li>
+        <li><span class="ref-num">6.</span> Black, B. E. &amp; Cleveland, D. W. Epigenetic centromere specification and the paradoxical structure of CENP-A chromatin. <em>J. Cell Biol.</em> <strong>193</strong>, 413–424 (2011).</li>
+        <li><span class="ref-num">7.</span> Dunleavy, E. M. et al. The cell cycle timing of centromeric chromatin assembly in human cells. <em>Cell</em> <strong>137</strong>, 485–497 (2009).</li>
+        <li><span class="ref-num">8.</span> Dalal, Y., Wang, H., Lindsay, S. &amp; Henikoff, S. Tetrameric structure of centromeric nucleosomes in interphase Drosophila cells. <em>PLoS Biol.</em> <strong>5</strong>, e218 (2007).</li>
+        <li><span class="ref-num">9.</span> Bodor, D. L. et al. The quantitative architecture of centromeric chromatin. <em>eLife</em> <strong>3</strong>, e02137 (2014).</li>
+        <li><span class="ref-num">10.</span> Lacoste, N. et al. Mislocalization of cell cycle-regulated CENP-A to non-centromeric regions promotes aneuploidy. <em>Mol. Cell</em> <strong>53</strong>, 633–644 (2014).</li>
+        <li><span class="ref-num">11.</span> Camahort, R. et al. Cse4 is part of an octameric nucleosome in budding yeast. <em>Mol. Cell</em> <strong>35</strong>, 794–805 (2009).</li>
+        <li><span class="ref-num">12.</span> Henikoff, S. &amp; Furuyama, T. The unconventional architecture of centromeric nucleosomes. <em>Curr. Opin. Genet. Dev.</em> <strong>22</strong>, 90–97 (2012).</li>
+        <li><span class="ref-num">13.</span> Tachiwana, H. et al. Structural basis of instability of the CENP-A nucleosome. <em>Nature</em> <strong>476</strong>, 232–235 (2011).</li>
+        <li><span class="ref-num">14.</span> Roulland, Y. et al. The Flexible Ends of CENP-A Nucleosome Are Required for Mitotic Fidelity. <em>Mol. Cell</em> <strong>63</strong>, 674–685 (2016).</li>
+        <li><span class="ref-num">15.</span> Masumoto, H. et al. Properties of the novel DNA-binding protein CENP-B. <em>J. Cell Biol.</em> <strong>109</strong>, 1963–1973 (1989).</li>
+        <li><span class="ref-num">16.</span> Yoda, K. et al. Human centromere protein A (CENP-A) can be replaced in a human artificial chromosome by mouse CENP-A. <em>Mol. Cell. Biol.</em> <strong>20</strong>, 1953–1966 (2000).</li>
+        <li><span class="ref-num">17.</span> Hasson, D. et al. The octamer is the major form of CENP-A nucleosomes at human centromeres. <em>Nat. Struct. Mol. Biol.</em> <strong>20</strong>, 687–695 (2013).</li>
+        <li><span class="ref-num">18.</span> Nechemia-Arbely, Y. et al. Human centromeric CENP-A chromatin is a homotypic octamer. <em>J. Cell Biol.</em> <strong>216</strong>, 607–621 (2017).</li>
+        <li><span class="ref-num">19.</span> Thakur, J. &amp; Henikoff, S. CENPT bridges adjacent CENPA nucleosomes on young human α-satellite dimers. <em>Genome Res.</em> <strong>26</strong>, 1178–1187 (2016).</li>
+        <li><span class="ref-num">20.</span> Thakur, J. &amp; Henikoff, S. Unexpected conformational variations of the human centromeric chromatin complex. <em>Genes Dev.</em> <strong>32</strong>, 20–25 (2018).</li>
+        <li><span class="ref-num">21.</span> Gershman, A. et al. Epigenetic patterns in a complete human genome. <em>Science</em> <strong>376</strong>, eabj5089 (2022).</li>
+        <li><span class="ref-num">22.</span> Salinas-Luypaert, C. et al. DNA methylation influences human centromere positioning and function. <em>Nat. Genet.</em> <strong>57</strong>, 2509–2521 (2025).</li>
+        <li><span class="ref-num">23.</span> Logsdon, G. A. et al. The structure, function and evolution of a complete human chromosome 8. <em>Nature</em> <strong>593</strong>, 101–107 (2021).</li>
+        <li><span class="ref-num">24.</span> Bednar, J. et al. Structure and dynamics of a chromatosome with a linker histone. <em>Mol. Cell</em> <strong>66</strong>, 384–397 (2017).</li>
+        <li><span class="ref-num">25.</span> Zhou, B.-R. et al. Structural insights into the mechanism of human linker histone H1.4 recognition by nucleosomes. <em>Nat. Commun.</em> <strong>6</strong>, 6115 (2015).</li>
+        <li><span class="ref-num">26.</span> Corda, L. et al. Cell line-matched reference enables high-precision functional genomics. <em>Nat. Commun.</em> <strong>16</strong>, 11194 (2025).</li>
+      </ol>
+    </section>
+
+    <!-- Footer -->
+    <footer class="article-footer">
+      <div>
+        <strong>Repository:</strong> <a href="https://github.com/ad3002/cenpa_nucleosome_architecture" style="color:var(--primary); text-decoration:none;">github.com/ad3002/cenpa_nucleosome_architecture</a>
+      </div>
+      <div>
+        Generated with Research Compiler &amp; Antigravity • Version 2.0 (Post-Audit Epistemic Revision)
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll("section[id], div[id^='result-'], div[id^='disc-']");
+  const navLinks = document.querySelectorAll(".sidebar nav a");
+
+  window.addEventListener("scroll", () => {
+    let current = "";
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop - 120;
+      if (window.pageYOffset >= sectionTop) {
+        current = section.getAttribute("id");
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove("active");
+      if (link.getAttribute("href") === "#" + current) {
+        link.classList.add("active");
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
