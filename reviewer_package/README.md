@@ -20,12 +20,12 @@ For peer reviewers, referees, and editors, a dedicated standalone package is pre
   * [`cenpa_reviewer_package_v3.1.tar.gz`](cenpa_reviewer_package_v3.1.tar.gz) (7.2 MB)
   * [`cenpa_reviewer_package_v3.1.zip`](cenpa_reviewer_package_v3.1.zip) (7.2 MB)
 * **Compiled Publication Manuscripts:**
-  * **Integrated Manuscript with Embedded Figures (PDF, 15 pages):** [`paper/manuscript_integrated.pdf`](paper/manuscript_integrated.pdf)
-  * **Standard Submission Manuscript (PDF, 13 pages):** [`paper/manuscript.pdf`](paper/manuscript.pdf)
-  * **Interactive Web Article (KaTeX + Sidebar):** [`paper/index.html`](paper/index.html)
-  * **Markdown Source:** [`paper/manuscript.md`](paper/manuscript.md)
+  * **Integrated Manuscript with Embedded Figures (PDF, 15 pages):** [`manuscript_integrated.pdf`](manuscript_integrated.pdf)
+  * **Standard Submission Manuscript (PDF, 13 pages):** [`manuscript.pdf`](manuscript.pdf)
+  * **Interactive Web Article (KaTeX + Sidebar):** [`index.html`](index.html)
+  * **Markdown Source:** [`manuscript.md`](manuscript.md)
 * **Supplementary Data Workbook (Excel, 8 Formatted Tabs):**
-  * [`data/Supplementary_Tables_S1_to_S8.xlsx`](data/Supplementary_Tables_S1_to_S8.xlsx)
+  * [`tables/Supplementary_Tables_S1_to_S8.xlsx`](tables/Supplementary_Tables_S1_to_S8.xlsx)
 
 ---
 
@@ -80,7 +80,7 @@ For peer reviewers, referees, and editors, a dedicated standalone package is pre
 │       ├── Fig5_physical_caliper_and_mapq_invariance.{png,pdf,svg}
 │       ├── Fig6_intra_array_epigenetic_contrast.{png,pdf,svg}
 │       └── Fig7_cross_lineage_replication.{png,pdf,svg}
-├── data/
+├── tables/
 │   ├── Supplementary_Tables_S1_to_S8.xlsx # Formatted multi-tab Excel workbook
 │   ├── ledger_manifest.tsv            # Dynamically generated single-source-of-truth ledger
 │   ├── metrics.json                   # Machine-readable verified parameters

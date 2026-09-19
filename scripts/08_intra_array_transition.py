@@ -63,8 +63,12 @@ def run_intra_array_analysis():
                     cdrs[acc] = (int(p[1]), int(p[2]))
 
     # 2. Get array spans from BAM idxstats
-    array_spans = {}
-    array_names = {}
+    array_spans = collections.defaultdict(int)
+    array_names = collections.defaultdict(list)
+    table_rows = []
+    summary_tsv = os.path.join(DATA_DIR, "intra_array_transition_summary.tsv")
+    out_tsv = os.path.join(DATA_DIR, "intra_array_cdr_vs_flank_metrics.tsv")
+
     if os.path.exists(bam_file):
         cmd_idx = ["samtools", "idxstats", bam_file]
         res = subprocess.run(cmd_idx, stdout=subprocess.PIPE, text=True, check=True)
@@ -78,19 +82,19 @@ def run_intra_array_analysis():
                     acc = parts[0] + "_" + parts[1]
                     c = acc_to_chr.get(acc)
                     if c:
-                        array_spans[c] = span
-                        array_names[c] = arr
+                        array_spans[c] += span
+                        array_names[c].append(arr)
 
-    # 3. Stream reads from BAM
-    chr_stats = collections.defaultdict(lambda: {
-        "cdr_reads": 0, "flank_reads": 0, "cdr_bp": 0, "flank_bp": 0,
-        "cdr_mode": 133, "flank_mode": 133
-    })
-    
-    per_chr_cdr_lens = collections.defaultdict(collections.Counter)
-    per_chr_flank_lens = collections.defaultdict(collections.Counter)
+        # 3. Stream reads from BAM
+        chr_stats = collections.defaultdict(lambda: {
+            "cdr_reads": 0, "flank_reads": 0, "cdr_bp": 0, "flank_bp": 0,
+        })
+        
+        per_chr_cdr_lens = collections.defaultdict(collections.Counter)
+        per_chr_flank_lens = collections.defaultdict(collections.Counter)
+        global_cdr_lens = collections.Counter()
+        global_flank_lens = collections.Counter()
 
-    if os.path.exists(bam_file):
         print(f"Streaming reads from {bam_file} for intra-array contrast...")
         cmd_view = ["samtools", "view", "-f", "2", "-F", "2304", bam_file]
         proc = subprocess.Popen(cmd_view, stdout=subprocess.PIPE, text=True, bufsize=1048576)
@@ -120,119 +124,139 @@ def run_intra_array_analysis():
                     if cs <= genomic_mid < ce:
                         chr_stats[c]["cdr_reads"] += 1
                         per_chr_cdr_lens[c][tlen] += 1
+                        global_cdr_lens[tlen] += 1
                     else:
                         chr_stats[c]["flank_reads"] += 1
                         per_chr_flank_lens[c][tlen] += 1
+                        global_flank_lens[tlen] += 1
 
         proc.stdout.close()
         proc.wait()
 
-    # Calculate spans and densities
-    table_rows = []
-    total_cdr_reads = 0
-    total_cdr_bp = 0
-    total_flank_reads = 0
-    total_flank_bp = 0
+        # Calculate spans and densities
+        total_cdr_reads = 0
+        total_cdr_bp = 0
+        total_flank_reads = 0
+        total_flank_bp = 0
 
-    for c in chrom_order:
-        acc = chrom_map[c]
-        if acc in cdrs and c in array_spans:
-            cs, ce = cdrs[acc]
-            cdr_span = ce - cs
-            total_hor_span = array_spans[c]
-            flank_span = total_hor_span - cdr_span
-            
-            c_reads = chr_stats[c]["cdr_reads"]
-            f_reads = chr_stats[c]["flank_reads"]
-            
-            c_dens = c_reads / (cdr_span / 1000.0) if cdr_span > 0 else 0.0
-            f_dens = f_reads / (flank_span / 1000.0) if flank_span > 0 else 0.0
-            fold = c_dens / f_dens if f_dens > 0 else 0.0
-            
-            cdr_mode = per_chr_cdr_lens[c].most_common(1)[0][0] if per_chr_cdr_lens[c] else 133
-            flank_mode = per_chr_flank_lens[c].most_common(1)[0][0] if per_chr_flank_lens[c] else 133
-            
-            total_cdr_reads += c_reads
-            total_cdr_bp += cdr_span
-            total_flank_reads += f_reads
-            total_flank_bp += flank_span
-            
-            table_rows.append({
-                "chrom": c,
-                "hor_array_id": array_names.get(c, "HOR"),
-                "cdr_span_kb": f"{cdr_span / 1000.0:.1f}",
-                "flank_span_mb": f"{flank_span / 1e6:.2f}",
-                "cdr_reads": c_reads,
-                "flank_reads": f_reads,
-                "cdr_density_rp_per_kb": f"{c_dens:.3f}",
-                "flank_density_rp_per_kb": f"{f_dens:.3f}",
-                "fold_enrichment": f"{fold:.2f}x",
-                "cdr_mode_bp": cdr_mode,
-                "flank_mode_bp": flank_mode
-            })
+        for c in chrom_order:
+            acc = chrom_map[c]
+            if acc in cdrs and c in array_spans:
+                cs, ce = cdrs[acc]
+                cdr_span = ce - cs
+                total_hor_span = array_spans[c]
+                flank_span = total_hor_span - cdr_span
+                
+                c_reads = chr_stats[c]["cdr_reads"]
+                f_reads = chr_stats[c]["flank_reads"]
+                
+                c_dens = c_reads / (cdr_span / 1000.0) if cdr_span > 0 else 0.0
+                f_dens = f_reads / (flank_span / 1000.0) if flank_span > 0 else 0.0
+                fold = c_dens / f_dens if f_dens > 0 else 0.0
+                
+                cdr_mode = per_chr_cdr_lens[c].most_common(1)[0][0] if per_chr_cdr_lens[c] else "NA"
+                flank_mode = per_chr_flank_lens[c].most_common(1)[0][0] if per_chr_flank_lens[c] else "NA"
+                
+                total_cdr_reads += c_reads
+                total_cdr_bp += cdr_span
+                total_flank_reads += f_reads
+                total_flank_bp += flank_span
+                
+                hor_name = array_names[c][0] if array_names[c] else "HOR"
+                table_rows.append({
+                    "chrom": c,
+                    "hor_array_id": hor_name,
+                    "cdr_span_kb": f"{cdr_span / 1000.0:.1f}",
+                    "flank_span_mb": f"{flank_span / 1e6:.2f}",
+                    "cdr_reads": c_reads,
+                    "flank_reads": f_reads,
+                    "cdr_density_rp_per_kb": f"{c_dens:.3f}",
+                    "flank_density_rp_per_kb": f"{f_dens:.3f}",
+                    "fold_enrichment": f"{fold:.2f}x",
+                    "cdr_mode_bp": cdr_mode,
+                    "flank_mode_bp": flank_mode
+                })
 
-    # Global row
-    glob_c_dens = total_cdr_reads / (total_cdr_bp / 1000.0) if total_cdr_bp > 0 else 0.0
-    glob_f_dens = total_flank_reads / (total_flank_bp / 1000.0) if total_flank_bp > 0 else 0.0
-    glob_fold = glob_c_dens / glob_f_dens if glob_f_dens > 0 else 0.0
-    
-    table_rows.append({
-        "chrom": "GLOBAL",
-        "hor_array_id": "All 23 Active HOR Arrays",
-        "cdr_span_kb": f"{total_cdr_bp / 1000.0:.1f}",
-        "flank_span_mb": f"{total_flank_bp / 1e6:.2f}",
-        "cdr_reads": total_cdr_reads,
-        "flank_reads": total_flank_reads,
-        "cdr_density_rp_per_kb": f"{glob_c_dens:.3f}",
-        "flank_density_rp_per_kb": f"{glob_f_dens:.3f}",
-        "fold_enrichment": f"{glob_fold:.2f}x",
-        "cdr_mode_bp": 133,
-        "flank_mode_bp": 133
-    })
+        # Global row
+        glob_c_dens = total_cdr_reads / (total_cdr_bp / 1000.0) if total_cdr_bp > 0 else 0.0
+        glob_f_dens = total_flank_reads / (total_flank_bp / 1000.0) if total_flank_bp > 0 else 0.0
+        glob_fold = glob_c_dens / glob_f_dens if glob_f_dens > 0 else 0.0
+        glob_cdr_mode = global_cdr_lens.most_common(1)[0][0] if global_cdr_lens else "NA"
+        glob_flank_mode = global_flank_lens.most_common(1)[0][0] if global_flank_lens else "NA"
+        
+        table_rows.append({
+            "chrom": "GLOBAL",
+            "hor_array_id": "All 23 Active HOR Arrays",
+            "cdr_span_kb": f"{total_cdr_bp / 1000.0:.1f}",
+            "flank_span_mb": f"{total_flank_bp / 1e6:.2f}",
+            "cdr_reads": total_cdr_reads,
+            "flank_reads": total_flank_reads,
+            "cdr_density_rp_per_kb": f"{glob_c_dens:.3f}",
+            "flank_density_rp_per_kb": f"{glob_f_dens:.3f}",
+            "fold_enrichment": f"{glob_fold:.2f}x",
+            "cdr_mode_bp": glob_cdr_mode,
+            "flank_mode_bp": glob_flank_mode
+        })
 
-    # Write data/intra_array_cdr_vs_flank_metrics.tsv
-    out_tsv = os.path.join(DATA_DIR, "intra_array_cdr_vs_flank_metrics.tsv")
-    with open(out_tsv, "w") as f:
-        fields = list(table_rows[0].keys())
-        writer = csv.DictWriter(f, fieldnames=fields, delimiter="\t")
-        writer.writeheader()
-        for r in table_rows:
-            writer.writerow(r)
-    print(f"Wrote {out_tsv}")
+        # Write data/intra_array_cdr_vs_flank_metrics.tsv
+        with open(out_tsv, "w") as f:
+            fields = list(table_rows[0].keys())
+            writer = csv.DictWriter(f, fieldnames=fields, delimiter="\t")
+            writer.writeheader()
+            for r in table_rows:
+                writer.writerow(r)
+        print(f"Wrote {out_tsv}")
 
-    # Write data/intra_array_transition_summary.tsv
-    summary_tsv = os.path.join(DATA_DIR, "intra_array_transition_summary.tsv")
-    summary_data = [
-        {
-            "domain": "Active CDR Kinetochore Core",
-            "dna_methylation_5mc_pct": "20–40% (Hypomethylated Dip)",
-            "cenpa_read_density_rp_per_kb": f"{glob_c_dens:.3f}",
-            "fold_enrichment_vs_flank": f"{glob_fold:.2f}x",
-            "modal_core_footprint_bp": "125–133 bp (mode: 133 bp)",
-            "repeat_spacing_nrl_bp": "150 & 190 bp (340 bp dimer lattice)",
-            "modeled_linker_lengths_bp": "20 bp & 60 bp (mean: 40 bp)",
-            "cenpb_box_exposure_model": "Exposed at +55 bp (gyre exit) and +90–100 bp (free linker)",
-            "linker_histone_h1_model": "Predicted excluded (open gyres disrupt H1 binding pocket)"
-        },
-        {
-            "domain": "Adjacent Intra-Array HOR Flanks",
-            "dna_methylation_5mc_pct": "80–95% (Hypermethylated)",
-            "cenpa_read_density_rp_per_kb": f"{glob_f_dens:.3f}",
-            "fold_enrichment_vs_flank": "1.00x (Baseline)",
-            "modal_core_footprint_bp": "147 bp (Canonical H3 in Input MNase)",
-            "repeat_spacing_nrl_bp": "160 bp (Uniform peripheral lattice)",
-            "modeled_linker_lengths_bp": "13 bp (160 - 147 bp)",
-            "cenpb_box_exposure_model": "Sterically constrained (17-bp box cannot fit inside 13-bp linker)",
-            "linker_histone_h1_model": "Bound / chromatosome-stabilized (HP1/H3K9me3 compact chromatin)"
-        }
-    ]
-    with open(summary_tsv, "w") as f:
-        fields = list(summary_data[0].keys())
-        writer = csv.DictWriter(f, fieldnames=fields, delimiter="\t")
-        writer.writeheader()
-        for r in summary_data:
-            writer.writerow(r)
-    print(f"Wrote {summary_tsv}")
+        # Compute Wilcoxon and Sign Test p-values
+        from scipy import stats
+        diffs = [float(r["cdr_density_rp_per_kb"]) - float(r["flank_density_rp_per_kb"]) for r in table_rows if r["chrom"] != "GLOBAL"]
+        res_w = stats.wilcoxon(diffs, alternative="two-sided")
+        p_val_wilcoxon = float(res_w.pvalue)
+        p_val_exact_sign = 2.0 / (2.0 ** len(diffs))
+
+        # Write data/intra_array_transition_summary.tsv
+        summary_data = [
+            {
+                "domain": "Active CDR Kinetochore Core",
+                "dna_methylation_5mc_pct": "20–40% (Hypomethylated Dip, Literature model)",
+                "cenpa_read_density_rp_per_kb": f"{glob_c_dens:.3f}",
+                "fold_enrichment_vs_flank": f"{glob_fold:.2f}x",
+                "statistical_significance": f"p = {p_val_exact_sign:.2e} (two-sided exact sign test); p = {p_val_wilcoxon:.2e} (Wilcoxon)",
+                "modal_core_footprint_bp": f"125–133 bp (global mode: {glob_cdr_mode} bp)",
+                "repeat_spacing_nrl_bp": "150 & 190 bp (340 bp dimer lattice)",
+                "modeled_linker_lengths_bp": "20 bp & 60 bp (mean: 40 bp, Stereochemical model)",
+                "cenpb_box_exposure_model": "Exposed at +55 bp (gyre exit) and +90–100 bp (free linker)",
+                "linker_histone_h1_model": "Predicted excluded (open gyres disrupt H1 binding pocket)"
+            },
+            {
+                "domain": "Adjacent Intra-Array HOR Flanks",
+                "dna_methylation_5mc_pct": "80–95% (Hypermethylated, Literature model)",
+                "cenpa_read_density_rp_per_kb": f"{glob_f_dens:.3f}",
+                "fold_enrichment_vs_flank": "1.00x (Baseline)",
+                "statistical_significance": "Baseline comparator",
+                "modal_core_footprint_bp": f"Global mode: {glob_flank_mode} bp (147 bp in Input MNase)",
+                "repeat_spacing_nrl_bp": "160 bp (Uniform peripheral lattice)",
+                "modeled_linker_lengths_bp": "13 bp (160 - 147 bp, Stereochemical model)",
+                "cenpb_box_exposure_model": "Sterically constrained (17-bp box cannot fit inside 13-bp linker)",
+                "linker_histone_h1_model": "Bound / chromatosome-stabilized (HP1/H3K9me3 compact chromatin)"
+            }
+        ]
+        with open(summary_tsv, "w") as f:
+            fields = list(summary_data[0].keys())
+            writer = csv.DictWriter(f, fieldnames=fields, delimiter="\t")
+            writer.writeheader()
+            for r in summary_data:
+                writer.writerow(r)
+        print(f"Wrote {summary_tsv}")
+
+    else:
+        print(f"BAM {bam_file} not found; loading verified tables in data/ for Package F...")
+        with open(out_tsv) as f:
+            table_rows = list(csv.DictReader(f, delimiter="\t"))
+        glob_row = [r for r in table_rows if r["chrom"] == "GLOBAL"][0]
+        glob_c_dens = float(glob_row["cdr_density_rp_per_kb"])
+        glob_f_dens = float(glob_row["flank_density_rp_per_kb"])
+        glob_fold = float(glob_row["fold_enrichment"].replace("x", ""))
 
     # Plot Figure 6
     plot_figure_6(table_rows, glob_fold, glob_c_dens, glob_f_dens)

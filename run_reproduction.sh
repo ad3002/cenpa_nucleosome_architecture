@@ -184,6 +184,7 @@ assert ledger['PEAK1_OE_RATIO_55BP'] == f'{oe_peak1_55:.2f}x', 'Ledger peak 1 OE
 assert ledger['PEAK2_OE_RATIO_100BP'] == f'{oe_peak2_100:.2f}x', 'Ledger peak 2 OE mismatch'
 assert ledger['CDR_PHASOGRAM_DIMER'] == f'{phas_max_bp} bp', 'Ledger dimer peak mismatch'
 assert ledger['PHYSICAL_CALIPER_MODE'] == '133 bp', 'Ledger physical caliper mode mismatch'
+assert ledger['CALIPER_TLEN_EXACT_AGREEMENT'] == '98.49%', 'Caliper exact agreement mismatch'
 assert ledger['MAPQ_0_MULTIMAPPER_MODE'] == '133 bp', 'Ledger MAPQ=0 mode mismatch'
 assert ledger['MAPQ_GE20_UNIQUE_MODE'] == '133 bp', 'Ledger MAPQ>=20 mode mismatch'
 assert ledger['MAPQ_MODE_INVARIANCE_DELTA'] == '0 bp', 'Ledger MAPQ mode invariance mismatch'
@@ -196,6 +197,7 @@ assert ledger['REPLICATION_CHM13_REP1_CORE_PCT'] == '76.64%', 'CHM13 Rep 1 core 
 assert ledger['REPLICATION_CHM13_REP1_150BP_PCT'] == '0.215%', 'CHM13 Rep 1 150bp pct mismatch'
 assert ledger['REPLICATION_HG002_T2T_PAIRS'] == '11497', 'HG002 pairs mismatch'
 assert ledger['REPLICATION_RPE1_CENPA_PAIRS'] == '12991', 'RPE1 CENPA pairs mismatch'
+assert ledger['REPLICATION_RPE1_CENPB_PAIRS'] == '1347', 'RPE1 CENPB pairs mismatch'
 
 print(f'  [PASS] Single-Source Ledger: {sum_cdr_23 + sum_noncdr_23:,} (23 chr) + {unassigned_remainder:,} (unassigned residual) = {raw_total_global:,} total proper pairs')
 print(f'  [PASS] CDR Mononucleosome Gates: {raw_total_cdr:,} total CDR pairs -> {raw_cdr_130_175:,} dyads (130-175 bp); {raw_cdr_110_180:,} dyads (110-180 bp)')
@@ -204,7 +206,7 @@ print(f'         Fold depletion of 150 bp: {raw_depletion_mode_vs_150:.2f}x vs t
 print(f'  [PASS] CENP-B Box Geometry: Peak 1 at 55 bp ({raw_contrast:.2f}x contrast vs dyad; {oe_peak1_55:.2f}x vs null; {raw_depletion_null_15:.2f}x dyad depletion); Peak 2 at 100 bp ({oe_peak2_100:.2f}x vs null)')
 print(f'  [PASS] CDR Phasogram: Dominant non-zero peak in [100, 800] bp window at {phas_max_bp} bp ({phas_max_pairs:,} pairs); monomer modes at 150 & 190 bp')
 print(f'  [PASS] Mathematical Equivalence (Fig 3): Models A & B residuals identically 0 (algebraic unidentifiability verified)')
-print(f'  [PASS] Physical Caliper (Package B): FASTQ overlap mode = 133 bp (binned 130 bp); 88.18% in [110, 140] bp core; Concordance with BAM TLEN = 98.40% (median diff 0.0 bp)')
+print(f'  [PASS] Physical Caliper (Package B): FASTQ overlap mode = 133 bp (binned 130 bp); 88.18% in [110, 140] bp core; Concordance with BAM TLEN = 98.49% (median diff 0.0 bp)')
 print(f'  [PASS] MAPQ Invariance (Package C): MAPQ=0 mode = 133 bp; MAPQ>=20 mode = 133 bp (Delta = 0 bp; invariant to multi-mapping)')
 print(f'  [PASS] Intra-Array Contrast (Package F): CDR density = 4.374 rp/kb vs Flank density = 1.140 rp/kb (3.84x enrichment within identical HOR arrays)')
 print(f'  [PASS] Cross-Lineage Replication (Package G): CHM13 Rep 1 single-base mode = 133 bp (76.64% in core gate; 0.215% canonical 150 bp); FASTQ caliper mode = 133 bp; HG002 & RPE-1 validated')

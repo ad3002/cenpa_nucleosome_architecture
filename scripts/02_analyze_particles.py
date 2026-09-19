@@ -168,7 +168,7 @@ def run_analysis(bam_file, cdr_bed, boxes_tsv, hist_out, dist_out, summary_out=N
                     b = int(round(l / 5.0)) * 5
                     bin_counts[b] += cnt
             if not bin_counts:
-                return 130
+                return "NA"
             return max(bin_counts, key=bin_counts.get)
 
         def find_di_peak(counter):
@@ -196,19 +196,22 @@ def run_analysis(bam_file, cdr_bed, boxes_tsv, hist_out, dist_out, summary_out=N
                 m_nc = find_5bp_mode(chr_noncdr_hist[c])
                 di_c = find_di_peak(chr_cdr_hist[c])
                 di_nc = find_di_peak(chr_noncdr_hist[c])
-                nrl_c = di_c - m_c if di_c else "None"
-                nrl_nc = di_nc - m_nc if di_nc else "None"
+                nrl_c = di_c - m_c if (di_c is not None and m_c != "NA") else "None"
+                nrl_nc = di_nc - m_nc if (di_nc is not None and m_nc != "NA") else "None"
                 delta = (nrl_c - nrl_nc) if (isinstance(nrl_c, int) and isinstance(nrl_nc, int)) else "NA"
-                f.write(f"{c}\t{n_c}\t{m_c}\t{di_c if di_c else 'None'}\t{nrl_c}\t{n_nc}\t{m_nc}\t{di_nc if di_nc else 'None'}\t{nrl_nc}\t{delta}\n")
+                f.write(f"{c}\t{n_c}\t{m_c}\t{di_c if di_c is not None else 'None'}\t{nrl_c}\t{n_nc}\t{m_nc}\t{di_nc if di_nc is not None else 'None'}\t{nrl_nc}\t{delta}\n")
             
             # Global row
             tot_cdr = sum(chr_cdr_counts.values())
             tot_noncdr = sum(hist_noncdr.values())
             glob_m_c = find_5bp_mode(hist_cdr)
             glob_m_nc = find_5bp_mode(hist_noncdr)
-            glob_di_c = 290
-            glob_di_nc = 310
-            f.write(f"GLOBAL\t{tot_cdr}\t{glob_m_c}\t{glob_di_c}\t{glob_di_c - glob_m_c}\t{tot_noncdr}\t{glob_m_nc}\t{glob_di_nc}\t{glob_di_nc - glob_m_nc}\t{(glob_di_nc - glob_m_nc) - (glob_di_c - glob_m_c)}\n")
+            glob_di_c = find_di_peak(hist_cdr)
+            glob_di_nc = find_di_peak(hist_noncdr)
+            glob_nrl_c = (glob_di_c - glob_m_c) if (glob_di_c is not None and glob_m_c != "NA") else "None"
+            glob_nrl_nc = (glob_di_nc - glob_m_nc) if (glob_di_nc is not None and glob_m_nc != "NA") else "None"
+            glob_delta = (glob_nrl_c - glob_nrl_nc) if (isinstance(glob_nrl_c, int) and isinstance(glob_nrl_nc, int)) else "NA"
+            f.write(f"GLOBAL\t{tot_cdr}\t{glob_m_c}\t{glob_di_c if glob_di_c is not None else 'None'}\t{glob_nrl_c}\t{tot_noncdr}\t{glob_m_nc}\t{glob_di_nc if glob_di_nc is not None else 'None'}\t{glob_nrl_nc}\t{glob_delta}\n")
         print(f"Wrote {summary_out}")
 
 def main():

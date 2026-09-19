@@ -103,9 +103,12 @@ def run_bam_phasogram(bam_path, min_len=100, max_len=180, max_lag=600):
         if len(parts) > 8:
             ref = parts[2]
             pos = int(parts[3])
-            tl = abs(int(parts[8]))
+            tlen_val = int(parts[8])
+            tl = abs(tlen_val)
             if min_len <= tl <= max_len:
-                dyad = pos + tl // 2
+                # Orientation-invariant fragment dyad calculation
+                left_pos = pos if tlen_val > 0 else pos + tlen_val
+                dyad = left_pos + tl // 2
                 ref_dyads[ref].append(dyad)
     
     lags = collections.Counter()
@@ -192,6 +195,7 @@ def run_cross_lineage_analysis():
 
     summary_file = os.path.join(DATA_DIR, "cross_lineage_metrics_summary.tsv")
     dist_file = os.path.join(DATA_DIR, "cross_lineage_length_distributions.tsv")
+    caliper_file = os.path.join(DATA_DIR, "cross_lineage_caliper_distributions.tsv")
     phas_file = os.path.join(DATA_DIR, "cross_lineage_phasograms.tsv")
 
     # Check if raw files exist
@@ -209,9 +213,15 @@ def run_cross_lineage_analysis():
             # 1. BAM lengths
             bam_lens = run_bam_length_extraction(s["bam"])
             tot = sum(bam_lens.values())
+            
+            single_mode = "NA"
+            binned_mode = "NA"
+            core_pct = 0.0
+            p150_pct = 0.0
+            sub85_pct = 0.0
+            
             if tot > 0:
-                top_lens = sorted(bam_lens.items(), key=lambda x: -x[1])
-                single_mode = top_lens[0][0]
+                single_mode = sorted(bam_lens.items(), key=lambda x: -x[1])[0][0]
                 
                 binned = collections.Counter()
                 for k, v in bam_lens.items():
@@ -224,8 +234,6 @@ def run_cross_lineage_analysis():
                 
                 for k, v in bam_lens.items():
                     length_distributions[k][s["id"]] = v
-            else:
-                single_mode, binned_mode, core_pct, p150_pct, sub85_pct = 133, 130, 80.0, 0.1, 2.0
 
             # 2. Caliper
             caliper_mode = "NA"
@@ -251,9 +259,9 @@ def run_cross_lineage_analysis():
                 "analyzed_pairs": tot,
                 "single_base_mode_bp": single_mode,
                 "binned_5bp_mode_bp": binned_mode,
-                "core_pct_110_140bp": f"{core_pct:.2f}%",
-                "canonical_150bp_pct": f"{p150_pct:.3f}%",
-                "sub85bp_pct": f"{sub85_pct:.2f}%",
+                "core_pct_110_140bp": f"{core_pct:.2f}%" if tot > 0 else "NA",
+                "canonical_150bp_pct": f"{p150_pct:.3f}%" if tot > 0 else "NA",
+                "sub85bp_pct": f"{sub85_pct:.2f}%" if tot > 0 else "NA",
                 "physical_caliper_mode": caliper_mode
             })
 
@@ -273,6 +281,15 @@ def run_cross_lineage_analysis():
                 counts = [str(length_distributions[length].get(sid, 0)) for sid in ids]
                 f.write(f"{length}\t" + "\t".join(counts) + "\n")
         print(f"Wrote {dist_file}")
+
+        # Save caliper distributions
+        with open(caliper_file, "w") as f:
+            ids = [s["id"] for s in samples]
+            f.write("fragment_length_bp\t" + "\t".join(ids) + "\n")
+            for length in range(30, 150):
+                counts = [str(caliper_distributions[length].get(sid, 0)) for sid in ids]
+                f.write(f"{length}\t" + "\t".join(counts) + "\n")
+        print(f"Wrote {caliper_file}")
 
         # Save phasograms
         with open(phas_file, "w") as f:
@@ -298,6 +315,16 @@ def run_cross_lineage_analysis():
                     for s in samples:
                         length_distributions[length][s["id"]] = int(r.get(s["id"], 0))
         
+        # Load caliper distributions
+        if os.path.exists(caliper_file):
+            with open(caliper_file) as f:
+                reader = csv.DictReader(f, delimiter="\t")
+                for r in reader:
+                    length = int(r["fragment_length_bp"])
+                    for s in samples:
+                        caliper_distributions[length][s["id"]] = int(r.get(s["id"], 0))
+
+        # Load phasograms
         if os.path.exists(phas_file):
             with open(phas_file) as f:
                 reader = csv.DictReader(f, delimiter="\t")
@@ -307,32 +334,30 @@ def run_cross_lineage_analysis():
                         phasograms[lag][s["id"]] = int(r.get(s["id"], 0))
 
     # Plot Figure 7
-    plot_figure_7(samples, sample_metrics, length_distributions, caliper_distributions, phasograms)
+    plot_figure_7(samples, length_distributions, caliper_distributions, phasograms)
 
-def plot_figure_7(samples, sample_metrics, length_dist, caliper_dist, phas_dist):
-    fig = plt.figure(figsize=(13, 10), dpi=300)
-    gs = fig.add_gridspec(2, 2, hspace=0.35, wspace=0.25)
+def plot_figure_7(samples, length_dist, caliper_dist, phas_dist):
+    fig = plt.figure(figsize=(14, 11), dpi=300)
+    gs = fig.add_gridspec(2, 2, hspace=0.32, wspace=0.25)
 
     # -------------------------------------------------------------
-    # Panel A: Fragment Length Distribution across Lineages
+    # Panel A: Fragment Length Distributions Across Cohorts
     # -------------------------------------------------------------
     ax_a = fig.add_subplot(gs[0, 0])
-    cenpa_samples = [s for s in samples if s["id"] != "RPE1_CENPB"]
+    x_vals = np.arange(50, 241)
     
-    for s in cenpa_samples:
+    for s in samples:
         sid = s["id"]
-        x_vals = np.arange(40, 260)
         y_vals = np.array([length_dist[x].get(sid, 0) for x in x_vals], dtype=float)
         total = np.sum(y_vals)
         if total > 0:
             y_norm = y_vals / total * 100
-            # 5-bp smoothing for clean visualization
             kernel = np.ones(5) / 5
             y_smooth = np.convolve(y_norm, kernel, mode='same')
             ax_a.plot(x_vals, y_smooth, label=s["name"], color=s["color"], lw=1.8)
 
     ax_a.axvspan(110, 140, color="#fed7aa", alpha=0.3, label="Open Core Gate (110–140 bp)")
-    ax_a.axvline(133, color="#c2410c", ls="--", lw=1.2, alpha=0.8, label="Single-Base Mode (133 bp)")
+    ax_a.axvline(133, color="#c2410c", ls="--", lw=1.2, alpha=0.8, label="CHM13 Mode (133 bp)")
     ax_a.axvline(150, color="#64748b", ls=":", lw=1.2, alpha=0.8, label="Canonical Octamer (150 bp)")
     
     ax_a.set_title("A. Cross-Lineage CENP-A Protection Footprint", fontsize=11, fontweight="bold", loc="left")
@@ -343,42 +368,44 @@ def plot_figure_7(samples, sample_metrics, length_dist, caliper_dist, phas_dist)
     ax_a.legend(fontsize=7.5, loc="upper right")
 
     # -------------------------------------------------------------
-    # Panel B: Reference-Free Physical FASTQ Caliper (PE150 Cohorts)
+    # Panel B: Reference-Free FASTQ Caliper (Observable Window: L <= 138 bp)
     # -------------------------------------------------------------
     ax_b = fig.add_subplot(gs[0, 1])
     pe150_samples = [s for s in samples if s["is_pe150"]]
+    x_cal_vals = np.arange(60, 139) # Observable window for PE151 reads with 13 nt adapter
     
     for s in pe150_samples:
         sid = s["id"]
-        x_vals = np.arange(60, 150)
-        # Check caliper_dist or fallback to length_dist for inserts < 150
-        y_vals = np.array([caliper_dist[x].get(sid, length_dist[x].get(sid, 0)) for x in x_vals], dtype=float)
+        # ONLY plot real caliper data, NEVER fall back to BAM
+        y_vals = np.array([caliper_dist[x].get(sid, 0) for x in x_cal_vals], dtype=float)
         total = np.sum(y_vals)
         if total > 0:
             y_norm = y_vals / total * 100
-            ax_b.plot(x_vals, y_norm, label=f"{s['name']} Caliper", color=s["color"], lw=1.8)
+            mode_cal = x_cal_vals[np.argmax(y_vals)]
+            ax_b.plot(x_cal_vals, y_norm, label=f"{s['name']} (Mode: {mode_cal} bp)", color=s["color"], lw=1.8)
 
-    ax_b.axvline(133, color="#c2410c", ls="--", lw=1.2, label="Caliper Mode (133 bp)")
-    ax_b.set_title("B. Reference-Free FASTQ Read Overlap Caliper", fontsize=11, fontweight="bold", loc="left")
+    ax_b.axvline(133, color="#c2410c", ls="--", lw=1.2, alpha=0.8, label="CHM13 Caliper Mode (133 bp)")
+    ax_b.axvline(90, color="#0369a1", ls=":", lw=1.2, alpha=0.8, label="HG002 Caliper Mode (90 bp)")
+    ax_b.set_title("B. Reference-Free Overlap Caliper (L <= 138 bp window)", fontsize=11, fontweight="bold", loc="left")
     ax_b.set_xlabel("Physical Insert Length (bp)", fontsize=9.5)
     ax_b.set_ylabel("Normalized Density (%)", fontsize=9.5)
-    ax_b.set_xlim(70, 149)
+    ax_b.set_xlim(60, 140)
     ax_b.grid(True, alpha=0.25, ls="--")
-    ax_b.legend(fontsize=8, loc="upper left")
+    ax_b.legend(fontsize=7.5, loc="upper left")
 
     # -------------------------------------------------------------
     # Panel C: Spatial Autocorrelation (Phasogram) Across Cohorts
     # -------------------------------------------------------------
     ax_c = fig.add_subplot(gs[1, 0])
-    lags = np.arange(80, 550)
+    lags = np.arange(80, 520)
     
-    for s in [s for s in samples if s["id"] in ["CHM13_REP2", "CHM13_REP1", "HG002_T2T"]]:
+    # Plot CHM13_REP2 and CHM13_REP1
+    for s in [samples[0], samples[1]]:
         sid = s["id"]
         counts = np.array([phas_dist[l].get(sid, 0) for l in lags], dtype=float)
         tot = np.sum(counts)
         if tot > 0:
             norm_c = counts / tot * 100
-            # Gaussian/moving average smoothing
             smooth_c = np.convolve(norm_c, np.ones(7)/7, mode='same')
             ax_c.plot(lags, smooth_c, label=s["name"], color=s["color"], lw=1.8)
 
@@ -401,7 +428,6 @@ def plot_figure_7(samples, sample_metrics, length_dist, caliper_dist, phas_dist)
     # -------------------------------------------------------------
     ax_d = fig.add_subplot(gs[1, 1])
     
-    # Compare RPE1_CENPA vs RPE1_CENPB
     rpe_a = [length_dist[x].get("RPE1_CENPA", 0) for x in range(20, 260)]
     rpe_b = [length_dist[x].get("RPE1_CENPB", 0) for x in range(20, 260)]
     x_rpe = np.arange(20, 260)
@@ -411,18 +437,13 @@ def plot_figure_7(samples, sample_metrics, length_dist, caliper_dist, phas_dist)
     
     if tot_a > 0:
         p_a = np.convolve(np.array(rpe_a)/tot_a * 100, np.ones(5)/5, mode='same')
-        ax_d.plot(x_rpe, p_a, color="#15803d", lw=2.0, label="RPE-1 CENP-A (Histone Variant Core)")
+        ax_d.plot(x_rpe, p_a, color="#15803d", lw=2.0, label="RPE-1 CENP-A (Histone Wrap, Mode: 175 bp)")
     if tot_b > 0:
         p_b = np.convolve(np.array(rpe_b)/tot_b * 100, np.ones(5)/5, mode='same')
-        ax_d.plot(x_rpe, p_b, color="#7c3aed", lw=2.0, label="RPE-1 CENP-B (Sequence-Specific Factor)")
-    else:
-        # Illustrate clear schematic of CENP-B sub-nucleosomal protection
-        ax_d.text(0.5, 0.5, "RPE-1 CUT&RUN Comparator Verified:\nCENP-A wraps nucleosomal particles (125-175 bp)\nCENP-B binds directly to 17-bp box",
-                  ha="center", va="center", transform=ax_d.transAxes, fontsize=9,
-                  bbox=dict(boxstyle="round,pad=0.5", facecolor="#f8fafc", edgecolor="#cbd5e1"))
+        ax_d.plot(x_rpe, p_b, color="#7c3aed", lw=2.0, label="RPE-1 CENP-B (Factor Footprint, Mode: 165 bp)")
 
-    ax_d.axvline(133, color="#15803d", ls="--", lw=1.2, alpha=0.8, label="CENP-A Core (133 bp)")
-    ax_d.set_title("D. Histone Wrap (CENP-A) vs Sequence Factor (CENP-B)", fontsize=11, fontweight="bold", loc="left")
+    ax_d.axvline(133, color="#15803d", ls="--", lw=1.2, alpha=0.8, label="CHM13 Mode (133 bp)")
+    ax_d.set_title("D. Histone Wrap (CENP-A) vs Factor Complex (CENP-B) in RPE-1", fontsize=11, fontweight="bold", loc="left")
     ax_d.set_xlabel("Protected Footprint Length (bp)", fontsize=9.5)
     ax_d.set_ylabel("Relative Frequency (%)", fontsize=9.5)
     ax_d.set_xlim(20, 250)
