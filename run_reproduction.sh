@@ -68,13 +68,17 @@ python3 "$SCRIPT_DIR/scripts/05_simulate_phasogram_mixtures.py"
 echo "4. Packages B & C: Physical read overlap caliper & MAPQ stratification (Figure 5)..."
 python3 "$SCRIPT_DIR/scripts/07_calibrate_length_and_mapping.py"
 
-# 4. Package A (constructs single-source metrics.json and ledger_manifest.tsv from fresh TSVs)
-echo "5. Package A: Dynamically generating Single-Source-of-Truth ledger & metrics..."
+# 4. Package F (Intra-Array Epigenetic Contrast, Figure 6)
+echo "5. Package F: Local intra-array epigenetic contrast (Figure 6)..."
+python3 "$SCRIPT_DIR/scripts/08_intra_array_transition.py"
+
+# 5. Package A (constructs single-source metrics.json and ledger_manifest.tsv from fresh TSVs)
+echo "6. Package A: Dynamically generating Single-Source-of-Truth ledger & metrics..."
 python3 "$SCRIPT_DIR/scripts/generate_ledger.py"
 python3 "$SCRIPT_DIR/scripts/build_replicate_manifest.py"
 
-# 5. Empirical Figures (Figures 1 & 2 dynamically driven by metrics.json and raw TSVs)
-echo "6. Generating primary empirical figures (Figures 1 & 2)..."
+# 6. Empirical Figures (Figures 1 & 2 dynamically driven by metrics.json and raw TSVs)
+echo "7. Generating primary empirical figures (Figures 1 & 2)..."
 python3 "$SCRIPT_DIR/scripts/04_plot_figures.py"
 
 echo ""
@@ -201,6 +205,9 @@ assert ledger['PHYSICAL_CALIPER_MODE'] == '133 bp', 'Ledger physical caliper mod
 assert ledger['MAPQ_0_MULTIMAPPER_MODE'] == '133 bp', 'Ledger MAPQ=0 mode mismatch'
 assert ledger['MAPQ_GE20_UNIQUE_MODE'] == '133 bp', 'Ledger MAPQ>=20 mode mismatch'
 assert ledger['MAPQ_MODE_INVARIANCE_DELTA'] == '0 bp', 'Ledger MAPQ mode invariance mismatch'
+assert ledger['INTRA_ARRAY_FOLD_ENRICHMENT'] == '3.84x', 'Ledger intra-array fold enrichment mismatch'
+assert ledger['INTRA_ARRAY_CDR_DENSITY'] == '4.374 rp/kb', 'Ledger intra-array CDR density mismatch'
+assert ledger['INTRA_ARRAY_FLANK_DENSITY'] == '1.140 rp/kb', 'Ledger intra-array flank density mismatch'
 
 print(f'  [PASS] Single-Source Ledger: {sum_cdr_23 + sum_noncdr_23:,} (23 chr) + {unassigned_remainder:,} (unassigned residual) = {raw_total_global:,} total proper pairs')
 print(f'  [PASS] CDR Mononucleosome Gates: {raw_total_cdr:,} total CDR pairs -> {raw_cdr_130_175:,} dyads (130-175 bp); {raw_cdr_110_180:,} dyads (110-180 bp)')
@@ -211,14 +218,16 @@ print(f'  [PASS] CDR Phasogram: Dominant non-zero peak in [100, 800] bp window a
 print(f'  [PASS] Mathematical Equivalence (Fig 3): Models A & B residuals identically 0 (algebraic unidentifiability verified)')
 print(f'  [PASS] Physical Caliper (Package B): FASTQ overlap mode = 133 bp (binned 130 bp); 88.18% in [110, 140] bp core; Concordance with BAM TLEN = 98.40% (median diff 0.0 bp)')
 print(f'  [PASS] MAPQ Invariance (Package C): MAPQ=0 mode = 133 bp; MAPQ>=20 mode = 133 bp (Delta = 0 bp; invariant to multi-mapping)')
+print(f'  [PASS] Intra-Array Contrast (Package F): CDR density = 4.374 rp/kb vs Flank density = 1.140 rp/kb (3.84x enrichment within identical HOR arrays)')
 "
 
 echo "================================================================================"
-echo "  Validation Suite complete! All 5 publication figures verified."
+echo "  Validation Suite complete! All 6 publication figures verified."
 echo "  Figures saved to: paper/figures/"
 echo "    - Fig1_cenpa_core_and_box_geometry.{png,pdf,svg}"
 echo "    - Fig2_cdr_phasogram_and_chromatin_state.{png,pdf,svg}"
 echo "    - Fig3_phasogram_mixture_models.{png,pdf,svg}"
 echo "    - Fig4_cenpb_box_coupling_and_nulls.{png,pdf,svg}"
 echo "    - Fig5_physical_caliper_and_mapq_invariance.{png,pdf,svg}"
+echo "    - Fig6_intra_array_epigenetic_contrast.{png,pdf,svg}"
 echo "================================================================================"

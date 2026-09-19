@@ -93,5 +93,14 @@
     "mapq_0_multimapper_mode_bp": 133,
     "mapq_ge20_unique_mode_bp": 133,
     "mapq_mode_invariance_delta_bp": 0
+  },
+  "intra_array_contrast": {
+    "total_cdr_core_span_kb": 5022.6,
+    "total_intra_array_flank_span_mb": 55.04,
+    "cdr_read_density_rp_per_kb": 4.374,
+    "flank_read_density_rp_per_kb": 1.14,
+    "intra_array_fold_enrichment": 3.84,
+    "cdr_mode_bp": 133,
+    "flank_mode_bp": 133
   }
 }

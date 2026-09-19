@@ -28,3 +28,6 @@ CALIPER_TLEN_EXACT_AGREEMENT	Exact base-for-base agreement between FASTQ caliper
 MAPQ_0_MULTIMAPPER_MODE	Single-base modal length of MAPQ=0 repetitive HOR reads	bp	133	-	133 bp	MAPQ = 0 stratum
 MAPQ_GE20_UNIQUE_MODE	Single-base modal length of MAPQ>=20 uniquely placed reads	bp	133	-	133 bp	MAPQ >= 20 stratum
 MAPQ_MODE_INVARIANCE_DELTA	Difference between MAPQ=0 and MAPQ>=20 modal fragment lengths	bp	0	-	0 bp	Invariance test
+INTRA_ARRAY_FOLD_ENRICHMENT	CENP-A fold enrichment inside CDR vs flank of same active HOR arrays	fold_change	4.374	1.140	3.84x	Active HOR intra-array contrast
+INTRA_ARRAY_CDR_DENSITY	CENP-A read pair density inside active CDR core	reads_per_kb	21969	5022.6	4.374 rp/kb	23 active CDR intervals
+INTRA_ARRAY_FLANK_DENSITY	CENP-A read pair density in flanking regions of same HOR arrays	reads_per_kb	62732	55040.0	1.140 rp/kb	Flanks of same HOR arrays

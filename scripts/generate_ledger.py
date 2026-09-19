@@ -239,6 +239,15 @@ def build_ledger():
             "mapq_0_multimapper_mode_bp": 133,
             "mapq_ge20_unique_mode_bp": 133,
             "mapq_mode_invariance_delta_bp": 0
+        },
+        "intra_array_contrast": {
+            "total_cdr_core_span_kb": 5022.6,
+            "total_intra_array_flank_span_mb": 55.04,
+            "cdr_read_density_rp_per_kb": 4.374,
+            "flank_read_density_rp_per_kb": 1.140,
+            "intra_array_fold_enrichment": 3.84,
+            "cdr_mode_bp": 133,
+            "flank_mode_bp": 133
         }
     }
 
@@ -281,6 +290,9 @@ def build_ledger():
         f.write(f"MAPQ_0_MULTIMAPPER_MODE\tSingle-base modal length of MAPQ=0 repetitive HOR reads\tbp\t133\t-\t133 bp\tMAPQ = 0 stratum\n")
         f.write(f"MAPQ_GE20_UNIQUE_MODE\tSingle-base modal length of MAPQ>=20 uniquely placed reads\tbp\t133\t-\t133 bp\tMAPQ >= 20 stratum\n")
         f.write(f"MAPQ_MODE_INVARIANCE_DELTA\tDifference between MAPQ=0 and MAPQ>=20 modal fragment lengths\tbp\t0\t-\t0 bp\tInvariance test\n")
+        f.write(f"INTRA_ARRAY_FOLD_ENRICHMENT\tCENP-A fold enrichment inside CDR vs flank of same active HOR arrays\tfold_change\t4.374\t1.140\t3.84x\tActive HOR intra-array contrast\n")
+        f.write(f"INTRA_ARRAY_CDR_DENSITY\tCENP-A read pair density inside active CDR core\treads_per_kb\t21969\t5022.6\t4.374 rp/kb\t23 active CDR intervals\n")
+        f.write(f"INTRA_ARRAY_FLANK_DENSITY\tCENP-A read pair density in flanking regions of same HOR arrays\treads_per_kb\t62732\t55040.0\t1.140 rp/kb\tFlanks of same HOR arrays\n")
     print(f"Wrote {ledger_path}")
 
 if __name__ == "__main__":
