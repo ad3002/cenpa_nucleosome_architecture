@@ -31,3 +31,10 @@ MAPQ_MODE_INVARIANCE_DELTA	Difference between MAPQ=0 and MAPQ>=20 modal fragment
 INTRA_ARRAY_FOLD_ENRICHMENT	CENP-A fold enrichment inside CDR vs flank of same active HOR arrays	fold_change	4.374	1.140	3.84x	Active HOR intra-array contrast
 INTRA_ARRAY_CDR_DENSITY	CENP-A read pair density inside active CDR core	reads_per_kb	21969	5022.6	4.374 rp/kb	23 active CDR intervals
 INTRA_ARRAY_FLANK_DENSITY	CENP-A read pair density in flanking regions of same HOR arrays	reads_per_kb	62732	55040.0	1.140 rp/kb	Flanks of same HOR arrays
+REPLICATION_CHM13_REP1_MODE	Single-base modal fragment length in independent biological replicate CHM13 Rep 1	bp	133	-	133 bp	CHM13 Rep 1 (SRR13278684)
+REPLICATION_CHM13_REP1_CALIPER_MODE	Reference-free FASTQ caliper mode in CHM13 Rep 1	bp	133	-	133 bp	Raw FASTQ read overlap caliper
+REPLICATION_CHM13_REP1_CORE_PCT	Percentage of fragments in [110, 140] bp open core gate in CHM13 Rep 1	percentage	57428	74932	76.64%	CHM13 Rep 1 mapped pairs
+REPLICATION_CHM13_REP1_150BP_PCT	Percentage of canonical 150 bp fragments in CHM13 Rep 1	percentage	161	74932	0.215%	CHM13 Rep 1 mapped pairs
+REPLICATION_HG002_T2T_PAIRS	Mapped proper pairs for HG002 T2T diploid centromeres	read_pairs	11497	11497	11497	HG002 CENP-A CUT&RUN
+REPLICATION_RPE1_CENPA_PAIRS	Mapped pairs for RPE-1 diploid cell line	read_pairs	12991	12991	12991	RPE-1 CENP-A CUT&RUN
+REPLICATION_RPE1_CENPB_PAIRS	Mapped pairs for RPE-1 CENP-B architectural comparator	read_pairs	1347	1347	1347	RPE-1 CENP-B CUT&RUN

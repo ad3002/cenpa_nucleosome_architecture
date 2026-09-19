@@ -1,0 +1,6 @@
+cohort_id	cell_line	karyotype	assay	run_accession	analyzed_pairs	single_base_mode_bp	binned_5bp_mode_bp	core_pct_110_140bp	canonical_150bp_pct	sub85bp_pct	physical_caliper_mode
+CHM13_REP2	CHM13hTERT	46,XX (homozygous)	MNase ChIP-seq (PE150)	SRR13278683	84780	133	130	84.65%	0.022%	1.46%	133 bp
+CHM13_REP1	CHM13hTERT	46,XX (homozygous)	MNase ChIP-seq (PE150)	SRR13278684	74932	133	130	76.64%	0.215%	3.02%	133 bp
+HG002_T2T	HG002 (GM24385)	46,XY (diploid male)	CENP-A CUT&RUN (PE150)	SRR15395857	11497	20	30	16.12%	0.435%	38.64%	90 bp
+RPE1_CENPA	hTERT RPE-1	46,XX (diploid female)	CENP-A CUT&RUN (PE101)	SRR9201843	12991	175	160	12.39%	0.608%	7.31%	NA
+RPE1_CENPB	hTERT RPE-1	46,XX (diploid female)	CENP-B CUT&RUN (PE101)	SRR9201844	1347	126	165	12.84%	0.817%	2.38%	NA

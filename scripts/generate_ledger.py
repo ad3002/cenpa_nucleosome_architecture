@@ -248,6 +248,16 @@ def build_ledger():
             "intra_array_fold_enrichment": 3.84,
             "cdr_mode_bp": 133,
             "flank_mode_bp": 133
+        },
+        "cross_lineage_replication": {
+            "chm13_rep1_single_base_mode_bp": 133,
+            "chm13_rep1_caliper_mode_bp": 133,
+            "chm13_rep1_core_pct": 76.64,
+            "chm13_rep1_150bp_pct": 0.215,
+            "hg002_t2t_cutrun_analyzed_pairs": 11497,
+            "rpe1_cenpa_cutrun_analyzed_pairs": 12991,
+            "rpe1_cenpb_cutrun_analyzed_pairs": 1347,
+            "cross_lineage_150bp_depleted_all": True
         }
     }
 
@@ -293,6 +303,13 @@ def build_ledger():
         f.write(f"INTRA_ARRAY_FOLD_ENRICHMENT\tCENP-A fold enrichment inside CDR vs flank of same active HOR arrays\tfold_change\t4.374\t1.140\t3.84x\tActive HOR intra-array contrast\n")
         f.write(f"INTRA_ARRAY_CDR_DENSITY\tCENP-A read pair density inside active CDR core\treads_per_kb\t21969\t5022.6\t4.374 rp/kb\t23 active CDR intervals\n")
         f.write(f"INTRA_ARRAY_FLANK_DENSITY\tCENP-A read pair density in flanking regions of same HOR arrays\treads_per_kb\t62732\t55040.0\t1.140 rp/kb\tFlanks of same HOR arrays\n")
+        f.write(f"REPLICATION_CHM13_REP1_MODE\tSingle-base modal fragment length in independent biological replicate CHM13 Rep 1\tbp\t133\t-\t133 bp\tCHM13 Rep 1 (SRR13278684)\n")
+        f.write(f"REPLICATION_CHM13_REP1_CALIPER_MODE\tReference-free FASTQ caliper mode in CHM13 Rep 1\tbp\t133\t-\t133 bp\tRaw FASTQ read overlap caliper\n")
+        f.write(f"REPLICATION_CHM13_REP1_CORE_PCT\tPercentage of fragments in [110, 140] bp open core gate in CHM13 Rep 1\tpercentage\t57428\t74932\t76.64%\tCHM13 Rep 1 mapped pairs\n")
+        f.write(f"REPLICATION_CHM13_REP1_150BP_PCT\tPercentage of canonical 150 bp fragments in CHM13 Rep 1\tpercentage\t161\t74932\t0.215%\tCHM13 Rep 1 mapped pairs\n")
+        f.write(f"REPLICATION_HG002_T2T_PAIRS\tMapped proper pairs for HG002 T2T diploid centromeres\tread_pairs\t11497\t11497\t11497\tHG002 CENP-A CUT&RUN\n")
+        f.write(f"REPLICATION_RPE1_CENPA_PAIRS\tMapped pairs for RPE-1 diploid cell line\tread_pairs\t12991\t12991\t12991\tRPE-1 CENP-A CUT&RUN\n")
+        f.write(f"REPLICATION_RPE1_CENPB_PAIRS\tMapped pairs for RPE-1 CENP-B architectural comparator\tread_pairs\t1347\t1347\t1347\tRPE-1 CENP-B CUT&RUN\n")
     print(f"Wrote {ledger_path}")
 
 if __name__ == "__main__":

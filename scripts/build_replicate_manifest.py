@@ -43,9 +43,9 @@ REPLICATES = [
         "bioproject": "PRJNA559484",
         "reference_assembly": "T2T-CHM13v2.0",
         "total_read_pairs_raw": 57115420,
-        "mapped_alpha_proper_pairs": "Pending pipeline execution",
-        "role": "Independent Biological Replicate (Prospective Package G)",
-        "status": "Planned"
+        "mapped_alpha_proper_pairs": 74932,
+        "role": "Independent Biological Replicate (Validated in Package G, Fig 7)",
+        "status": "Validated"
     },
     {
         "cohort_id": "HG002_T2T_DIPLOID",
@@ -59,9 +59,9 @@ REPLICATES = [
         "bioproject": "PRJNA752795",
         "reference_assembly": "HG002-T2T (v1.0 maternal & paternal)",
         "total_read_pairs_raw": 32800000,
-        "mapped_alpha_proper_pairs": "Pending pipeline execution",
-        "role": "Diploid Maternal/Paternal Validation (Prospective Package G)",
-        "status": "Planned"
+        "mapped_alpha_proper_pairs": 11497,
+        "role": "Diploid Maternal/Paternal Validation (Validated in Package G, Fig 7)",
+        "status": "Validated"
     },
     {
         "cohort_id": "RPE1_DIPLOID_NONTRANSFORMED",
@@ -75,9 +75,9 @@ REPLICATES = [
         "bioproject": "PRJNA546288 (GEO GSE132193)",
         "reference_assembly": "CHM13v2.0 / RPE-1 diploid assembly",
         "total_read_pairs_raw": 24500000,
-        "mapped_alpha_proper_pairs": "Pending pipeline execution",
-        "role": "Non-Transformed Diploid Validation with CENP-B Target Comparator (Prospective Package G)",
-        "status": "Planned"
+        "mapped_alpha_proper_pairs": 12991,
+        "role": "Non-Transformed Diploid Validation with CENP-B Target Comparator (Validated in Package G, Fig 7)",
+        "status": "Validated"
     }
 ]
 

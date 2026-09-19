@@ -102,5 +102,15 @@
     "intra_array_fold_enrichment": 3.84,
     "cdr_mode_bp": 133,
     "flank_mode_bp": 133
+  },
+  "cross_lineage_replication": {
+    "chm13_rep1_single_base_mode_bp": 133,
+    "chm13_rep1_caliper_mode_bp": 133,
+    "chm13_rep1_core_pct": 76.64,
+    "chm13_rep1_150bp_pct": 0.215,
+    "hg002_t2t_cutrun_analyzed_pairs": 11497,
+    "rpe1_cenpa_cutrun_analyzed_pairs": 12991,
+    "rpe1_cenpb_cutrun_analyzed_pairs": 1347,
+    "cross_lineage_150bp_depleted_all": true
   }
 }
