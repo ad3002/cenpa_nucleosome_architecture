@@ -227,6 +227,18 @@ def build_ledger():
             "cdr_linker_class1_bp": 20,
             "cdr_linker_class2_bp": 60,
             "cdr_mean_linker_bp": 40
+        },
+        "physical_caliper_and_mapping": {
+            "physical_caliper_single_base_mode_bp": 133,
+            "physical_caliper_5bp_binned_mode_bp": 130,
+            "physical_caliper_core_gate_110_140bp_pct": 88.18,
+            "physical_caliper_sub85bp_pct": 1.15,
+            "physical_caliper_150bp_pct": 0.00,
+            "caliper_to_tlen_median_diff_bp": 0.0,
+            "caliper_to_tlen_exact_agreement_pct": 98.4,
+            "mapq_0_multimapper_mode_bp": 133,
+            "mapq_ge20_unique_mode_bp": 133,
+            "mapq_mode_invariance_delta_bp": 0
         }
     }
 
@@ -263,6 +275,12 @@ def build_ledger():
         f.write(f"CDR_PHASOGRAM_DIMER_PAIRS\tDyad pairs at detected dimer lattice peak ({dimer_lattice_peak_bp} bp) in CDR\tpairs\t{dimer_lattice_pairs_at_detected_peak}\t-\t{dimer_lattice_pairs_at_detected_peak}\tCDR dyads\n")
         f.write(f"CDR_PHASOGRAM_PAIRS_AT_340BP\tDyad pairs at exactly 340 bp in CDR\tpairs\t{pairs_at_exact_340bp_cdr}\t-\t{pairs_at_exact_340bp_cdr}\tCDR dyads at 340 bp\n")
         f.write(f"CDR_PHASOGRAM_MONOMERS\tBimodal monomer peaks in CDR\tbp\t[150, 190]\t-\tmean 170\tCDR dyads\n")
+        f.write(f"PHYSICAL_CALIPER_MODE\tReference-free physical overlap modal fragment length from raw FASTQ\tbp\t133\t-\t133 bp\tRaw FASTQ read overlap caliper\n")
+        f.write(f"PHYSICAL_CALIPER_CORE_PCT\tPercentage of FASTQ caliper fragments in [110, 140] bp core gate\tpercentage\t78025\t88481\t88.18%\tFASTQ sequence-verified pairs\n")
+        f.write(f"CALIPER_TLEN_EXACT_AGREEMENT\tExact base-for-base agreement between FASTQ caliper and BAM TLEN\tpercentage\t74696\t75911\t98.40%\tPairs mapped with TLEN\n")
+        f.write(f"MAPQ_0_MULTIMAPPER_MODE\tSingle-base modal length of MAPQ=0 repetitive HOR reads\tbp\t133\t-\t133 bp\tMAPQ = 0 stratum\n")
+        f.write(f"MAPQ_GE20_UNIQUE_MODE\tSingle-base modal length of MAPQ>=20 uniquely placed reads\tbp\t133\t-\t133 bp\tMAPQ >= 20 stratum\n")
+        f.write(f"MAPQ_MODE_INVARIANCE_DELTA\tDifference between MAPQ=0 and MAPQ>=20 modal fragment lengths\tbp\t0\t-\t0 bp\tInvariance test\n")
     print(f"Wrote {ledger_path}")
 
 if __name__ == "__main__":

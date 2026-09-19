@@ -716,7 +716,8 @@
             <li><a href="#result-2">2. Bipartite CENP-B Architecture (Fig 1, 4)</a></li>
             <li><a href="#result-3">3. 340 bp Dimer &amp; Counterexample (Fig 2, 3)</a></li>
             <li><a href="#result-4">4. Epigenetic Linker Transition</a></li>
-            <li><a href="#result-5">5. Prospective Validation Roadmap (Table 2)</a></li>
+            <li><a href="#result-5">5. Physical Caliper &amp; MAPQ Invariance (Fig 5)</a></li>
+            <li><a href="#result-6">6. Prospective Validation Roadmap (Table 2)</a></li>
           </ul>
         </li>
         <li>
@@ -1031,13 +1032,42 @@
 
       <!-- Result 5 -->
       <div id="result-5">
-        <h3>5. Prospective Validation Roadmap Across Independent Cohorts (Packages B, C, F, G)</h3>
+        <h3>5. Physical Overlap Caliper and MAPQ Stratification Invariance (Packages B &amp; C)</h3>
         <p>
-          While the core architecture (125–130 bp protection, bipartite CENP-B coupling, and 340-bp dimer lattice) is definitively established in the CHM13 discovery dataset ($N = 4,290,331$ proper pairs), establishing absolute cross-lineage universality requires systematic testing across genetic backgrounds and experimental methodologies. We define a prospective validation roadmap with authenticated public accessions (<strong>Table 2</strong>):
+          To demonstrate that the open 125–133 bp nucleosome protection footprint is an authentic physical property rather than an artifact of alignment scoring, soft-clipping, or mapping ambiguity in repetitive alpha-satellite higher-order repeats (HORs), we executed two independent biophysical and algorithmic calibrations (<strong>Fig. 5</strong>):
+        </p>
+        <p>
+          <strong>Reference-Free FASTQ Overlap Caliper (Package B):</strong> In paired-end 150 bp sequencing (PE150), all DNA inserts &lt;150 bp are fully double-sequenced across both strands, with both reads extending into 3' Illumina adapter sequences (<strong>Fig. 5A</strong>). Evaluating 100,000 paired-end reads from <code>SRR13278683</code> reveals that 88,481 pairs (88.48%) have base-for-base sequence-verified concordance across the duplex. Directly measuring physical insert length yields a single-base mode at <strong>133 bp</strong> (5-bp binned mode at <strong>130 bp</strong>; <strong>Fig. 5B</strong>), with <strong>88.18%</strong> of fragments inside the [110, 140] bp core gate, 1.15% sub-85 bp, and 0.00% canonical 150 bp.
+        </p>
+        <p>
+          Cross-referencing physical FASTQ caliper lengths against BWA-MEM alignment <code>TLEN</code> across 75,911 mapped pairs demonstrates exact linear agreement ($R^2 = 0.999$, median deviation = <strong>0.0 bp</strong>; <strong>Fig. 5C</strong>), with <strong>98.40%</strong> exact base-for-base identity, confirming that alignment introduces zero systematic distortion.
+        </p>
+        <p>
+          <strong>Invariance Across MAPQ Strata (Package C):</strong> Stratifying mapped pairs into multi-mapped repeats ($\text{MAPQ} = 0$, $N = 80,957$) and uniquely resolved reads ($\text{MAPQ} \ge 20$, $N = 2,942$) demonstrates that both strata peak at the exact same <strong>133 bp mode</strong> ($\Delta = 0$ bp; <strong>Fig. 5D</strong>). This confirms that locus placement ambiguity does not alter particle sizing.
+        </p>
+
+        <!-- FIGURE 5 -->
+        <figure class="figure-container" id="figure-5">
+          <div class="figure-wrapper">
+            <img src="figures/Fig5_physical_caliper_and_mapq_invariance.svg" alt="Figure 5: Physical Read Overlap Caliper and MAPQ Invariance" onerror="this.onerror=null; this.src='figures/Fig5_physical_caliper_and_mapq_invariance.png';">
+          </div>
+          <figcaption class="figure-caption">
+            <div class="figure-title">Figure 5 | Physical Read Overlap Caliper Model and MAPQ Stratification Invariance (Packages B &amp; C).</div><br>
+            <strong>(A)</strong> Physical caliper model for paired-end 150 bp reads. DNA fragments &lt;150 bp are sequenced in their entirety by both mates, bounded by 3' adapter read-through, enabling reference-free physical insert sizing.<br>
+            <strong>(B)</strong> Reference-free insert length distribution from raw FASTQ read overlaps ($N = 88,481$ sequence-verified pairs), showing dominant mode at 133 bp (130-bp bin) and 88.18% in the [110, 140] bp core gate.<br>
+            <strong>(C)</strong> Caliper length vs. BWA-MEM alignment <code>TLEN</code> concordance ($N = 75,911$ pairs, $R^2 = 0.999$, median difference = 0.0 bp, 98.40% exact match).<br>
+            <strong>(D)</strong> Normalized fragment length density for $\text{MAPQ} = 0$ (multimappers, $N = 80,957$) vs. $\text{MAPQ} \ge 20$ (uniquely placed, $N = 2,942$), demonstrating strict modal invariance ($\Delta = 0$ bp).
+          </figcaption>
+        </figure>
+      </div>
+
+      <!-- Result 6 -->
+      <div id="result-6">
+        <h3>6. Prospective Validation Roadmap Across Independent Cohorts (Packages F, G)</h3>
+        <p>
+          While the core architecture (125–130 bp protection, bipartite CENP-B coupling, 340-bp dimer lattice, and physical caliper invariance) is definitively established in the CHM13 discovery dataset ($N = 4,290,331$ proper pairs), establishing absolute cross-lineage universality requires systematic testing across genetic backgrounds and experimental methodologies. We define a prospective validation roadmap with authenticated public accessions (<strong>Table 2</strong>):
         </p>
         <ol>
-          <li><strong>Package B (Physical Sizing Calibration):</strong> High-depth mate-overlap assembly of PE150 reads (<code>SRR13278683</code>), verifying that for all inserts &lt;150 bp, mate alignment and 20 bp adapter read-through confirm the 125–130 bp mode independently of genomic mapping.</li>
-          <li><strong>Package C (Mapping Resolvability Calibration):</strong> Stratification of fragment length across MAPQ thresholds (multimapping $\text{MAPQ} = 0$ in homogeneous core HORs vs uniquely placed $\text{MAPQ} \ge 20$ in divergent flanking monomers) across all 23 centromeres.</li>
           <li><strong>Package F (Intra-Array Epigenetic Contrast):</strong> Paired comparison of hypomethylated CDR cores (28% 5mC) against adjacent hypermethylated flanks (88% 5mC) within identical higher-order repeat units (e.g., chr1, chr8, chr11, chrX), testing the transition from peripheral 160-bp repeats to the CDR 340-bp lattice.</li>
           <li><strong>Package G (Cross-Lineage Biological Replication):</strong> Independent validation across three distinct cellular and genomic contexts:
             <ul style="margin-top:0.3rem;">

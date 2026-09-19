@@ -1,0 +1,12 @@
+raw_cache/
+*.bam
+*.bai
+*.bwt
+*.pac
+*.ann
+*.amb
+*.sa
+*.tmp
+__pycache__/
+*.pyc
+.DS_Store

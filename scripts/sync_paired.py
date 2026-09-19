@@ -58,9 +58,14 @@ with open_gz_safe(f1_in) as r1, open_gz_safe(f2_in) as r2, \
 
         id1 = h1.split()[0]
         id2 = h2.split()[0]
-        # Clean common /1 and /2 suffixes if present
-        b1 = id1[:-2] if id1.endswith(('/1', '.1')) else id1
-        b2 = id2[:-2] if id2.endswith(('/2', '.2')) else id2
+        if id1 == id2:
+            b1, b2 = id1, id2
+        elif id1.endswith('/1') and id2.endswith('/2'):
+            b1, b2 = id1[:-2], id2[:-2]
+        elif id1.endswith('.1') and id2.endswith('.2'):
+            b1, b2 = id1[:-2], id2[:-2]
+        else:
+            b1, b2 = id1, id2
 
         if b1 != b2:
             raise ValueError(f"Mismatched paired-end ID at record {count}: {id1} vs {id2}")
