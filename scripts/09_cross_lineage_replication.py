@@ -77,25 +77,23 @@ def run_bam_length_extraction(bam_path):
     lens = collections.Counter()
     if not os.path.exists(bam_path):
         return lens
+    # First in pair (-f 65) excluding non-primary and supplementary alignments (-F 2304)
     cmd = ["samtools", "view", "-f", "65", "-F", "2304", bam_path]
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, text=True, bufsize=1048576)
     for line in proc.stdout:
         parts = line.split("\t")
         if len(parts) > 8:
             tl = abs(int(parts[8]))
-            r1_pos = int(parts[3])
-            r2_chr = parts[6]
-            r2_pos = int(parts[7])
             if 20 <= tl <= 500:
                 lens[tl] += 1
-            elif r2_chr == "=" and 20 <= abs(r2_pos - r1_pos) <= 500:
-                lens[abs(r2_pos - r1_pos)] += 1
+    proc.wait()
     return lens
 
 def run_bam_phasogram(bam_path, min_len=100, max_len=180, max_lag=600):
     ref_dyads = collections.defaultdict(list)
     if not os.path.exists(bam_path):
         return collections.Counter()
+    # Read1 of proper pair (-f 67), primary alignments only (-F 2304)
     cmd = ["samtools", "view", "-f", "67", "-F", "2304", bam_path]
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, text=True, bufsize=1048576)
     for line in proc.stdout:
@@ -103,24 +101,32 @@ def run_bam_phasogram(bam_path, min_len=100, max_len=180, max_lag=600):
         if len(parts) > 8:
             ref = parts[2]
             pos = int(parts[3])
+            pnext = int(parts[7])
             tlen_val = int(parts[8])
             tl = abs(tlen_val)
             if min_len <= tl <= max_len:
-                # Orientation-invariant fragment dyad calculation
-                left_pos = pos if tlen_val > 0 else pos + tlen_val
-                dyad = left_pos + tl // 2
+                # Fully orientation- and mate-invariant template start:
+                # In SAM format for proper pair on same chromosome, template start is min(POS, PNEXT)
+                left_pos = min(pos, pnext) if pnext > 0 else pos
+                dyad = left_pos + tl / 2.0
                 ref_dyads[ref].append(dyad)
+    proc.wait()
     
     lags = collections.Counter()
     for ref, d_list in ref_dyads.items():
-        if len(d_list) < 2: continue
+        if len(d_list) < 2:
+            continue
         d_arr = np.array(sorted(d_list))
-        for i in range(len(d_arr)):
-            sub = d_arr[i+1 : i+200]
-            diffs = sub - d_arr[i]
-            valid = diffs[diffs <= max_lag]
-            for d in valid:
-                lags[int(d)] += 1
+        n_dyads = len(d_arr)
+        # Distance-bounded sliding window without arbitrary neighbor truncation
+        for i in range(n_dyads):
+            j = i + 1
+            while j < n_dyads:
+                dist = d_arr[j] - d_arr[i]
+                if dist > max_lag:
+                    break
+                lags[int(round(dist))] += 1
+                j += 1
     return lags
 
 def run_cross_lineage_analysis():
@@ -133,7 +139,9 @@ def run_cross_lineage_analysis():
             "karyotype": "46,XX (homozygous)",
             "assay": "MNase ChIP-seq (PE150)",
             "run": "SRR13278683",
-            "bam": os.path.join(RAW_DIR, "SRR13278683_slice.sorted.bam"),
+            "bam": (os.path.join(RAW_DIR, "SRR13278683.sorted.bam")
+                    if os.path.exists(os.path.join(RAW_DIR, "SRR13278683.sorted.bam"))
+                    else os.path.join(RAW_DIR, "SRR13278683_slice.sorted.bam")),
             "f1": os.path.join(RAW_DIR, "sync_1.fastq.gz"),
             "f2": os.path.join(RAW_DIR, "sync_2.fastq.gz"),
             "color": "#c2410c",
@@ -154,8 +162,8 @@ def run_cross_lineage_analysis():
         },
         {
             "id": "HG002_T2T",
-            "name": "HG002 (Diploid Phased Centromeres)",
-            "cell_line": "HG002 (GM24385)",
+            "name": "HG002 (Diploid Centromeres)",
+            "cell_line": "HG002 (GM24385, EBV-transformed)",
             "karyotype": "46,XY (diploid male)",
             "assay": "CENP-A CUT&RUN (PE150)",
             "run": "SRR15395857",
@@ -306,7 +314,7 @@ def run_cross_lineage_analysis():
         with open(summary_file) as f:
             sample_metrics = list(csv.DictReader(f, delimiter="\t"))
         
-        # Load distributions
+        # Load distributions and reconcile summary metrics
         if os.path.exists(dist_file):
             with open(dist_file) as f:
                 reader = csv.DictReader(f, delimiter="\t")
@@ -314,6 +322,24 @@ def run_cross_lineage_analysis():
                     length = int(r["fragment_length_bp"])
                     for s in samples:
                         length_distributions[length][s["id"]] = int(r.get(s["id"], 0))
+            # Mathematically reconcile summary metrics with distribution counts so they never diverge
+            for sm in sample_metrics:
+                sid = sm["cohort_id"]
+                counts = {l: length_distributions[l].get(sid, 0) for l in length_distributions}
+                tot = sum(counts.values())
+                if tot > 0:
+                    sm["analyzed_pairs"] = tot
+                    core_c = sum(counts.get(l, 0) for l in range(110, 141))
+                    p150_c = counts.get(150, 0)
+                    sub85_c = sum(counts.get(l, 0) for l in range(0, 86))
+                    sm["core_pct_110_140bp"] = f"{(core_c / tot * 100.0):.2f}%"
+                    sm["canonical_150bp_pct"] = f"{(p150_c / tot * 100.0):.3f}%"
+                    sm["sub85bp_pct"] = f"{(sub85_c / tot * 100.0):.2f}%"
+            with open(summary_file, "w") as f:
+                writer = csv.DictWriter(f, fieldnames=list(sample_metrics[0].keys()), delimiter="\t")
+                writer.writeheader()
+                for r in sample_metrics:
+                    writer.writerow(r)
         
         # Load caliper distributions
         if os.path.exists(caliper_file):

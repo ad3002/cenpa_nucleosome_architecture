@@ -183,21 +183,71 @@ assert ledger['DYAD_CONTRAST_RATIO'] == f'{raw_contrast:.2f}x', 'Ledger dyad con
 assert ledger['PEAK1_OE_RATIO_55BP'] == f'{oe_peak1_55:.2f}x', 'Ledger peak 1 OE mismatch'
 assert ledger['PEAK2_OE_RATIO_100BP'] == f'{oe_peak2_100:.2f}x', 'Ledger peak 2 OE mismatch'
 assert ledger['CDR_PHASOGRAM_DIMER'] == f'{phas_max_bp} bp', 'Ledger dimer peak mismatch'
-assert ledger['PHYSICAL_CALIPER_MODE'] == '133 bp', 'Ledger physical caliper mode mismatch'
-assert ledger['CALIPER_TLEN_EXACT_AGREEMENT'] == '98.49%', 'Caliper exact agreement mismatch'
-assert ledger['MAPQ_0_MULTIMAPPER_MODE'] == '133 bp', 'Ledger MAPQ=0 mode mismatch'
-assert ledger['MAPQ_GE20_UNIQUE_MODE'] == '133 bp', 'Ledger MAPQ>=20 mode mismatch'
-assert ledger['MAPQ_MODE_INVARIANCE_DELTA'] == '0 bp', 'Ledger MAPQ mode invariance mismatch'
-assert ledger['INTRA_ARRAY_FOLD_ENRICHMENT'] == '3.84x', 'Ledger intra-array fold enrichment mismatch'
-assert ledger['INTRA_ARRAY_CDR_DENSITY'] == '4.374 rp/kb', 'Ledger intra-array CDR density mismatch'
-assert ledger['INTRA_ARRAY_FLANK_DENSITY'] == '1.140 rp/kb', 'Ledger intra-array flank density mismatch'
-assert ledger['REPLICATION_CHM13_REP1_MODE'] == '133 bp', 'CHM13 Rep 1 mode mismatch'
-assert ledger['REPLICATION_CHM13_REP1_CALIPER_MODE'] == '133 bp', 'CHM13 Rep 1 caliper mode mismatch'
-assert ledger['REPLICATION_CHM13_REP1_CORE_PCT'] == '76.64%', 'CHM13 Rep 1 core pct mismatch'
-assert ledger['REPLICATION_CHM13_REP1_150BP_PCT'] == '0.215%', 'CHM13 Rep 1 150bp pct mismatch'
-assert ledger['REPLICATION_HG002_T2T_PAIRS'] == '11497', 'HG002 pairs mismatch'
-assert ledger['REPLICATION_RPE1_CENPA_PAIRS'] == '12991', 'RPE1 CENPA pairs mismatch'
-assert ledger['REPLICATION_RPE1_CENPB_PAIRS'] == '1347', 'RPE1 CENPB pairs mismatch'
+# Caliper concordance dynamic check
+with open(data_dir / 'caliper_vs_tlen_concordance.tsv') as f:
+    conc_rows = list(csv.DictReader(f, delimiter='\t'))
+conc_tot = sum(float(r['n_pairs']) for r in conc_rows)
+conc_exact_pct = round(sum(float(r['n_pairs']) * float(r['exact_agreement_pct']) for r in conc_rows) / conc_tot, 2)
+assert ledger['CALIPER_TLEN_EXACT_AGREEMENT'] == f'{conc_exact_pct:.2f}%', 'Caliper exact agreement mismatch'
+
+# Physical caliper mode check
+with open(data_dir / 'read_overlap_caliper_hist.tsv') as f:
+    cal_rows = {int(r['fragment_length_bp']): int(r['count']) for r in csv.DictReader(f, delimiter='\t')}
+cal_mode = max(cal_rows, key=cal_rows.get)
+assert ledger['PHYSICAL_CALIPER_MODE'] == f'{cal_mode} bp', 'Ledger physical caliper mode mismatch'
+
+# MAPQ stratification dynamic check
+with open(data_dir / 'fragment_length_by_mapq.tsv') as f:
+    mapq_rows = list(csv.DictReader(f, delimiter='\t'))
+mapq0_counts = {int(r['fragment_length_bp']): int(r['mapq_0_multimappers']) for r in mapq_rows}
+mapq20_counts = {int(r['fragment_length_bp']): int(r['mapq_ge20_unique']) for r in mapq_rows}
+mapq0_mode = max(mapq0_counts, key=mapq0_counts.get)
+mapq20_mode = max(mapq20_counts, key=mapq20_counts.get)
+assert ledger['MAPQ_0_MULTIMAPPER_MODE'] == f'{mapq0_mode} bp'
+assert ledger['MAPQ_GE20_UNIQUE_MODE'] == f'{mapq20_mode} bp'
+assert ledger['MAPQ_MODE_INVARIANCE_DELTA'] == f'{abs(mapq20_mode - mapq0_mode)} bp'
+
+# Intra-array contrast dynamic check
+with open(data_dir / 'intra_array_cdr_vs_flank_metrics.tsv') as f:
+    ia_rows = [r for r in csv.DictReader(f, delimiter='\t') if r['chrom'] != 'GLOBAL']
+ia_cdr_reads = sum(int(r['cdr_reads']) for r in ia_rows)
+ia_flank_reads = sum(int(r['flank_reads']) for r in ia_rows)
+ia_cdr_kb = sum(float(r['cdr_span_kb']) for r in ia_rows)
+ia_flank_mb = sum(float(r['flank_span_mb']) for r in ia_rows)
+ia_c_dens = ia_cdr_reads / ia_cdr_kb
+ia_f_dens = ia_flank_reads / (ia_flank_mb * 1000.0)
+ia_fold = ia_c_dens / ia_f_dens
+assert ledger['INTRA_ARRAY_FOLD_ENRICHMENT'] == f'{ia_fold:.2f}x'
+assert ledger['INTRA_ARRAY_CDR_DENSITY'] == f'{ia_c_dens:.3f} rp/kb'
+assert ledger['INTRA_ARRAY_FLANK_DENSITY'] == f'{ia_f_dens:.3f} rp/kb'
+
+# Cross-lineage replication dynamic check
+with open(data_dir / 'cross_lineage_length_distributions.tsv') as f:
+    cl_lens = list(csv.DictReader(f, delimiter='\t'))
+with open(data_dir / 'cross_lineage_metrics_summary.tsv') as f:
+    cl_sum = {r['cohort_id']: r for r in csv.DictReader(f, delimiter='\t')}
+
+for cid in ['CHM13_REP1', 'HG002_T2T', 'RPE1_CENPA', 'RPE1_CENPB']:
+    c_counts = {int(r['fragment_length_bp']): int(r[cid]) for r in cl_lens}
+    c_tot = sum(c_counts.values())
+    assert int(cl_sum[cid]['analyzed_pairs']) == c_tot, f'Summary total mismatch for {cid}'
+    if cid == 'CHM13_REP1':
+        c_mode = max(c_counts, key=c_counts.get)
+        c_core = sum(c for l, c in c_counts.items() if 110 <= l <= 140)
+        c_p150 = c_counts.get(150, 0)
+        c_core_pct = f'{c_core / c_tot * 100.0:.2f}%'
+        c_150_pct = f'{c_p150 / c_tot * 100.0:.3f}%'
+        assert ledger['REPLICATION_CHM13_REP1_MODE'] == f'{c_mode} bp'
+        assert ledger['REPLICATION_CHM13_REP1_CORE_PCT'] == c_core_pct
+        assert ledger['REPLICATION_CHM13_REP1_150BP_PCT'] == c_150_pct
+        assert cl_sum[cid]['core_pct_110_140bp'] == c_core_pct
+        assert cl_sum[cid]['canonical_150bp_pct'] == c_150_pct
+    elif cid == 'HG002_T2T':
+        assert int(ledger['REPLICATION_HG002_T2T_PAIRS']) == c_tot
+    elif cid == 'RPE1_CENPA':
+        assert int(ledger['REPLICATION_RPE1_CENPA_PAIRS']) == c_tot
+    elif cid == 'RPE1_CENPB':
+        assert int(ledger['REPLICATION_RPE1_CENPB_PAIRS']) == c_tot
 
 print(f'  [PASS] Single-Source Ledger: {sum_cdr_23 + sum_noncdr_23:,} (23 chr) + {unassigned_remainder:,} (unassigned residual) = {raw_total_global:,} total proper pairs')
 print(f'  [PASS] CDR Mononucleosome Gates: {raw_total_cdr:,} total CDR pairs -> {raw_cdr_130_175:,} dyads (130-175 bp); {raw_cdr_110_180:,} dyads (110-180 bp)')
@@ -206,10 +256,11 @@ print(f'         Fold depletion of 150 bp: {raw_depletion_mode_vs_150:.2f}x vs t
 print(f'  [PASS] CENP-B Box Geometry: Peak 1 at 55 bp ({raw_contrast:.2f}x contrast vs dyad; {oe_peak1_55:.2f}x vs null; {raw_depletion_null_15:.2f}x dyad depletion); Peak 2 at 100 bp ({oe_peak2_100:.2f}x vs null)')
 print(f'  [PASS] CDR Phasogram: Dominant non-zero peak in [100, 800] bp window at {phas_max_bp} bp ({phas_max_pairs:,} pairs); monomer modes at 150 & 190 bp')
 print(f'  [PASS] Mathematical Equivalence (Fig 3): Models A & B residuals identically 0 (algebraic unidentifiability verified)')
-print(f'  [PASS] Physical Caliper (Package B): FASTQ overlap mode = 133 bp (binned 130 bp); 88.18% in [110, 140] bp core; Concordance with BAM TLEN = 98.49% (median diff 0.0 bp)')
-print(f'  [PASS] MAPQ Invariance (Package C): MAPQ=0 mode = 133 bp; MAPQ>=20 mode = 133 bp (Delta = 0 bp; invariant to multi-mapping)')
-print(f'  [PASS] Intra-Array Contrast (Package F): CDR density = 4.374 rp/kb vs Flank density = 1.140 rp/kb (3.84x enrichment within identical HOR arrays)')
-print(f'  [PASS] Cross-Lineage Replication (Package G): CHM13 Rep 1 single-base mode = 133 bp (76.64% in core gate; 0.215% canonical 150 bp); FASTQ caliper mode = 133 bp; HG002 & RPE-1 validated')
+print(f'  [PASS] Physical Caliper (Package B): FASTQ overlap mode = {cal_mode} bp; Concordance with BAM TLEN = {conc_exact_pct:.2f}%')
+print(f'  [PASS] MAPQ Invariance (Package C): MAPQ=0 mode = {mapq0_mode} bp; MAPQ>=20 mode = {mapq20_mode} bp (Delta = {abs(mapq20_mode - mapq0_mode)} bp; invariant to multi-mapping)')
+print(f'  [PASS] Intra-Array Contrast (Package F): CDR density = {ia_c_dens:.3f} rp/kb vs Flank density = {ia_f_dens:.3f} rp/kb ({ia_fold:.2f}x enrichment within active HOR arrays)')
+print(f'  [PASS] Cross-Lineage Replication (Package G): CHM13 Rep 1 single-base mode = {cl_sum[\"CHM13_REP1\"][\"single_base_mode_bp\"]} bp ({cl_sum[\"CHM13_REP1\"][\"core_pct_110_140bp\"]} core gate); HG002 & RPE-1 validated')
+
 "
 
 echo "================================================================================"

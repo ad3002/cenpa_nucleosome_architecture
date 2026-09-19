@@ -23,6 +23,9 @@ if [ ! -f "$ALPHA_FA" ]; then
     if [ -f "/mnt/data/claude/2026-09-14_nucleosome_genomics/cache/chm13_alpha_arrays.fa" ]; then
         echo "Copying reference from local cache..."
         cp "/mnt/data/claude/2026-09-14_nucleosome_genomics/cache/chm13_alpha_arrays.fa" "$ALPHA_FA"
+    elif [ -f "$SCRIPT_DIR/build_alpha_reference.py" ]; then
+        echo "Building alpha-satellite array reference via build_alpha_reference.py..."
+        python3 "$SCRIPT_DIR/build_alpha_reference.py" || true
     elif command -v samtools >/dev/null 2>&1 && [ -f "$RAW_DIR/chm13v2.0.fa" ]; then
         echo "Extracting alpha-satellite arrays from chm13v2.0.fa..."
         # Can extract centromeric intervals from whole genome FASTA
@@ -55,9 +58,15 @@ align_sra() {
     local S1="$RAW_DIR/${ACC}_sync_1.fastq.gz"
     local S2="$RAW_DIR/${ACC}_sync_2.fastq.gz"
 
-    echo "Downloading slice for $ACC (600 MB)..."
-    [ ! -s "$R1" ] && curl -4 -s -r 0-629145600 --retry 5 "$U1" -o "$R1"
-    [ ! -s "$R2" ] && curl -4 -s -r 0-629145600 --retry 5 "$U2" -o "$R2"
+    if [ "$PAIRS_LIMIT" -le 0 ]; then
+        echo "Downloading full FASTQ for $ACC..."
+        [ ! -s "$R1" ] && curl -4 -L -s --retry 5 "$U1" -o "$R1"
+        [ ! -s "$R2" ] && curl -4 -L -s --retry 5 "$U2" -o "$R2"
+    else
+        echo "Downloading slice for $ACC (600 MB)..."
+        [ ! -s "$R1" ] && curl -4 -s -r 0-629145600 --retry 5 "$U1" -o "$R1"
+        [ ! -s "$R2" ] && curl -4 -s -r 0-629145600 --retry 5 "$U2" -o "$R2"
+    fi
 
     echo "Synchronizing paired-end records for $ACC..."
     python3 "$SCRIPT_DIR/sync_paired.py" "$R1" "$R2" "$S1" "$S2" "$PAIRS_LIMIT"

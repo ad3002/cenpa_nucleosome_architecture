@@ -139,7 +139,7 @@ All sequencing data analyzed in this manuscript are publicly available under ope
 |---|---|---|---|---|---|---|
 | **CHM13_REP2** | CHM13hTERT | CENP-A ChIP | `SRR13278683` | `SRR13278681` (Input) | `PRJNA559484` | Primary Discovery Cohort ($N = 4,290,331$ proper pairs) |
 | **CHM13_REP1** | CHM13hTERT | CENP-A ChIP | `SRR13278684` | `SRR13278682` (Input) | `PRJNA559484` | Biological Replicate (Package G, $N = 74,932$ pairs) |
-| **HG002_T2T** | HG002 | CENP-A CUT&RUN | `SRR15395857` | `SRR15395854` (IgG) | `PRJNA752795` | Phased Diploid Validation (Package G, $N = 11,497$ pairs) |
+| **HG002_T2T** | HG002 (EBV-LCL) | CENP-A CUT&RUN | `SRR15395857` | `SRR15395854` (IgG) | `PRJNA752795` | Diploid Validation (Package G, $N = 11,497$ pairs) |
 | **RPE1_CENPA** | hTERT RPE-1 | CENP-A CUT&RUN | `SRR9201843` | `SRR9201844` (CENP-B) | `PRJNA546288` | Non-Transformed Diploid ($N = 12,991$ pairs) |
 | **RPE1_CENPB** | hTERT RPE-1 | CENP-B CUT&RUN | `SRR9201844` | Structural Comparator | `PRJNA546288` | Sequence-Specific Factor Comparator ($N = 1,347$ pairs) |
 

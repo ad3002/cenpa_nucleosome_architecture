@@ -166,11 +166,38 @@ def build_ledger():
     with open(concordance_path) as f:
         conc_rows = list(csv.DictReader(f, delimiter="\t"))
     conc_tot_pairs = sum(int(r["n_pairs"]) for r in conc_rows)
-    conc_exact_count = sum(round(int(r["n_pairs"]) * float(r["exact_agreement_pct"]) / 100) for r in conc_rows)
-    conc_exact_pct = round(conc_exact_count / conc_tot_pairs * 100, 2)
-    conc_weighted_mean_diff = round(sum(int(r["n_pairs"]) * (float(r["mean_tlen"]) - int(r["caliper_length_bp"])) for r in conc_rows) / conc_tot_pairs, 2)
-    conc_median_diff = 0.0
-    conc_r2 = 0.8832
+    c_vals = [float(r["caliper_length_bp"]) for r in conc_rows]
+    n_vals = [float(r["n_pairs"]) for r in conc_rows]
+    mean_t_vals = [float(r["mean_tlen"]) for r in conc_rows]
+    std_t_vals = [float(r["std_tlen"]) for r in conc_rows]
+    med_t_vals = [float(r["median_tlen"]) for r in conc_rows]
+    exact_p_vals = [float(r["exact_agreement_pct"]) for r in conc_rows]
+
+    mean_x = sum(n * x for n, x in zip(n_vals, c_vals)) / conc_tot_pairs
+    mean_y = sum(n * y for n, y in zip(n_vals, mean_t_vals)) / conc_tot_pairs
+    var_x = sum(n * (x - mean_x)**2 for n, x in zip(n_vals, c_vals)) / conc_tot_pairs
+    var_y = sum(n * (s**2 + (y - mean_y)**2) for n, y, s in zip(n_vals, mean_t_vals, std_t_vals)) / conc_tot_pairs
+    cov_xy = sum(n * (x - mean_x) * (y - mean_y) for n, x, y in zip(n_vals, c_vals, mean_t_vals)) / conc_tot_pairs
+    conc_r2 = round((cov_xy ** 2) / (var_x * var_y), 4) if (var_x * var_y) > 0 else 0.0
+    conc_weighted_mean_diff = round(mean_y - mean_x, 2)
+    conc_exact_pct = round(sum(n * p for n, p in zip(n_vals, exact_p_vals)) / conc_tot_pairs, 2)
+    conc_exact_count = int(round(conc_exact_pct / 100.0 * conc_tot_pairs))
+
+    row_diffs = [m - c for m, c in zip(med_t_vals, c_vals)]
+    w_0 = sum(n for n, d in zip(n_vals, row_diffs) if d == 0.0)
+    if w_0 >= 0.5 * conc_tot_pairs:
+        conc_median_diff = 0.0
+    else:
+        s_idx = sorted(range(len(row_diffs)), key=lambda i: row_diffs[i])
+        s_diffs = [row_diffs[i] for i in s_idx]
+        s_w = [n_vals[i] for i in s_idx]
+        cum = 0.0
+        conc_median_diff = 0.0
+        for d, w in zip(s_diffs, s_w):
+            cum += w
+            if cum >= 0.5 * conc_tot_pairs:
+                conc_median_diff = round(d, 1)
+                break
 
     mapq_path = os.path.join(DATA_DIR, "fragment_length_by_mapq.tsv")
     with open(mapq_path) as f:
@@ -199,7 +226,12 @@ def build_ledger():
     ia_pos_diff = sum(float(r["cdr_density_rp_per_kb"]) > float(r["flank_density_rp_per_kb"]) for r in ia_chr)
     ia_both_133 = sum(r["cdr_mode_bp"] == r["flank_mode_bp"] == "133" for r in ia_chr)
     ia_unequal = sum(r["cdr_mode_bp"] != r["flank_mode_bp"] for r in ia_chr)
-    ia_sign_test_p = 2 / (2 ** len(ia_chr)) if ia_pos_diff == len(ia_chr) else None
+    
+    diffs = [float(r["cdr_density_rp_per_kb"]) - float(r["flank_density_rp_per_kb"]) for r in ia_chr]
+    from scipy.stats import binomtest
+    non_zeros = [d for d in diffs if d != 0]
+    n_nz = len(non_zeros)
+    ia_sign_test_p = float(binomtest(sum(1 for d in non_zeros if d > 0), n_nz, p=0.5, alternative="two-sided").pvalue) if n_nz > 0 else 1.0
 
     # 7. Load cross-lineage replication data (Package G)
     cl_summary_path = os.path.join(DATA_DIR, "cross_lineage_metrics_summary.tsv")
@@ -215,25 +247,36 @@ def build_ledger():
     chm13_rep1_mode_count = chm13_rep1_counts[chm13_rep1_mode]
     chm13_rep1_110_140_count = sum(c for l, c in chm13_rep1_counts.items() if 110 <= l <= 140)
     chm13_rep1_150_count = chm13_rep1_counts.get(150, 0)
-    chm13_rep1_fold_depletion = round(chm13_rep1_mode_count / chm13_rep1_150_count, 2)
+    chm13_rep1_core_pct = round(chm13_rep1_110_140_count / chm13_rep1_n * 100.0, 2) if chm13_rep1_n > 0 else 0.0
+    chm13_rep1_150_pct = round(chm13_rep1_150_count / chm13_rep1_n * 100.0, 3) if chm13_rep1_n > 0 else 0.0
+    chm13_rep1_fold_depletion = round(chm13_rep1_mode_count / chm13_rep1_150_count, 2) if chm13_rep1_150_count > 0 else 999.0
 
     hg002_counts = {int(r["fragment_length_bp"]): int(r["HG002_T2T"]) for r in cl_lengths}
     hg002_n = sum(hg002_counts.values())
     hg002_uncond_mode = max(hg002_counts, key=hg002_counts.get)
-    hg002_core_pct = float(cl_summary["HG002_T2T"]["core_pct_110_140bp"].rstrip("%"))
-    hg002_150_pct = float(cl_summary["HG002_T2T"]["canonical_150bp_pct"].rstrip("%"))
-    hg002_sub85_pct = float(cl_summary["HG002_T2T"]["sub85bp_pct"].rstrip("%"))
+    hg002_core_count = sum(c for l, c in hg002_counts.items() if 110 <= l <= 140)
+    hg002_150_count = hg002_counts.get(150, 0)
+    hg002_sub85_count = sum(c for l, c in hg002_counts.items() if l <= 85)
+    hg002_core_pct = round(hg002_core_count / hg002_n * 100.0, 2) if hg002_n > 0 else 0.0
+    hg002_150_pct = round(hg002_150_count / hg002_n * 100.0, 3) if hg002_n > 0 else 0.0
+    hg002_sub85_pct = round(hg002_sub85_count / hg002_n * 100.0, 2) if hg002_n > 0 else 0.0
 
     rpe1_cenpa_counts = {int(r["fragment_length_bp"]): int(r["RPE1_CENPA"]) for r in cl_lengths}
     rpe1_cenpa_n = sum(rpe1_cenpa_counts.values())
     rpe1_cenpa_mode = max(rpe1_cenpa_counts, key=rpe1_cenpa_counts.get)
     rpe1_cenpa_147_175_count = sum(c for l, c in rpe1_cenpa_counts.items() if 147 <= l <= 175)
     rpe1_cenpa_150_count = rpe1_cenpa_counts.get(150, 0)
+    rpe1_cenpa_core_count = sum(c for l, c in rpe1_cenpa_counts.items() if 110 <= l <= 140)
+    rpe1_cenpa_core_pct = round(rpe1_cenpa_core_count / rpe1_cenpa_n * 100.0, 2) if rpe1_cenpa_n > 0 else 0.0
+    rpe1_cenpa_150_pct = round(rpe1_cenpa_150_count / rpe1_cenpa_n * 100.0, 3) if rpe1_cenpa_n > 0 else 0.0
+    rpe1_cenpa_147_175_pct = round(rpe1_cenpa_147_175_count / rpe1_cenpa_n * 100.0, 2) if rpe1_cenpa_n > 0 else 0.0
 
     rpe1_cenpb_counts = {int(r["fragment_length_bp"]): int(r["RPE1_CENPB"]) for r in cl_lengths}
     rpe1_cenpb_n = sum(rpe1_cenpb_counts.values())
     rpe1_cenpb_45_65_count = sum(c for l, c in rpe1_cenpb_counts.items() if 45 <= l <= 65)
     rpe1_cenpb_sub85_count = sum(c for l, c in rpe1_cenpb_counts.items() if l <= 85)
+    rpe1_cenpb_45_65_pct = round(rpe1_cenpb_45_65_count / rpe1_cenpb_n * 100.0, 2) if rpe1_cenpb_n > 0 else 0.0
+    rpe1_cenpb_sub85_pct = round(rpe1_cenpb_sub85_count / rpe1_cenpb_n * 100.0, 2) if rpe1_cenpb_n > 0 else 0.0
 
     # Compile metrics dictionary (pure dynamic computation)
     metrics = {

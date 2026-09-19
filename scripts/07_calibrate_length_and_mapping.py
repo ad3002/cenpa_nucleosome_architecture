@@ -265,23 +265,48 @@ def plot_figure_5(caliper_hist, mapq_0_hist, mapq_ge20_hist, concordance_pairs):
         ax_c.legend(fontsize=8, loc="lower right")
     elif os.path.exists(conc_tsv):
         # Render directly from verified concordance table
-        c_vals, mean_t, std_t, n_p = [], [], [], []
+        c_vals, mean_t, std_t, n_p, med_t, exact_p = [], [], [], [], [], []
         with open(conc_tsv) as f:
             for r in csv.DictReader(f, delimiter="\t"):
                 c_vals.append(int(r["caliper_length_bp"]))
                 mean_t.append(float(r["mean_tlen"]))
                 std_t.append(float(r["std_tlen"]))
                 n_p.append(int(r["n_pairs"]))
+                med_t.append(float(r["median_tlen"]))
+                exact_p.append(float(r["exact_agreement_pct"]))
         c_vals = np.array(c_vals)
         mean_t = np.array(mean_t)
         std_t = np.array(std_t)
         n_p = np.array(n_p)
+        med_t = np.array(med_t)
+        exact_p = np.array(exact_p)
         tot_n = sum(n_p)
         
+        # Dynamically compute statistics from sufficient statistics
+        mean_x = np.sum(n_p * c_vals) / tot_n
+        mean_y = np.sum(n_p * mean_t) / tot_n
+        var_x = np.sum(n_p * (c_vals - mean_x)**2) / tot_n
+        var_y = np.sum(n_p * (std_t**2 + (mean_t - mean_y)**2)) / tot_n
+        cov_xy = np.sum(n_p * (c_vals - mean_x) * (mean_t - mean_y)) / tot_n
+        r2 = (cov_xy ** 2) / (var_x * var_y) if (var_x * var_y) > 0 else 0.0
+        mean_diff = mean_y - mean_x
+        exact_pct = np.sum(n_p * exact_p) / tot_n
+        
+        row_diffs = med_t - c_vals
+        w_0 = np.sum(n_p[row_diffs == 0.0])
+        if w_0 >= 0.5 * tot_n:
+            median_diff = 0.0
+        else:
+            s_idx = np.argsort(row_diffs)
+            s_diffs = row_diffs[s_idx]
+            s_w = n_p[s_idx]
+            cum = np.cumsum(s_w)
+            median_diff = float(s_diffs[np.searchsorted(cum, 0.5 * tot_n)])
+
         ax_c.scatter(c_vals, mean_t, s=np.sqrt(n_p)*1.8, color="#0284c7", alpha=0.75, edgecolors="#0369a1", label="Binned mean TLEN")
         ax_c.errorbar(c_vals, mean_t, yerr=std_t, fmt='none', ecolor="#94a3b8", elinewidth=0.8, alpha=0.6, capsize=1.5)
         ax_c.plot([70, 150], [70, 150], color="#dc2626", ls="--", lw=1.5, label="Identity line (y = x)")
-        ax_c.text(75, 142, f"N = {tot_n:,} pairs\n$R^2$ = 0.8832\nMedian diff = 0.0 bp\nMean diff = -0.31 bp\nExact match = 98.49%",
+        ax_c.text(75, 142, f"N = {tot_n:,} pairs\n$R^2$ = {r2:.4f}\nMedian diff = {median_diff:.1f} bp\nMean diff = {mean_diff:.2f} bp\nExact match = {exact_pct:.2f}%",
                   fontsize=8.5, va="top", bbox=dict(boxstyle="round,pad=0.4", facecolor="#ffffff", edgecolor="#cbd5e1"))
         ax_c.legend(fontsize=8, loc="lower right")
     else:
@@ -304,13 +329,20 @@ def plot_figure_5(caliper_hist, mapq_0_hist, mapq_ge20_hist, concordance_pairs):
     c0 = np.array([mapq_0_hist[l] for l in plot_lens], dtype=float)
     c20 = np.array([mapq_ge20_hist[l] for l in plot_lens], dtype=float)
     
+    m0_tot = sum(mapq_0_hist.values())
+    m20_tot = sum(mapq_ge20_hist.values())
+    m0_mode = max(mapq_0_hist, key=mapq_0_hist.get) if mapq_0_hist else "NA"
+    m20_mode = max(mapq_ge20_hist, key=mapq_ge20_hist.get) if mapq_ge20_hist else "NA"
+    delta = (m20_mode - m0_mode) if (isinstance(m0_mode, int) and isinstance(m20_mode, int)) else "NA"
+    
     norm_0 = c0 / max(1.0, np.max(c0))
     norm_20 = c20 / max(1.0, np.max(c20))
     
-    ax_d.plot(plot_lens, norm_0, color="#d97706", lw=1.8, label="MAPQ = 0 (Multimappers, N=80,957)")
-    ax_d.plot(plot_lens, norm_20, color="#2563eb", lw=1.8, label="MAPQ >= 20 (Uniquely placed, N=2,942)")
+    ax_d.plot(plot_lens, norm_0, color="#d97706", lw=1.8, label=f"MAPQ = 0 (Multimappers, N={m0_tot:,})")
+    ax_d.plot(plot_lens, norm_20, color="#2563eb", lw=1.8, label=f"MAPQ >= 20 (Uniquely placed, N={m20_tot:,})")
     
-    ax_d.axvline(133, color="#dc2626", ls="--", lw=1.2, label="Modal invariant: 133 bp (Delta = 0 bp)")
+    mode_line = m0_mode if isinstance(m0_mode, int) else 133
+    ax_d.axvline(mode_line, color="#dc2626", ls="--", lw=1.2, label=f"Modal invariant: {mode_line} bp (Delta = {delta} bp)")
     ax_d.axvspan(110, 140, color="#fef3c7", alpha=0.4, zorder=0)
     
     ax_d.set_title("D. Mapping Quality Stratification Invariance", fontsize=11, fontweight="bold", loc="left")
@@ -335,9 +367,15 @@ def plot_figure_5(caliper_hist, mapq_0_hist, mapq_ge20_hist, concordance_pairs):
 def main():
     f1_sync = os.path.join(RAW_DIR, "sync_1.fastq.gz")
     f2_sync = os.path.join(RAW_DIR, "sync_2.fastq.gz")
-    bam_file = os.path.join(RAW_DIR, "SRR13278683_slice.sorted.bam")
+    if not (os.path.exists(f1_sync) and os.path.exists(f2_sync)):
+        alt_f1 = os.path.join(RAW_DIR, "SRR13278683_sync_1.fastq.gz")
+        alt_f2 = os.path.join(RAW_DIR, "SRR13278683_sync_2.fastq.gz")
+        if os.path.exists(alt_f1) and os.path.exists(alt_f2):
+            f1_sync, f2_sync = alt_f1, alt_f2
+
+    bam_file = os.path.join(RAW_DIR, "SRR13278683.sorted.bam")
     if not os.path.exists(bam_file):
-        bam_file = os.path.join(RAW_DIR, "SRR13278683.sorted.bam")
+        bam_file = os.path.join(RAW_DIR, "SRR13278683_slice.sorted.bam")
         
     caliper_hist = collections.Counter()
     mapq_0_hist = collections.Counter()
@@ -400,6 +438,9 @@ def main():
             with open(out_caliper_tsv) as f:
                 for r in csv.DictReader(f, delimiter="\t"):
                     caliper_hist[int(r["fragment_length_bp"])] = int(r["count"])
+
+    # Ensure MAPQ data is loaded if not already populated from BAM (mixed cache safety)
+    if sum(mapq_0_hist.values()) == 0:
         out_mapq_tsv = os.path.join(DATA_DIR, "fragment_length_by_mapq.tsv")
         if os.path.exists(out_mapq_tsv):
             with open(out_mapq_tsv) as f:

@@ -18,14 +18,98 @@ import subprocess
 import argparse
 
 def run_analysis(bam_file, cdr_bed, boxes_tsv, hist_out, dist_out, summary_out=None, max_len=800):
-    if not os.path.exists(bam_file):
-        raise FileNotFoundError(f"Input BAM file not found: {bam_file}")
-
     # 1. Chromosome mapping for CHM13v2.0
     chrom_order = [f"chr{i}" for i in range(1, 23)] + ["chrX"]
     chrom_map = {f"chr{i}": f"NC_{60925 + i - 1:06d}.1" for i in range(1, 23)}
     chrom_map["chrX"] = "NC_060947.1"
     acc_to_chr = {v: k for k, v in chrom_map.items()}
+
+    def find_5bp_mode(counter, min_len=100, max_len=200):
+        bin_counts = collections.Counter()
+        for l, cnt in counter.items():
+            if min_len <= l <= max_len:
+                b = int(round(l / 5.0)) * 5
+                bin_counts[b] += cnt
+        if not bin_counts:
+            return "NA"
+        return max(bin_counts, key=bin_counts.get)
+
+    def find_di_peak_func(counter, min_len=250, max_len=350, min_support=50, snr_threshold=1.8, min_peak_count=15):
+        bin_counts = collections.Counter()
+        for l, cnt in counter.items():
+            if min_len <= l <= max_len:
+                b = int(round(l / 5.0)) * 5
+                bin_counts[b] += cnt
+        if not bin_counts:
+            return None
+        tot_in_window = sum(bin_counts.values())
+        if tot_in_window < min_support:
+            return None
+        possible_bins = list(range(min_len, max_len + 5, 5))
+        avg_background = tot_in_window / float(len(possible_bins))
+        top_b, top_c = bin_counts.most_common(1)[0]
+        if top_c >= snr_threshold * avg_background and top_c >= min_peak_count:
+            return top_b
+        return None
+
+    if not os.path.exists(bam_file):
+        if os.path.exists(hist_out):
+            print(f"Notice: BAM file {bam_file} not found; analyzing pre-computed histogram from {hist_out}...")
+            hist_global = collections.Counter()
+            hist_cdr = collections.Counter()
+            hist_noncdr = collections.Counter()
+            with open(hist_out) as f:
+                for r in csv.DictReader(f, delimiter="\t"):
+                    l = int(r["fragment_length_bp"])
+                    hist_global[l] = int(r["global_count"])
+                    hist_cdr[l] = int(r["cdr_count"])
+                    hist_noncdr[l] = int(r["noncdr_count"])
+            
+            if summary_out and os.path.exists(summary_out):
+                with open(summary_out) as f:
+                    rows = list(csv.DictReader(f, delimiter="\t"))
+                
+                glob_m_c = find_5bp_mode(hist_cdr)
+                glob_m_nc = find_5bp_mode(hist_noncdr)
+                glob_di_c = find_di_peak_func(hist_cdr)
+                glob_di_nc = find_di_peak_func(hist_noncdr)
+                glob_nrl_c = (glob_di_c - glob_m_c) if (glob_di_c is not None and glob_m_c != "NA") else "None"
+                glob_nrl_nc = (glob_di_nc - glob_m_nc) if (glob_di_nc is not None and glob_m_nc != "NA") else "None"
+                glob_delta = (glob_nrl_c - glob_nrl_nc) if (isinstance(glob_nrl_c, int) and isinstance(glob_nrl_nc, int)) else "NA"
+                
+                for r in rows:
+                    if r["chrom"] == "GLOBAL":
+                        r["Mono_CDR"] = str(glob_m_c)
+                        r["Di_CDR"] = str(glob_di_c if glob_di_c is not None else "None")
+                        r["NRL_CDR"] = str(glob_nrl_c)
+                        r["Mono_NonCDR"] = str(glob_m_nc)
+                        r["Di_NonCDR"] = str(glob_di_nc if glob_di_nc is not None else "None")
+                        r["NRL_NonCDR"] = str(glob_nrl_nc)
+                        r["Delta_NRL"] = str(glob_delta)
+                    else:
+                        # Ensure Di and NRL match threshold if Di was called on tiny count
+                        try:
+                            # If Di was None, keep None
+                            if r.get("Di_CDR") in ["None", "—", ""]:
+                                r["Di_CDR"] = "None"
+                                r["NRL_CDR"] = "None"
+                            if r.get("Di_NonCDR") in ["None", "—", ""]:
+                                r["Di_NonCDR"] = "None"
+                                r["NRL_NonCDR"] = "None"
+                            nc = int(r["NRL_CDR"])
+                            nnc = int(r["NRL_NonCDR"])
+                            r["Delta_NRL"] = str(nc - nnc)
+                        except (ValueError, TypeError):
+                            r["Delta_NRL"] = "NA"
+                
+                with open(summary_out, "w") as f:
+                    writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()), delimiter="\t")
+                    writer.writeheader()
+                    for r in rows:
+                        writer.writerow(r)
+                print(f"Updated {summary_out}")
+            return
+        raise FileNotFoundError(f"Input BAM file not found: {bam_file}")
 
     cdrs = {}
     if os.path.exists(cdr_bed):
@@ -171,18 +255,23 @@ def run_analysis(bam_file, cdr_bed, boxes_tsv, hist_out, dist_out, summary_out=N
                 return "NA"
             return max(bin_counts, key=bin_counts.get)
 
-        def find_di_peak(counter):
+        def find_di_peak(counter, min_len=250, max_len=350, min_support=50, snr_threshold=1.8, min_peak_count=15):
             bin_counts = collections.Counter()
             for l, cnt in counter.items():
-                if 250 <= l <= 350:
+                if min_len <= l <= max_len:
                     b = int(round(l / 5.0)) * 5
                     bin_counts[b] += cnt
             if not bin_counts:
                 return None
+            tot_in_window = sum(bin_counts.values())
+            # Require minimum statistical support in the dinucleosome search window
+            if tot_in_window < min_support:
+                return None
+            # Evaluate average background across all possible 5-bp bins in the window
+            possible_bins = list(range(min_len, max_len + 5, 5))
+            avg_background = tot_in_window / float(len(possible_bins))
             top_b, top_c = bin_counts.most_common(1)[0]
-            # Must be a substantial peak (> 1.5x background)
-            avg = sum(bin_counts.values()) / max(len(bin_counts), 1)
-            if top_c > 1.8 * avg:
+            if top_c >= snr_threshold * avg_background and top_c >= min_peak_count:
                 return top_b
             return None
 

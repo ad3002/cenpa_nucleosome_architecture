@@ -128,7 +128,7 @@ Both strata exhibit identical single-base modes at **133 bp** ($\Delta = 0$ bp; 
 A potential confounding factor in centromeric genomics is that higher-order repeat arrays on different chromosomes possess divergent monomer compositions, divergent CENP-B box frequencies, and varying local sequence mappability. To strictly control for primary DNA sequence composition, we performed paired comparisons of the active hypomethylated CDR core against adjacent flanking chromatin strictly within the **exact same continuous higher-order repeat (HOR) array** across human chromosomes (e.g., `hor_1_5` on chr1, `hor_8_2` on chr8, `hor_11_3` on chr11, `hor_X_1` on chrX) (**Fig. 6A**, **Supplementary Table S5**).
 
 By restricting measurements to flanks of identical arrays, primary repeat unit sequence, monomer order, and CENP-B box motifs are held constant within each array. We observe:
-1. **Marked Local Enrichment in CDR Cores:** Mapped CENP-A read density within active CDR cores averages **4.374 reads/kb** ($N = 21,969$ reads across 5.02 Mb of CDR span) compared to **1.140 reads/kb** ($N = 62,732$ reads across 55.04 Mb of flank span) in flanking regions of the exact same arrays, representing a **3.84-fold pooled density contrast** (exact two-sided sign-test $p = 2 / 2^{23} = 2.38 \times 10^{-7}$; two-sided Wilcoxon signed-rank $p = 2.70 \times 10^{-5}$ across 23 chromosomes; all 23 chromosomes display positive enrichment, **Fig. 6B, C**, **Table S5**). Local enrichment reaches up to 11.1-fold on individual chromosomes (e.g., chr2: 10.77 vs 0.97 rp/kb; chr11: 4.87 vs 0.90 rp/kb).
+1. **Marked Local Enrichment in CDR Cores:** Mapped CENP-A read density within active CDR cores averages **4.374 reads/kb** ($N = 21,969$ reads across 5.02 Mb of CDR span) compared to **1.140 reads/kb** ($N = 62,732$ reads across 55.04 Mb of flank span) in flanking regions of the exact same arrays, representing a **3.84-fold pooled density contrast** (exact two-sided sign-test $p = 2 / 2^{23} = 2.38 \times 10^{-7}$; two-sided Wilcoxon signed-rank $p = 2.70 \times 10^{-5}$ across 23 chromosomes; all 23 chromosomes display positive enrichment, **Fig. 6B, C**, **Table S5**). Local enrichment reaches up to 11.1-fold on individual chromosomes (e.g., chr2: 10.77 vs 0.97 rp/kb; chr11: 4.23 vs 0.85 rp/kb [4.98x]).
 2. **Core Footprint Across Intra-Array Domains:** Across the pooled population of all 23 active HOR arrays, reads mapped to both the active CDR core and intra-array flanks exhibit an identical pooled single-base protection mode at **133 bp** (modal 5-bp bin at 130 bp). Across individual chromosomes, local mode estimates vary (4/23 chromosomes exhibit both CDR and flank modes at exactly 133 bp; 14/23 exhibit differing point modes due to finite coverage across narrow intervals), while pooled aggregate profiles confirm that the open 125–133 bp particle geometry is maintained across the active centromere.
 3. **Steric Linker Compatibility Model:** In peripheral heterochromatin, canonical nucleosome repeat lengths (~160 bp) and 147-bp octamer footprints leave an average linker of only **~13 bp** ($160 - 147$ bp), which is sterically incompatible with sequence-specific binding of the 17-bp CENP-B box without DNA unpeeling or remodeling (**Fig. 6D**). Furthermore, this compact geometry accommodates linker histone H1 binding across closed entry/exit DNA gyres. In sharp contrast, within the CDR kinetochore domain, the combination of 125–133 bp unpeeled cores and 150/190 bp repeat spacing expands linkers to modeled lengths of **20 bp and 60 bp** (mean 40 bp). This linker expansion accommodates the 17-bp CENP-B box both at the unpeeled gyre boundary (+55 bp) and in free linker DNA (+90–100 bp), while the flared entry/exit gyres sterically disrupt the canonical chromatosome binding pocket for H1 (**Fig. 6D**). We note that 5mC DNA methylation states and H1 exclusion represent structural and literature-grounded mechanistic models rather than directly measured channels in this MNase ChIP dataset.
 
@@ -143,10 +143,10 @@ Evaluating 74,932 mapped proper pairs from independent biological replicate `SRR
 - **Identical Single-Base Protection Mode:** CENP-A ChIP fragments exhibit a single-base mode at **133 bp** (modal 5-bp bin at 130 bp; **Fig. 7A**), exactly replicating the discovery dataset ($\Delta = 0$ bp). Fragments in the [110, 140] bp open core gate constitute **76.64%** of the library ($N = 57,426$).
 - **Canonical Octamer Depletion:** Fragments at exactly 150 bp represent **0.215%** of reads ($N = 161$), representing a **26.91-fold depletion** relative to the 133-bp mode ($N = 4,333$), confirming that 150-bp octamer wraps are depleted in native CENP-A chromatin.
 - **Reference-Free Caliper Confirmation:** Computing reference-free insert lengths directly from raw FASTQ read overlaps without reference alignment within the observable window ($L \le 138$ bp) yields an identical single-base mode at **133 bp** (**Fig. 7B**), confirming that the open core particle is an intrinsic biophysical feature of independent chromatin preparations.
-- **340-bp Dimer Lattice Preservation:** Spatial autocorrelation of mononucleosome dyads independently recovers the **340-bp dimer lattice peak** ($N = 502$ pairs at 340 bp) and bimodal monomer spacing at 150 bp and 190 bp (**Fig. 7C**).
+- **340-bp Dimer Lattice Preservation:** Spatial autocorrelation of mononucleosome dyads independently recovers the **340-bp dimer lattice peak** ($N = 779$ pairs at 340 bp for Rep 1; $N = 844$ pairs in Rep 2) and bimodal monomer spacing at 150 bp and 190 bp (**Fig. 7C**).
 
 #### 2. Diploid Centromeres (HG002 T2T)
-To test particle sizing in an untransformed diploid male genome, we evaluated CENP-A CUT&RUN from HG002 (`SRR15395857`, $N = 11,497$ mapped pairs aligned across alpha-satellite arrays; **Fig. 7A**):
+To test particle sizing in a diploid male genome (HG002/GM24385, EBV-transformed B-lymphoblastoid cell line), we evaluated CENP-A CUT&RUN from HG002 (`SRR15395857`, $N = 11,497$ mapped pairs aligned across alpha-satellite arrays; **Fig. 7A**):
 - **Cleavage Dynamics and Modal Sizing:** Due to targeted pAG-MNase tethering kinetics, 38.64% of fragments reside in the sub-nucleosomal range ($\le 85$ bp), giving an unconditioned global mode of 20 bp. Within the mononucleosome size window [100, 180] bp, the conditional mononucleosome mode centers at **120 bp** (modal 5-bp bin at 125 bp; 16.12% in [110, 140] bp). Canonical 150-bp fragments represent **0.435%** ($N = 50$).
 - **Physical Caliper Distribution:** Reference-free FASTQ caliper sizing of PE150 reads yields a modal insert length at **90 bp** (**Fig. 7B**), reflecting the sub-nucleosomal enrichment characteristic of CUT&RUN.
 
@@ -217,48 +217,48 @@ Comparison of pairwise autocorrelation between **Model A** (intramolecular alter
 ---
 
 ### Table 1: Chromosome-by-Chromosome CENP-A MNase Metrics Across 23 CHM13 Centromeres.
-| Chromosome | N_cdr | CDR Mode* | Di_CDR (bp) | NRL_CDR | N_noncdr | Non-CDR Mode* | Di_NonCDR | NRL_NonCDR | Delta_NRL |
+| Chromosome | N CDR | CDR Mode | Di CDR | NRL CDR | N Non-CDR | Non-CDR Mode | Di Non-CDR | NRL Non-CDR | Delta NRL |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| chr1 | 43,439 | 130 | 290 | 160 | 179,722 | 130 | — | — | NA |
-| chr2 | 93,675 | 130 | — | — | 109,100 | 130 | — | — | NA |
-| chr3 | 60,139 | 130 | — | — | 137,443 | 130 | — | — | NA |
-| chr4 | 24,070 | 130 | — | — | 180,320 | 130 | — | — | NA |
-| chr5 | 57,875 | 130 | — | — | 184,479 | 130 | 310 | 180 | NA |
-| chr6 | 56,875 | 130 | — | — | 148,556 | 130 | 305 | 175 | NA |
-| chr7 | 58,158 | 130 | — | — | 124,814 | 130 | — | — | NA |
-| chr8 | 28,552 | 130 | — | — | 144,590 | 130 | — | — | NA |
-| chr9 | 30,291 | 130 | — | — | 188,086 | 130 | — | — | NA |
-| chr10 | 40,244 | 130 | — | — | 136,221 | 130 | — | — | NA |
-| chr11 | 52,678 | 130 | — | — | 130,394 | 130 | — | — | NA |
-| chr12 | 82,347 | 130 | — | — | 156,792 | 130 | — | — | NA |
-| chr13 | 29,517 | 130 | 295 | 165 | 139,108 | 130 | — | — | NA |
-| chr14 | 32,779 | 130 | — | — | 124,800 | 130 | — | — | NA |
-| chr15 | 53,108 | 130 | — | — | 120,412 | 130 | — | — | NA |
-| chr16 | 44,224 | 130 | — | — | 149,973 | 130 | — | — | NA |
-| chr17 | 13,665 | 130 | — | — | 132,789 | 130 | — | — | NA |
-| chr18 | 14,934 | 130 | — | — | 151,036 | 130 | — | — | NA |
-| chr19 | 93,308 | 130 | — | — | 109,934 | 130 | 290 | 160 | NA |
-| chr20 | 32,482 | 130 | — | — | 148,563 | 130 | — | — | NA |
-| chr21 | 61,168 | 130 | — | — | 47,341 | 130 | — | — | NA |
-| chr22 | 37,070 | 130 | — | — | 132,069 | 130 | — | — | NA |
-| chrX | 24,734 | 130 | — | — | 146,721 | 130 | — | — | NA |
+| chr1 | 43,439 | 130 | — | — | 179,722 | 130 | — | — | — |
+| chr2 | 93,675 | 130 | — | — | 109,100 | 130 | — | — | — |
+| chr3 | 60,139 | 130 | — | — | 137,443 | 130 | — | — | — |
+| chr4 | 24,070 | 130 | — | — | 180,320 | 130 | — | — | — |
+| chr5 | 57,875 | 130 | — | — | 184,479 | 130 | — | — | — |
+| chr6 | 56,875 | 130 | — | — | 148,556 | 130 | — | — | — |
+| chr7 | 58,158 | 130 | — | — | 124,814 | 130 | — | — | — |
+| chr8 | 28,552 | 130 | — | — | 144,590 | 130 | — | — | — |
+| chr9 | 30,291 | 130 | — | — | 188,086 | 130 | — | — | — |
+| chr10 | 40,244 | 130 | — | — | 136,221 | 130 | — | — | — |
+| chr11 | 52,678 | 130 | — | — | 130,394 | 130 | — | — | — |
+| chr12 | 82,347 | 130 | — | — | 156,792 | 130 | — | — | — |
+| chr13 | 29,517 | 130 | — | — | 139,108 | 130 | — | — | — |
+| chr14 | 32,779 | 130 | — | — | 124,800 | 130 | — | — | — |
+| chr15 | 53,108 | 130 | — | — | 120,412 | 130 | — | — | — |
+| chr16 | 44,224 | 130 | — | — | 149,973 | 130 | — | — | — |
+| chr17 | 13,665 | 130 | — | — | 132,789 | 130 | — | — | — |
+| chr18 | 14,934 | 130 | — | — | 151,036 | 130 | — | — | — |
+| chr19 | 93,308 | 130 | — | — | 109,934 | 130 | — | — | — |
+| chr20 | 32,482 | 130 | — | — | 148,563 | 130 | — | — | — |
+| chr21 | 61,168 | 130 | — | — | 47,341 | 130 | — | — | — |
+| chr22 | 37,070 | 130 | — | — | 132,069 | 130 | — | — | — |
+| chrX | 24,734 | 130 | — | — | 146,721 | 130 | — | — | — |
 | **23 CHR TOTAL** | **1,065,332** | **130** | — | — | **3,223,263** | **130** | — | — | — |
-| *Residual arrays\*** | — | — | — | — | **1,736** | **130** | — | — | — |
-| **GLOBAL TOTAL** | **1,065,332** | **130** | **290** | **160** | **3,224,999** | **130** | **310** | **180** | **20** |
+| Residual arrays | — | — | — | — | **1,736** | **130** | — | — | — |
+| **GLOBAL TOTAL** | **1,065,332** | **130** | — | — | **3,224,999** | **130** | — | — | — |
 
-*\*Note: Columns report empirical data matching `data/cenpa_per_chromosome_summary.tsv`. Modes are reported as 5-bp binned modal insert sizes (130 bp bin, representing 128–132 bp). The 133-bp single-base mode and 340-bp dimer phasogram peak are measured on the pooled global and CDR datasets ($N = 4,290,331$ and $N = 1,065,332$). Residual arrays outside chr1–22 and chrX account for 1,736 pairs (0.04% of total proper pairs; including NC_060948.1).*
+*Note: Table reports empirical data matching `data/cenpa_per_chromosome_summary.tsv`. Modes are 5-bp binned modal insert sizes (130 bp bin, representing 128–132 bp). Due to mononucleosome size selection of the library (only 11 CDR and 33 Non-CDR fragments in the 250–350 bp dinucleosome range across 4.29M reads), fragment-length dinucleosome calling yields no statistically supported peak (reported as —); repeat spacing (NRL = 340 bp dimer lattice) is independently and directly determined by spatial dyad autocorrelation (phasogram, Fig. 2). Residual arrays outside chr1–22 and chrX account for 1,736 pairs (0.04% of total proper pairs).*
 
 ---
 
 ### Table 2: Cross-Lineage Validation Cohorts and Replicate Manifest.
-| Cohort ID | Cell Line | Karyotype | Target Assay | Target Run | Control Assay | Control Run | BioProject | Status |
+| Cohort | Cell Line | Karyotype | Target | Run | Control | Control Run | BioProject | Status |
 |:---|:---|:---|:---|:---|:---|:---|:---|:---|
-| **CHM13_REP2** | CHM13hTERT | 46,XX | CENP-A ChIP | `SRR13278683` | Input MNase | `SRR13278681` | `PRJNA559484` | **Discovery** |
-| **CHM13_REP1** | CHM13hTERT | 46,XX | CENP-A ChIP | `SRR13278684` | Input MNase | `SRR13278682` | `PRJNA559484` | **Validated** |
-| **HG002_T2T** | HG002 | 46,XY | CENP-A CUT&RUN | `SRR15395857` | IgG Control | `SRR15395854` | `PRJNA752795` | **Validated** |
-| **RPE1_DIPLOID** | hTERT RPE-1 | 46,XX | CENP-A CUT&RUN | `SRR9201843` | CENP-B CUT&RUN* | `SRR9201844` | `PRJNA546288` | **Validated** |
+| **CHM13_REP2** | CHM13hTERT | 46,XX | CENP-A ChIP | `SRR13278683` | Input MNase | `SRR13278681` | `PRJNA559484` | Discovery |
+| **CHM13_REP1** | CHM13hTERT | 46,XX | CENP-A ChIP | `SRR13278684` | Input MNase | `SRR13278682` | `PRJNA559484` | Validated |
+| **HG002_T2T** | HG002 (EBV-LCL) | 46,XY | CENP-A CUT&RUN | `SRR15395857` | IgG Control | `SRR15395854` | `PRJNA752795` | Validated |
+| **RPE1_DIPLOID** | hTERT RPE-1 | 46,XX | CENP-A CUT&RUN | `SRR9201843` | CENP-B CUT&RUN | `SRR9201844` | `PRJNA546288` | Validated |
 
-*\*Note: In RPE-1, CENP-B CUT&RUN serves as a structural comparator distinguishing sequence-specific factor complexes from histone wrapping (see Methods and Supplementary Table S6).*
+*Note: In RPE-1, CENP-B CUT&RUN serves as a structural comparator distinguishing sequence-specific factor complexes from histone wrapping (see Methods and Supplementary Table S6). HG002 is an EBV-transformed B-lymphoblastoid cell line (GM24385).*
 
 ---
 

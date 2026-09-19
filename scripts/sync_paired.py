@@ -62,8 +62,6 @@ with open_gz_safe(f1_in) as r1, open_gz_safe(f2_in) as r2, \
             b1, b2 = id1, id2
         elif id1.endswith('/1') and id2.endswith('/2'):
             b1, b2 = id1[:-2], id2[:-2]
-        elif id1.endswith('.1') and id2.endswith('.2'):
-            b1, b2 = id1[:-2], id2[:-2]
         else:
             b1, b2 = id1, id2
 
