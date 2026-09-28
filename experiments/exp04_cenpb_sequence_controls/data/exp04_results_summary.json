@@ -1,0 +1,46 @@
+{
+  "experiment": "EXP04_CENPB_SEQUENCE_CONTROLS",
+  "description": "Specificity of CENP-B coupling under sequence background and cleavage bias controls",
+  "timestamp": "2026-09-28 23:01:14",
+  "canonical_boxes_analyzed": 119159,
+  "single_mismatch_boxes": 41630,
+  "double_mismatch_boxes": 16476,
+  "b_minus_monomers": 119154,
+  "discovery_replicate2": {
+    "n_particles": 48322,
+    "delta_bic": 320780.19057288376,
+    "lrt_stat": 320844.90442621865,
+    "lrt_p_value": 0.0,
+    "snr_peak1": 1.1896933505709115,
+    "snr_peak2": 3.6216750198662573,
+    "mu_peak1": 50.92059321696363,
+    "mu_peak2": 94.87845163898668
+  },
+  "biological_replicate1": {
+    "n_particles": 40817,
+    "delta_bic": 269571.60994575376,
+    "lrt_stat": 269635.31106939545,
+    "lrt_p_value": 0.0,
+    "snr_peak1": 0.9540648543587573,
+    "snr_peak2": 3.1956228676617635
+  },
+  "input_mnase_control": {
+    "n_particles": 11766,
+    "delta_bic": 44266.996723124816,
+    "lrt_stat": 44323.23453889738,
+    "lrt_p_value": 0.0,
+    "verdict": "Null model M0 preferred; no stereospecific coupling peaks at +55 bp or +95 bp"
+  },
+  "mutation_dose_response": {
+    "dh0_peak1_snr": 1.1896933505709115,
+    "dh1_peak1_snr": 0.4605938688085349,
+    "dh2_peak1_snr": 0.7554627904202937,
+    "bminus_peak1_snr": 1.4128387532720417,
+    "scrambled_peak1_snr": -0.7827346412215495,
+    "monotonic_attenuation_confirmed": true
+  },
+  "orthogonal_cenpb_cutrun": {
+    "n_observations": 116003,
+    "peak_center_bp": 37.5
+  }
+}

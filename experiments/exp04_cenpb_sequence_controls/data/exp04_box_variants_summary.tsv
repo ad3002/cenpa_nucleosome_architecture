@@ -1,0 +1,6 @@
+motif_class	description	site_count	density_per_mb
+dh0	Canonical 17-bp CENP-B box (0 mismatches)	119159	1982.68
+dh1	Single-mismatch variant (dH=1)	41630	692.68
+dh2	Double-mismatch variant (dH=2)	16476	274.14
+b_minus	Alternating B- monomer homologous locus (+171 bp)	119154	1982.60
+scrambled	Dinucleotide-matched scrambled negative control	119159	1982.68

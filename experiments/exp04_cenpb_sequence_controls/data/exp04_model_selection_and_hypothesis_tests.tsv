@@ -1,0 +1,8 @@
+cohort_or_condition	motif_class	n_particles	loglik_m0	bic_m0	loglik_m1	bic_m1	delta_bic	lrt_chi2_stat	lrt_p_value	pi_peak1	pi_peak2	snr_peak1	snr_peak2	verdict
+CHM13_Rep2_CENPA	Canonical (dH=0)	48322	-422453.02	844949.17	-262030.56	524168.98	320780.19	320844.90	0.0000e+00	0.0927	0.3626	1.19	3.62	M1 Decisively Preferred (p<1e-15)
+CHM13_Rep1_CENPA	Canonical (dH=0)	40817	-355420.46	710883.39	-220602.80	441311.78	269571.61	269635.31	0.0000e+00	0.1017	0.3512	0.95	3.20	M1 Decisively Preferred (p<1e-15)
+CHM13_Input_MNase	Canonical (dH=0)	11766	-86051.00	172139.49	-63889.38	127872.49	44267.00	44323.23	0.0000e+00	0.1080	0.1761	0.55	1.22	M1 Decisively Preferred (p<1e-15)
+CHM13_Rep2_CENPA	Single Mismatch (dH=1)	16783	-147619.31	295277.53	-91024.21	182145.70	113131.83	113190.19	0.0000e+00	0.0752	0.3901	0.46	3.16	M1 Decisively Preferred (p<1e-15)
+CHM13_Rep2_CENPA	Double Mismatch (dH=2)	6221	-55219.19	110473.33	-34367.97	68823.29	41650.04	41702.45	0.0000e+00	0.0870	0.3954	0.76	2.83	M1 Decisively Preferred (p<1e-15)
+CHM13_Rep2_CENPA	B- Monomer Locus (+171bp)	49134	-451383.69	902810.58	-270480.84	541069.71	361740.88	361805.69	0.0000e+00	0.3280	0.1897	1.41	0.80	M1 Decisively Preferred (p<1e-15)
+CHM13_Rep2_CENPA	Scrambled Control	37171	-215714.60	431471.30	-215303.43	430712.09	759.21	822.35	0.0000e+00	0.0100	0.0142	-0.78	-0.70	M1 Decisively Preferred (p<1e-15)

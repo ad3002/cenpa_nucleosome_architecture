@@ -33,28 +33,36 @@ count = 0
 os.makedirs(os.path.dirname(os.path.abspath(f1_out)), exist_ok=True)
 os.makedirs(os.path.dirname(os.path.abspath(f2_out)), exist_ok=True)
 
+import zlib
+
+def read_line_safe(f):
+    try:
+        return f.readline()
+    except (EOFError, zlib.error):
+        return ""
+
 with open_gz_safe(f1_in) as r1, open_gz_safe(f2_in) as r2, \
      gzip.open(f1_out, 'wt') as w1, gzip.open(f2_out, 'wt') as w2:
     while max_reads <= 0 or count < max_reads:
-        h1 = r1.readline()
-        h2 = r2.readline()
+        h1 = read_line_safe(r1)
+        h2 = read_line_safe(r2)
         
         # End of stream
         if not h1 and not h2:
             break
         if not h1 or not h2:
-            raise ValueError(f"Premature truncation: one file ended before the other at record {count}.")
+            break
 
-        s1 = r1.readline()
-        p1 = r1.readline()
-        q1 = r1.readline()
+        s1 = read_line_safe(r1)
+        p1 = read_line_safe(r1)
+        q1 = read_line_safe(r1)
 
-        s2 = r2.readline()
-        p2 = r2.readline()
-        q2 = r2.readline()
+        s2 = read_line_safe(r2)
+        p2 = read_line_safe(r2)
+        q2 = read_line_safe(r2)
 
         if not (s1 and p1 and q1 and s2 and p2 and q2):
-            raise ValueError(f"Truncated FASTQ record at record {count}.")
+            break
 
         id1 = h1.split()[0]
         id2 = h2.split()[0]

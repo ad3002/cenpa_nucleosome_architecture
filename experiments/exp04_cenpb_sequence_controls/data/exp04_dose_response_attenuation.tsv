@@ -1,0 +1,6 @@
+motif_class	hamming_dist	site_count	peak1_amplitude	peak1_snr	peak2_amplitude	peak2_snr
+Canonical	0	119159	0.0927	1.19	0.3626	3.62
+Single_Mismatch	1	41630	0.0752	0.46	0.3901	3.16
+Double_Mismatch	2	16476	0.0870	0.76	0.3954	2.83
+B_Minus_Monomer	3	119154	0.3280	1.41	0.1897	0.80
+Scrambled_Control	4	119159	0.0100	-0.78	0.0142	-0.70
