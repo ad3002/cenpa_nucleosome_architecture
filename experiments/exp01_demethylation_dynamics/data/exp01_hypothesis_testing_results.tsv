@@ -1,0 +1,4 @@
+hypothesis_id	statement	test_applied	test_statistic	p_value	empirical_finding	verdict
+H1	Local nucleosome core geometry is invariant under demethylation	Kolmogorov-Smirnov	D=0.0131	2.0459e-03	Delta-mode=0 bp, Delta-mean=0.18 bp	CONFIRMED
+H2	Demethylation remodels 125-130 bp core to 147 bp canonical octasome	Modal core shift	Delta-mode=-19 bp	< 1e-15	Core remains at 128 bp; no shift to 147 bp	FALSIFIED
+H3	Demethylation increases linker accessibility (>50 bp MSPs)	Mann-Whitney U	U=307,670,346	0.0000e+00	Significant accessibility increase (25.1% -> 38.2%)	CONFIRMED

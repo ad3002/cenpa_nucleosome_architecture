@@ -1,0 +1,27 @@
+{
+  "experiment": "EXP01_DEMETHYLATION_DYNAMICS",
+  "dataset": "Salinas-Luypaert et al. (Nature Genetics 2025, PRJNA1270043 / Zenodo 15875037)",
+  "timestamp": "2026-09-28 23:58:24",
+  "core_invariance_test": {
+    "mode_untreated_bp": 133,
+    "mode_demethylated_bp": 128,
+    "delta_mode_bp": -5,
+    "mean_untreated_bp": 134.65370618133872,
+    "mean_demethylated_bp": 134.8367087397656,
+    "delta_mean_bp": 0.1830025584268924,
+    "ks_statistic": 0.013111217155428845,
+    "ks_p_value": 0.002045851973170796,
+    "h1_confirmed": true,
+    "h2_falsified": true
+  },
+  "accessibility_test": {
+    "pct_long_msps_untreated": 25.12312141683612,
+    "pct_long_msps_demethylated": 38.19131221806842,
+    "mann_whitney_u": 307670346.0,
+    "mann_whitney_p": 0.0,
+    "h3_confirmed": true
+  },
+  "domain_expansion": {
+    "expansion_kb": 45.226130653266324
+  }
+}
