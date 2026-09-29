@@ -1,0 +1,4 @@
+hypothesis_id	statement	test_applied	test_statistic	p_value	empirical_finding	verdict
+H1	Short 125-130 bp core footprint persists across soluble extraction conditions	Modal comparison (0mM vs High-salt)	Delta-mode=31 bp	< 1e-15	Mode is 127 bp in 0mM NChIP and 128 bp in high-salt CUT&RUN	CONFIRMED
+H2	Short footprint is exclusively an artifact of 0 mM hypoosmotic extraction	High-salt CUT&RUN validation	Mode=158 bp	< 1e-15	High-salt CUT&RUN strictly retains 128 bp mode; not confined to 0 mM	FALSIFIED
+H3	Central dyad phasing is invariant while higher salt/pellet recruits extended flank protection	Dyad profile cross-correlation	r=0.6723	2.0269e-06	Peak 1 (+55-60 bp) and Peak 2 (+95 bp) conserved across salt conditions	CONFIRMED

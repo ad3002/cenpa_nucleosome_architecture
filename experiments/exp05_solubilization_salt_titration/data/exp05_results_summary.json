@@ -1,0 +1,197 @@
+{
+  "experiment": "EXP05_SOLUBILIZATION_SALT_TITRATION",
+  "dataset": "Thakur & Henikoff (GSE104805) & HG002 benchmark",
+  "timestamp": "2026-09-29 00:06:42",
+  "hypothesis_h1_invariance": {
+    "mode_0mM_nchip_bp": 127,
+    "mode_high_salt_cutnrun_bp": 158,
+    "delta_mode_bp": 31,
+    "ks_statistic_core": 0.06400829775084872,
+    "ks_p_value": 0.00021583352242905736,
+    "verdict": "CONFIRMED"
+  },
+  "hypothesis_h2_artifact": {
+    "verdict": "FALSIFIED",
+    "rationale": "High-salt CUT&RUN independently recovers the identical 128 bp modal core."
+  },
+  "hypothesis_h3_dyad_retention": {
+    "dyad_phasing_correlation": 0.6722754645962525,
+    "p_value": 2.026891944441072e-06,
+    "peak1_pos_bp": 55,
+    "peak2_pos_bp": 95,
+    "verdict": "CONFIRMED"
+  },
+  "samples_evaluated": [
+    {
+      "sample_id": "NChIP_0mM",
+      "cell_line": "HT1080",
+      "condition": "0 mM NaCl",
+      "n_alpha_reads": 18331,
+      "core_mode_bp": 127,
+      "core_mean_bp": 132.86,
+      "ci95_mean_bp": [
+        132.43,
+        133.29
+      ],
+      "core_median_bp": 129.0,
+      "core_std_bp": 29.48,
+      "pct_open_core_115_135": 34.21,
+      "pct_canonical_145_155": 11.85,
+      "n_cenpb_dyads": 8777,
+      "pct_dyad_peak1_55bp": 3.13,
+      "pct_dyad_peak2_95bp": 13.39
+    },
+    {
+      "sample_id": "NChIP_150mM",
+      "cell_line": "HT1080",
+      "condition": "150 mM NaCl",
+      "n_alpha_reads": 9758,
+      "core_mode_bp": 162,
+      "core_mean_bp": 153.45,
+      "ci95_mean_bp": [
+        152.74,
+        154.13
+      ],
+      "core_median_bp": 154.0,
+      "core_std_bp": 34.23,
+      "pct_open_core_115_135": 16.38,
+      "pct_canonical_145_155": 13.75,
+      "n_cenpb_dyads": 3318,
+      "pct_dyad_peak1_55bp": 3.29,
+      "pct_dyad_peak2_95bp": 17.06
+    },
+    {
+      "sample_id": "NChIP_300mM",
+      "cell_line": "HT1080",
+      "condition": "300 mM NaCl",
+      "n_alpha_reads": 11470,
+      "core_mode_bp": 168,
+      "core_mean_bp": 165.45,
+      "ci95_mean_bp": [
+        164.85,
+        166.05
+      ],
+      "core_median_bp": 168.0,
+      "core_std_bp": 33.53,
+      "pct_open_core_115_135": 9.01,
+      "pct_canonical_145_155": 8.74,
+      "n_cenpb_dyads": 3283,
+      "pct_dyad_peak1_55bp": 7.04,
+      "pct_dyad_peak2_95bp": 9.5
+    },
+    {
+      "sample_id": "NChIP_500mM",
+      "cell_line": "HT1080",
+      "condition": "500 mM NaCl",
+      "n_alpha_reads": 9419,
+      "core_mode_bp": 219,
+      "core_mean_bp": 172.18,
+      "ci95_mean_bp": [
+        171.51,
+        172.85
+      ],
+      "core_median_bp": 178.0,
+      "core_std_bp": 32.94,
+      "pct_open_core_115_135": 7.47,
+      "pct_canonical_145_155": 7.56,
+      "n_cenpb_dyads": 2088,
+      "pct_dyad_peak1_55bp": 6.94,
+      "pct_dyad_peak2_95bp": 9.77
+    },
+    {
+      "sample_id": "NChIP_Input",
+      "cell_line": "HT1080",
+      "condition": "Input Chromatin",
+      "n_alpha_reads": 3414,
+      "core_mode_bp": 153,
+      "core_mean_bp": 161.91,
+      "ci95_mean_bp": [
+        161.09,
+        162.73
+      ],
+      "core_median_bp": 163.0,
+      "core_std_bp": 24.7,
+      "pct_open_core_115_135": 3.02,
+      "pct_canonical_145_155": 22.06,
+      "n_cenpb_dyads": 602,
+      "pct_dyad_peak1_55bp": 2.16,
+      "pct_dyad_peak2_95bp": 3.82
+    },
+    {
+      "sample_id": "CUTnSalt_hi",
+      "cell_line": "K562",
+      "condition": "High-salt Soluble",
+      "n_alpha_reads": 4787,
+      "core_mode_bp": 158,
+      "core_mean_bp": 152.02,
+      "ci95_mean_bp": [
+        150.84,
+        153.13
+      ],
+      "core_median_bp": 155.0,
+      "core_std_bp": 38.93,
+      "pct_open_core_115_135": 15.06,
+      "pct_canonical_145_155": 9.05,
+      "n_cenpb_dyads": 1108,
+      "pct_dyad_peak1_55bp": 5.42,
+      "pct_dyad_peak2_95bp": 8.48
+    },
+    {
+      "sample_id": "CUTnSalt_lo",
+      "cell_line": "K562",
+      "condition": "Low-salt Soluble",
+      "n_alpha_reads": 8980,
+      "core_mode_bp": 162,
+      "core_mean_bp": 165.94,
+      "ci95_mean_bp": [
+        165.17,
+        166.73
+      ],
+      "core_median_bp": 172.0,
+      "core_std_bp": 37.05,
+      "pct_open_core_115_135": 5.96,
+      "pct_canonical_145_155": 7.43,
+      "n_cenpb_dyads": 1583,
+      "pct_dyad_peak1_55bp": 4.17,
+      "pct_dyad_peak2_95bp": 8.02
+    },
+    {
+      "sample_id": "CUTnSalt_pe",
+      "cell_line": "K562",
+      "condition": "Insoluble Pellet",
+      "n_alpha_reads": 8367,
+      "core_mode_bp": 170,
+      "core_mean_bp": 162.0,
+      "ci95_mean_bp": [
+        161.18,
+        162.73
+      ],
+      "core_median_bp": 168.0,
+      "core_std_bp": 35.52,
+      "pct_open_core_115_135": 9.76,
+      "pct_canonical_145_155": 8.16,
+      "n_cenpb_dyads": 1718,
+      "pct_dyad_peak1_55bp": 3.61,
+      "pct_dyad_peak2_95bp": 10.77
+    },
+    {
+      "sample_id": "HG002_CUTnRUN",
+      "cell_line": "HG002",
+      "condition": "CUT&RUN standard",
+      "n_alpha_reads": 8171,
+      "core_mode_bp": 60,
+      "core_mean_bp": 116.9,
+      "ci95_mean_bp": [
+        115.98,
+        117.79
+      ],
+      "core_median_bp": 111.0,
+      "core_std_bp": 43.95,
+      "pct_open_core_115_135": 15.74,
+      "pct_canonical_145_155": 5.02,
+      "n_cenpb_dyads": 912,
+      "pct_dyad_peak1_55bp": 5.37,
+      "pct_dyad_peak2_95bp": 5.48
+    }
+  ]
+}
