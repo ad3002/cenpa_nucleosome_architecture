@@ -60,6 +60,24 @@ REQUIRED_FILES = {
     'figures/Fig7_cross_lineage_replication.pdf',
     'figures/Fig7_cross_lineage_replication.png',
     'figures/Fig7_cross_lineage_replication.svg',
+    'figures/Fig8_exp01_demethylation_dynamics.pdf',
+    'figures/Fig8_exp01_demethylation_dynamics.png',
+    'figures/Fig8_exp01_demethylation_dynamics.svg',
+    'figures/Fig9_exp02_single_molecule_fiberseq.pdf',
+    'figures/Fig9_exp02_single_molecule_fiberseq.png',
+    'figures/Fig9_exp02_single_molecule_fiberseq.svg',
+    'figures/Fig10_exp03_dyad_vs_ends_geometry.pdf',
+    'figures/Fig10_exp03_dyad_vs_ends_geometry.png',
+    'figures/Fig10_exp03_dyad_vs_ends_geometry.svg',
+    'figures/Fig11_exp04_cenpb_sequence_controls.pdf',
+    'figures/Fig11_exp04_cenpb_sequence_controls.png',
+    'figures/Fig11_exp04_cenpb_sequence_controls.svg',
+    'figures/Fig12_exp05_solubilization_salt_titration.pdf',
+    'figures/Fig12_exp05_solubilization_salt_titration.png',
+    'figures/Fig12_exp05_solubilization_salt_titration.svg',
+    'figures/Fig13_exp06_structural_accessibility_model.pdf',
+    'figures/Fig13_exp06_structural_accessibility_model.png',
+    'figures/Fig13_exp06_structural_accessibility_model.svg',
 }
 
 bad = []
@@ -353,8 +371,8 @@ print(f"         - RPE-1 CENP-A: mode={rpe1_a_mode} bp, N={rpe1_a_pairs:,}, 147-
 print(f"         - RPE-1 CENP-B: N={rpe1_b_pairs:,}, 45-65bp={rpe1_b_45_65}%, sub85={rpe1_b_sub85}%")
 EOF
 
-echo "3. Verifying all 7 publication figures..."
-for i in {1..7}; do
+echo "3. Verifying all 13 publication figures..."
+for i in {1..13}; do
     for ext in pdf png svg; do
         matched=0
         for f in figures/Fig${i}_*.$ext; do

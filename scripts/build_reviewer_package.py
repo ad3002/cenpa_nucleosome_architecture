@@ -64,7 +64,19 @@ def compile_pdfs():
         '### Figure 6: Local Epigenetic Contrast Within Identical Higher-Order Repeat Arrays.': 
             '### Figure 6: Local Epigenetic Contrast Within Identical Higher-Order Repeat Arrays.\n\n![](figures/Fig6_intra_array_epigenetic_contrast.png){width=92%}\n',
         '### Figure 7: Cross-Lineage Biological Replication Across Cell Lines and Technologies.': 
-            '### Figure 7: Cross-Lineage Biological Replication Across Cell Lines and Technologies.\n\n![](figures/Fig7_cross_lineage_replication.png){width=92%}\n'
+            '### Figure 7: Cross-Lineage Biological Replication Across Cell Lines and Technologies.\n\n![](figures/Fig7_cross_lineage_replication.png){width=92%}\n',
+        '### Figure 8: Epigenetic Domain Expansion and Local Geometric Invariance Under Targeted Demethylation (EXP-01).': 
+            '### Figure 8: Epigenetic Domain Expansion and Local Geometric Invariance Under Targeted Demethylation (EXP-01).\n\n![](figures/Fig8_exp01_demethylation_dynamics.png){width=92%}\n',
+        '### Figure 9: Single-Molecule Fiber-seq Testing of Spacing Alternation and Register Mixtures (EXP-02).': 
+            '### Figure 9: Single-Molecule Fiber-seq Testing of Spacing Alternation and Register Mixtures (EXP-02).\n\n![](figures/Fig9_exp02_single_molecule_fiberseq.png){width=92%}\n',
+        '### Figure 10: Geometric Anchoring of CENP-B Coupling: Central Dyad vs. Fragment End Dynamics (EXP-03).': 
+            '### Figure 10: Geometric Anchoring of CENP-B Coupling: Central Dyad vs. Fragment End Dynamics (EXP-03).\n\n![](figures/Fig10_exp03_dyad_vs_ends_geometry.png){width=92%}\n',
+        '### Figure 11: Sequence Specificity Controls, Cleavage Bias Null Calibration, and Factor Footprinting (EXP-04).': 
+            '### Figure 11: Sequence Specificity Controls, Cleavage Bias Null Calibration, and Factor Footprinting (EXP-04).\n\n![](figures/Fig11_exp04_cenpb_sequence_controls.png){width=92%}\n',
+        '### Figure 12: Disentangling Stable Nucleosome Core Footprints from Salt Extraction Fractionation Bias (EXP-05).': 
+            '### Figure 12: Disentangling Stable Nucleosome Core Footprints from Salt Extraction Fractionation Bias (EXP-05).\n\n![](figures/Fig12_exp05_solubilization_salt_titration.png){width=92%}\n',
+        '### Figure 13: 3D Structural Steric Accessibility Model and Out-of-Sample Genomic Validation (EXP-06).': 
+            '### Figure 13: 3D Structural Steric Accessibility Model and Out-of-Sample Genomic Validation (EXP-06).\n\n![](figures/Fig13_exp06_structural_accessibility_model.png){width=92%}\n'
     }
 
     for k, v in replacements.items():
@@ -440,6 +452,24 @@ REQUIRED_FILES = {
     'figures/Fig7_cross_lineage_replication.pdf',
     'figures/Fig7_cross_lineage_replication.png',
     'figures/Fig7_cross_lineage_replication.svg',
+    'figures/Fig8_exp01_demethylation_dynamics.pdf',
+    'figures/Fig8_exp01_demethylation_dynamics.png',
+    'figures/Fig8_exp01_demethylation_dynamics.svg',
+    'figures/Fig9_exp02_single_molecule_fiberseq.pdf',
+    'figures/Fig9_exp02_single_molecule_fiberseq.png',
+    'figures/Fig9_exp02_single_molecule_fiberseq.svg',
+    'figures/Fig10_exp03_dyad_vs_ends_geometry.pdf',
+    'figures/Fig10_exp03_dyad_vs_ends_geometry.png',
+    'figures/Fig10_exp03_dyad_vs_ends_geometry.svg',
+    'figures/Fig11_exp04_cenpb_sequence_controls.pdf',
+    'figures/Fig11_exp04_cenpb_sequence_controls.png',
+    'figures/Fig11_exp04_cenpb_sequence_controls.svg',
+    'figures/Fig12_exp05_solubilization_salt_titration.pdf',
+    'figures/Fig12_exp05_solubilization_salt_titration.png',
+    'figures/Fig12_exp05_solubilization_salt_titration.svg',
+    'figures/Fig13_exp06_structural_accessibility_model.pdf',
+    'figures/Fig13_exp06_structural_accessibility_model.png',
+    'figures/Fig13_exp06_structural_accessibility_model.svg',
 }
 
 bad = []
@@ -733,8 +763,8 @@ print(f"         - RPE-1 CENP-A: mode={rpe1_a_mode} bp, N={rpe1_a_pairs:,}, 147-
 print(f"         - RPE-1 CENP-B: N={rpe1_b_pairs:,}, 45-65bp={rpe1_b_45_65}%, sub85={rpe1_b_sub85}%")
 EOF
 
-echo "3. Verifying all 7 publication figures..."
-for i in {1..7}; do
+echo "3. Verifying all 13 publication figures..."
+for i in {1..13}; do
     for ext in pdf png svg; do
         matched=0
         for f in figures/Fig${i}_*.$ext; do
