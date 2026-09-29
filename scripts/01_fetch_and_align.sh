@@ -20,10 +20,7 @@ PAIRS_LIMIT=${PAIRS_LIMIT:-3000000}
 ALPHA_FA="$RAW_DIR/chm13_alpha_arrays.fa"
 if [ ! -f "$ALPHA_FA" ]; then
     echo "Notice: Reference FASTA $ALPHA_FA not found."
-    if [ -f "/mnt/data/claude/2026-09-14_nucleosome_genomics/cache/chm13_alpha_arrays.fa" ]; then
-        echo "Copying reference from local cache..."
-        cp "/mnt/data/claude/2026-09-14_nucleosome_genomics/cache/chm13_alpha_arrays.fa" "$ALPHA_FA"
-    elif [ -f "$SCRIPT_DIR/build_alpha_reference.py" ]; then
+    if [ -f "$SCRIPT_DIR/build_alpha_reference.py" ]; then
         echo "Building alpha-satellite array reference via build_alpha_reference.py..."
         python3 "$SCRIPT_DIR/build_alpha_reference.py" || true
     elif command -v samtools >/dev/null 2>&1 && [ -f "$RAW_DIR/chm13v2.0.fa" ]; then

@@ -2,7 +2,7 @@
 # run_reproduction.sh
 # Master reproduction and verification suite for "Human CENP-A Nucleosomes Form an Open 125-130 bp Particle
 # Phased to a 340 bp Alpha-Satellite Dimer Lattice with Bipartite CENP-B Linker Geometry".
-# Version 3.2 (Audit v4 Remediated Suite with Topological Order & Dynamic Invariants)
+# Version 3.2 (Comprehensive Validation Suite with Topological Order & Dynamic Invariants)
 
 set -eo pipefail
 

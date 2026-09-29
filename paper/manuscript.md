@@ -4,7 +4,7 @@
 
 $^{1}$ Institute of Science and Technology / Independent Research Initiative  
 $^*$ Corresponding author: `akomissarov@...`  
-**Manuscript Version:** 3.2 (Comprehensive T2T Resolution & Epistemic Synthesis) • September 2026
+**Manuscript Version:** 3.2 (Comprehensive T2T Resolution & Experimental Validation) • September 2026
 
 ---
 

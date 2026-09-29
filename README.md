@@ -12,10 +12,10 @@ This repository provides the complete, self-contained codebase, processed data t
 
 ---
 
-## Reviewer & Auditor Inspection Package
+## Reviewer Inspection Package
 
 For peer reviewers, referees, and editors, a dedicated standalone package is prepared:
-* **Reviewer Guide & Audit Traceability Matrix:** [`REVIEWER_PACKAGE_GUIDE.md`](REVIEWER_PACKAGE_GUIDE.md)
+* **Reviewer Guide & Validation Matrix:** [`REVIEWER_PACKAGE_GUIDE.md`](REVIEWER_PACKAGE_GUIDE.md)
 * **Standalone Distribution Archives:**
   * [`cenpa_reviewer_package_v3.1.tar.gz`](cenpa_reviewer_package_v3.1.tar.gz) (7.2 MB)
   * [`cenpa_reviewer_package_v3.1.zip`](cenpa_reviewer_package_v3.1.zip) (7.2 MB)
@@ -29,27 +29,27 @@ For peer reviewers, referees, and editors, a dedicated standalone package is pre
 
 ---
 
-## Key Scientific Findings (Packages A–G)
+## Key Scientific Findings
 
 1. **Native CENP-A Open Core Particle (125–133 bp):**  
    Direct paired-end MNase ChIP-seq on human T2T centromeres (`SRR13278683`, 4,290,331 primary proper-pair fragments across the 23 active HOR alpha-satellite arrays spanning 60.1 Mb; harboring 119,159 canonical 17-bp CENP-B boxes) reveals a single-base mononucleosome protection mode at **133 bp** ($N = 212,205$ fragments globally), with $177,473$ fragments at 130 bp and **84.29%** of all fragments ($N = 3,616,490$) concentrated in the 110–140 bp window (with 130 bp representing the modal 5-bp bin). In this library, the canonical 150-bp octamer is depleted **177.28-fold** relative to the 133-bp mode ($N = 1,197$, 0.0279%; 148.26-fold relative to 130 bp), and sub-85 bp fragments represent 1.53%, confirming that terminal gyres unpeel from the CENP-A octamer core in native centromeric chromatin (**Fig. 1**).
 
-2. **Reference-Free Physical Caliper & MAPQ Invariance (Packages B & C):**  
+2. **Reference-Free Physical Caliper & MAPQ Invariance:**  
    - **Physical Caliper:** Direct measurement of physical insert length from adapter-bounded raw FASTQ read overlaps without reference alignment confirms the **133-bp mode** (88.18% in [110, 140] bp within $L \le 138$ bp) with **98.49%** ($N = 74,763 / 75,911$) exact base concordance ($R^2 = 0.8832$, weighted mean difference = -0.31 bp, median difference = 0.0 bp) with BWA-MEM BAM alignment (**Fig. 5A–C**).
    - **MAPQ Invariance:** Both multi-mapping fragments ($\text{MAPQ} = 0$, $N = 80,957$) and uniquely placed fragments ($\text{MAPQ} \ge 20$, $N = 2,942$) exhibit identical single-base protection modes at **133 bp** ($\Delta = 0$ bp), demonstrating complete immunity to repeat mapping ambiguity (**Fig. 5D**).
 
-3. **Bipartite CENP-B Box Architecture (Package D):**  
+3. **Bipartite CENP-B Box Architecture:**  
    Distance from the CENP-A dyad to 119,159 canonical 17-bp CENP-B boxes reveals severe dyad occlusion (0–15 bp, **66.0-fold contrast** relative to Peak 1; 15.36-fold depletion relative to an empirical stepwise null baseline) and two major functional zones:
    - **Peak 1 at 55-bp bin** (SHL $\pm 5.0\text{--}5.5$, unpeeled gyre boundary; 4.30x enrichment vs stepwise null baseline);
    - **Peak 2 at 85–100 bp** (free inter-nucleosomal linker DNA; 6.54x enrichment vs stepwise null baseline at 100 bp) (**Fig. 4**).
 
-4. **Dominant 340-bp Dimer Periodicity & Mathematical Equivalence (Package E):**  
-   Spatial autocorrelation (phasogram) of 411,919 dyads inside the hypomethylated Centromere Dip Region (CDR) exhibits bimodal monomer lags at 150 bp and 190 bp (mean **170 bp**) that lock into a dominant non-zero maximum at **340 bp ($2 \times 170$ bp)** dinucleosome periodicity ($N = 761,698$ pairs in CDR; 591,711 in Non-CDR) (**Fig. 2**). Simulating bulk autocorrelation proves that an intramolecular alternating lattice (150/190 bp steps) and a 50:50 mixture of two uniform 340-bp registers produce identically matching autocorrelation spectra ($r = 1.000$, residual difference $\equiv 0$), defining an epistemic boundary requiring single-molecule long-read sequencing (**Fig. 3**).
+4. **Dominant 340-bp Dimer Periodicity & Mathematical Equivalence:**  
+   Spatial autocorrelation (phasogram) of 411,919 dyads inside the hypomethylated Centromere Dip Region (CDR) exhibits bimodal monomer lags at 150 bp and 190 bp (mean **170 bp**) that lock into a dominant non-zero maximum at **340 bp ($2 \times 170$ bp)** dinucleosome periodicity ($N = 761,698$ pairs in CDR; 591,711 in Non-CDR) (**Fig. 2**). Simulating bulk autocorrelation proves that an intramolecular alternating lattice (150/190 bp steps) and a 50:50 mixture of two uniform 340-bp registers produce identically matching autocorrelation spectra ($r = 1.000$, residual difference $\equiv 0$), defining a theoretical identifiability boundary resolved via single-molecule long-read sequencing (**Fig. 3**).
 
-5. **Local Intra-Array Epigenetic Contrast (Package F):**  
+5. **Local Intra-Array Epigenetic Contrast:**  
    Paired contrast within the **exact same continuous HOR array** across chromosomes (`hor_1_5`, `hor_8_2`, `hor_11_3`, `hor_X_1`) demonstrates **3.84-fold pooled CENP-A enrichment** in active CDR cores (4.374 rp/kb) over intra-array flanks (1.140 rp/kb; exact two-sided sign-test $p = 2.38 \times 10^{-7}$, two-sided Wilcoxon $p = 2.70 \times 10^{-5}$; chr11: 4.23 vs 0.85 rp/kb [4.98x]). Flanking 160-bp repeats leave ~13-bp linkers that sterically clash with the 17-bp CENP-B box and bind linker histone H1, whereas CDR 340-bp units provide 20/60 bp linkers that accommodate CENP-B boxes and exclude H1 (**Fig. 6**).
 
-6. **Cross-Lineage Biological Replication (Package G):**  
+6. **Cross-Lineage Biological Replication:**  
    Biological validation across independent cohorts, karyotypes, and platforms confirms architectural conservation (**Fig. 7**, **Table 2**):
    - **CHM13 Biological Replicate 1 (`SRR13278684`, $N = 74,925$):** Mode at **133 bp** (76.64% in core gate; 0.215% 150 bp, 26.91-fold depleted), FASTQ caliper mode at **133 bp**, and independent replication of the **~340-bp dimer lattice peak** ($N = 537$ pairs at 340 bp in Rep 1; $N = 557$ at 340 bp and $N = 587$ at 341 bp in Rep 2), alongside line-specific monomer fine-structure (Rep 1 peak at 146 bp vs Rep 2 peak at 170 bp).
    - **HG002 T2T Diploid (`SRR15395857`, $N = 11,456$):** Diploid B-lymphoblastoid cell line (GM24385) exhibits conditional mononucleosome mode at **120 bp** (modal 5-bp bin at 125 bp), unconditioned mode 20 bp, caliper mode 90 bp, and canonical 150-bp depletion to **0.436%** ($N = 50$).
@@ -63,7 +63,7 @@ For peer reviewers, referees, and editors, a dedicated standalone package is pre
 ```text
 .
 ├── README.md                          # Repository documentation & guide
-├── REVIEWER_PACKAGE_GUIDE.md          # Comprehensive Reviewer & Auditor Guide
+├── REVIEWER_PACKAGE_GUIDE.md          # Comprehensive Reviewer Guide
 ├── cenpa_reviewer_package_v3.1.tar.gz # Compressed reviewer distribution archive
 ├── cenpa_reviewer_package_v3.1.zip    # Compressed reviewer distribution archive (ZIP)
 ├── run_reproduction.sh                # Master verification suite with dynamic assert checks (~15s)
