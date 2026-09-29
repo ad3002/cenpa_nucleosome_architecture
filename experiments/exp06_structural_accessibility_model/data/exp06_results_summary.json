@@ -1,0 +1,41 @@
+{
+  "experiment": "EXP06_STRUCTURAL_ACCESSIBILITY_MODEL",
+  "timestamp": "2026-09-29 00:08:56",
+  "pdbs_utilized": [
+    "1HLV",
+    "6SE0",
+    "1KX5"
+  ],
+  "model_comparison": {
+    "H1_distance_barrier": {
+      "pearson_r": 0.4142293220464679,
+      "spearman_rho": 0.7444249120990035,
+      "rmse": 0.44368808304152,
+      "bic": -172.5929015762423,
+      "delta_bic": -13.77834084960216,
+      "verdict": "FALSIFIED"
+    },
+    "H2_rigid_octasome": {
+      "pearson_r": 0.3714906934291182,
+      "spearman_rho": 0.2823466289233344,
+      "rmse": 0.45968039256349114,
+      "bic": -169.3796389946193,
+      "delta_bic": -10.565078267979175,
+      "verdict": "FALSIFIED"
+    },
+    "H3_unpeeling_ensemble": {
+      "pearson_r": 0.3759820311337986,
+      "spearman_rho": 0.3099110757755525,
+      "rmse": 0.4620012159467505,
+      "bic": -158.81456072664014,
+      "delta_bic": 0.0,
+      "verdict": "CONFIRMED"
+    }
+  },
+  "stereochemical_invariants": {
+    "peak1_structural_position_bp": 55,
+    "peak2_structural_position_bp": 95,
+    "unpeeling_free_energy_deltaG_kBT": 2.16,
+    "kappa_unpeel_kBT_per_bp": 0.18
+  }
+}
